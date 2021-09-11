@@ -443,7 +443,7 @@ read -p 'Press Enter to continue, or Ctrl+C to exit'
 #  Deploy Resource Group 
 #############################################################
 #
-echo" "
+echo " "
 echo "Deploying Resource Group (if needed)"
 (
     if [[ "$useExistingResourceGroup" == "no" ]]; then

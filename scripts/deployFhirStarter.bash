@@ -13,7 +13,7 @@ IFS=$'\n\t'
 #########################################
 # HealthArchitecture Deployment Settings 
 #########################################
-declare TAG="HealthArchitectures: FHIR-API"
+declare TAG="HealthArchitectures: FHIR-Starter"
 declare distribution="../distribution/publish.zip"
 
 #########################################
@@ -245,6 +245,7 @@ intro
 #
 echo " "
 echo "Collecting Azure Parameters (unless supplied on the command line) "
+echo "---"
 
 if [[ -z "$subscriptionId" ]]; then
 	echo "Enter your subscription ID <press Enter to accept default> ["$defSubscriptionId"]: "
@@ -258,7 +259,6 @@ fi
 if [[ -z "$resourceGroupName" ]]; then
 	echo "This script will look for an existing resource group, otherwise a new one will be created "
 	echo "You can create new resource groups with the CLI using: az group create "
-    echo " "
 	echo "Enter a resource group name []: "
 	read resourceGroupName
 	[[ "${resourceGroupName:?}" ]]
@@ -267,7 +267,6 @@ fi
 if [[ -z "$resourceGroupLocation" ]]; then
 	echo "If creating a *new* resource group, you need to set a location "
 	echo "You can lookup locations with the CLI using: az account list-locations "
-	echo " "
 	echo "Enter resource group location []: "
 	read resourceGroupLocation
 	[[ "${resourceGroupLocation:?}" ]]
@@ -283,21 +282,22 @@ fi
 # Check if the resource group exists
 #
 echo " "
-echo "Checking for existing Resource Group named ["$resourceGroupName"] "
+echo "  Checking for existing Resource Group named ["$resourceGroupName"]... "
 resourceGroupExists=$(az group exists --name $resourceGroupName)
 if [[ "$resourceGroupExists" == "true" ]]; then
-    echo "Resource Group ["$resourceGroupName"] found"
+    echo "  Resource Group ["$resourceGroupName"] found"
     useExistingResourceGroup="yes" ;
 else
-    echo "Will create a new Resource Group ["$resourceGroupName"]"
+    echo "  Resource Group ["$resourceGroupName"] not found"
+    echo "  a new Resource Group will be created"
     useExistingResourceGroup="no" 
 fi
-
 
 # Prompt for script parameters if some required parameters are missing
 #
 echo " "
 echo "Collecting Script Parameters (unless supplied on the command line).."
+echo "--- "
 
 # Set a Default App Name
 #
@@ -323,19 +323,18 @@ fi
 # Check FHIR Service exists
 #
 declare answer=""
-echo " "
-echo "Checking for exiting FHIR Service named ["$fhirServiceName"]"
+echo "  Checking for exiting FHIR Service named ["$fhirServiceName"] ...Warnings can be safely ignored... "
 stepresult=$(az config set extension.use_dynamic_install=yes_without_prompt)
 fhirServiceExists=$(az healthcareapis service list --query "[?name == '$fhirServiceName'].name" --out tsv)
 if [[ -n "$fhirServiceExists" ]]; then
-	echo "An API for FHIR Service Named "$fhirServiceName" already exists in this subscription, would you like to try ["$defFhirServiceName"] instead? [y/n]: "
+	echo "  An API for FHIR Service Named "$fhirServiceName" already exists in this subscription, would you like to try ["$defFhirServiceName"] instead? [y/n]: "
     read answer
     if [[ "$answer" == "y" ]]; then
         fhirServiceName=$defFhirServiceName 
         stepresult=$(az config set extension.use_dynamic_install=yes_without_prompt)
         fhirServiceExists=$(az healthcareapis service list --query "[?name == '$fhirServiceName'].name" --out tsv)
         if [[ -n "$fhirServiceExists" ]]; then
-            echo "An API for FHIR Service Named "$fhirServiceName" already exists in this subscription, exiting..."
+            echo "  An API for FHIR Service Named "$fhirServiceName" already exists in this subscription, exiting..."
             exit 1
         fi ;
     else 
@@ -372,8 +371,7 @@ fi
 
 # Check KV exists and load information 
 #
-echo " "
-echo "Checking for existing Key Vault named ["$keyVaultName"] ...it is ok to ignore warnings"
+echo "  Checking for existing Key Vault named ["$keyVaultName"]..."
 keyVaultExists=$(az keyvault list --query "[?name == '$keyVaultName'].name" --out tsv)
 if [[ -n "$keyVaultExists" ]]; then
 	set +e
@@ -399,7 +397,7 @@ fi
 #
 echo " "
 if [[ -z "$genpostman" ]]; then
-	echo "Do you want to generate a Postman Environment? [y/n]:"
+	echo "Do you want to generate a Postman Environment for API access? [y/n]:"
 	read genpostman
 	if [[ "$genpostman" == "y" ]]; then
         genpostman="yes" ;
@@ -410,16 +408,16 @@ fi
 
 # Prompt for final confirmation
 #
-echo " "
+echo "--- "
 echo "Ready to start deployment of ["$fhirServiceName"] with the following values:"
-echo "Subscription ID: " $subscriptionId
-echo "Use Existing Resource Group: "$useExistingResourceGroup
-echo "Resource Group Name: " $resourceGroupName 
-echo "Resource Group Location: " $resourceGroupLocation 
-echo "Use Existing Key Vault: "$useExistingKeyVault
-echo "KeyVault Name:  " $keyVaultName
-echo "FHIR Service Client Application Name: "$fhirServiceClientAppName
-echo "Generate Postman Env: "$genpostman  
+echo "Subscription ID:....................... "$subscriptionId
+echo "Use Existing Resource Group:........... "$useExistingResourceGroup
+echo "Resource Group Name:................... "$resourceGroupName 
+echo "Resource Group Location:............... "$resourceGroupLocation 
+echo "Use Existing Key Vault:................ "$useExistingKeyVault
+echo "KeyVault Name:......................... "$keyVaultName
+echo "FHIR Service Client Application Name:.. "$fhirServiceClientAppName
+echo "Generate Postman Env:.................. "$genpostman  
 echo " "
 echo "Please validate the settings above before continuing"
 read -p 'Press Enter to continue, or Ctrl+C to exit'
@@ -443,7 +441,8 @@ read -p 'Press Enter to continue, or Ctrl+C to exit'
 #  Deploy Resource Group 
 #############################################################
 #
-echo " "
+echo "--- "
+echo "Starting Deployments..."
 echo "Deploying Resource Group (if needed)"
 (
     if [[ "$useExistingResourceGroup" == "no" ]]; then
@@ -463,13 +462,13 @@ else
     echo "Deployment of Resource Group completed successfully"
 fi
 
-sleep 5
+sleep 3
 
 #############################################################
 #  Deploy Key Vault 
 #############################################################
 #
-echo " "
+echo "--- "
 echo "Deploying Key Vault (if needed)"
 (
     if [[ "$useExistingKeyVault" == "no" ]]; then
@@ -496,14 +495,14 @@ sleep 5
 #  Deploy FHIR Service
 #############################################################
 #
-echo " "
+echo "--- "
 echo "Deploying FHIR Service ["$fhirServiceName"]"
 (
     # Deploy API
     #
     echo " "
     echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
-    stepresult=$(az healthcareapis service create --name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4"  --cosmos-db-configuration offer-throughput=1000 --tags $TAG)
+    stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4"  --cosmos-db-configuration offer-throughput=1000 --tags $TAG)
 
     #healthCheck fhirServiceProperties=$stepresult
     
@@ -541,7 +540,7 @@ echo "Deploying FHIR Service ["$fhirServiceName"]"
     
     # Set the FHIR Service Client Object ID for role assignment 
     #
-    echo " "
+    echo "--- "
     echo "Setting FHIR Service Client Object ID"
     fhirServiceClientObjectId=$(az ad sp show --id $fhirServiceClientId --query "objectId" --out tsv)
 
@@ -549,7 +548,7 @@ echo "Deploying FHIR Service ["$fhirServiceName"]"
 
     # Save the FHIR Service Client Application information to the Key Vault 
     # 
-    echo " "
+    echo "--- "
     echo "Saving FHIR Service Client Information to Key Vault ["$keyVaultName"]"
     stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-TENANT-NAME" --value $fhirServiceTenantId)
     stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-CLIENT-ID" --value $fhirServiceClientId)
@@ -560,7 +559,7 @@ echo "Deploying FHIR Service ["$fhirServiceName"]"
 
     # Granting FHIR Service Client Application FHIR Data Contributor Role
     # 
-    echo " "
+    echo "--- "
     echo "Granting FHIR Service Client Application FHIR Data Contributor Role"
     stepresult=$(az role assignment create --assignee-object-id $fhirServiceClientObjectId --role "Fhir Data Contributor" --scope $fhirResourceId)
 
@@ -568,8 +567,8 @@ echo "Deploying FHIR Service ["$fhirServiceName"]"
 
     # Generate Postman Environment File if requested
     # 
-    if [[ "$generatePostmanEnvironmentFile" == "yes" ]]; then
-        echo " "
+    if [[ "$genpostman" == "yes" ]]; then
+        echo "--- "
         echo "Generating Postman Environment File"
             pmuuid=$(cat /proc/sys/kernel/random/uuid)
 		    pmenv=$(<postmantemplate.json)

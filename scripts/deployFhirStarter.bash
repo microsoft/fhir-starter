@@ -180,7 +180,7 @@ function healthCheck () {
 		echo "# FHIR Sync Agent Healthcheck variables" > ./healthcheck.txt
 		echo "declare $functionname1=\"$functionname2\"" >> ./healthcheck.txt ;
 	else 
-		echo "declare $functionname1=\"$functionname2\"" >> ./healthcheck.txt ;
+		echo "declare $functionname1=\"$functionname2\"" >> ./healthcheck.txt 
 	fi 
 	((count++))
 }
@@ -390,7 +390,7 @@ if [[ -n "$keyVaultExists" ]]; then
         useExistingKeyVault="yes"
 	fi 
 else
-	echo "Script will deploy new Key Vault ["$keyVaultName"] for FHIR Service [" 
+	echo "Script will deploy new Key Vault ["$keyVaultName"] for FHIR Service ["$fhirServiceName"]" 
     useExistingKeyVault="no"
 fi
 
@@ -410,6 +410,7 @@ fi
 
 # Prompt for final confirmation
 #
+echo " "
 echo "Ready to start deployment of ["$fhirServiceName"] with the following values:"
 echo "Subscription ID: " $subscriptionId
 echo "Use Existing Resource Group: "$useExistingResourceGroup

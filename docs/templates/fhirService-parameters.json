@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accessPolicies": {
+            "value": []
+        },
+        "audience": {
+            "value": "https://api-demo-r4.azurehealthcareapis.com"
+        },
+        "authority": {
+            "value": "https://login.microsoftonline.com/a229c322-1dae-48f4-9999-9973b4807cd4"
+        },
+        "fhirVersion": {
+            "value": "fhir-R4"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "name": {
+            "value": "api-demo-r4"
+        },
+        "offerThroughput": {
+            "value": 400
+        },
+        "keyVaultKeyUri": {
+            "value": ""
+        },
+        "smartProxyEnabled": {
+            "value": false
+        },
+        "publicNetworkAccess": {
+            "value": "Enabled"
+        }
+    }
+}

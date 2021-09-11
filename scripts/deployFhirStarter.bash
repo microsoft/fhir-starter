@@ -22,7 +22,7 @@ declare distribution="../distribution/publish.zip"
 declare defAppInstallName="fhir"$RANDOM
 declare defKeyVaultName=$defAppInstallName"kv"
 declare useExistingKeyVault=""
-declare genpostman=""
+
 
 #########################################
 # Script Control Variables
@@ -34,11 +34,12 @@ declare genpostman=""
 # Variables
 #########################################
 
-# common 
+# Common 
 declare defSubscriptionId=""
 declare subscriptionId=""
 declare resourceGroupName=""
 declare resourceGroupExists=""
+declare useExistingResourceGroup=""
 declare resourceGroupLocation=""
 declare storageAccountNameSuffix="store"
 declare storageConnectionString=""
@@ -49,12 +50,15 @@ declare stepresult=""
 declare fhirServiceUrl=""
 declare fhirServiceClientId=""
 declare fhirServiceClientSecret=""
-declare fhirServiceTenant=""
+declare fhirServiceTenantId=""
 declare fhirServiceAudience=""
 declare fhirResourceId=""
 declare fhirServiceName=""
 declare fhirServiceExists=""
-
+declare fhirServiceProperties=""
+declare fhirServiceClientAppName=""
+declare fhirServiceClientObjectId=""
+declare fhirServiceClientRoleAssignment=""
 
 # SyncAgent
 declare syncAgentServicePrincipalId=""
@@ -83,28 +87,25 @@ declare postprocessors=""
 declare msi=""
 declare count="0"
 
-# keyvault
+# Keyvault
 declare keyVaultNameAccountNameSuffix="kv"$RANDOM
 declare keyVaultName=""
 declare keyVaultExists=""
 
-
-
-
-declare fsresourceid=""
-declare fhirServiceClientId=""
-declare fhirServiceTenantid=""
-declare fhirServiceClientSecret=""
-declare fhirServiceAudienceience=""
-declare fsoid=""
-declare spname=""
-declare repurls=""
-
-
+# Postman 
 declare genpostman=""
 declare pmenv=""
 declare pmuuid=""
 declare pmfhirurl=""
+
+
+declare fsresourceid=""
+declare fhirServiceAudience=""
+
+declare spname=""
+declare repurls=""
+
+
 
 #########################################
 #  Script Functions 
@@ -152,9 +153,9 @@ function keyVaultUri {
 
 function result () {
     if [[ $1 = "ok" ]]; then
-        echo -e "..................... [ \033[32m ok \033[37m ] \r" 
+        echo -e ".....  [ \033[32m ok \033[37m ] \r" 
       else
-        echo -e "..................... [ \033[31m failed \033[37m ] \r"
+        echo -e ".....  [ \033[31m failed \033[37m ] \r"
         exit 1
       fi
     echo -e "\033[37m \r"
@@ -221,7 +222,9 @@ done
 shift $((OPTIND-1))
 echo "Deploy Azure API for FHIR..."
 echo "Checking Azure Authentication..."
-#login to azure using your credentials
+
+# login to azure using your credentials
+#
 az account show 1> /dev/null
 
 if [ $? != 0 ];
@@ -283,17 +286,12 @@ echo " "
 echo "Checking for existing Resource Group named ["$resourceGroupName"] "
 resourceGroupExists=$(az group exists --name $resourceGroupName)
 if [[ "$resourceGroupExists" == "true" ]]; then
-	
-
-if [ $(az group exists --name $resourceGroupName) = false ]; then
-	echo "Resource group with name" $resourceGroupName "could not be found. Creating new resource group.."
-	set -e
-	(
-		set -x
-		az group create --name $resourceGroupName --location $resourceGroupLocation 1> /dev/null
-	)
-	else
-	echo "Using existing resource group..."
+    echo "Resource Group ["$resourceGroupName"] found"
+    useExistingResourceGroup="yes" ;
+else
+    echo "Will create a new Resource Group ["$resourceGroupName"]"
+    useExistingResourceGroup="no" 
+fi
 
 
 # Prompt for script parameters if some required parameters are missing
@@ -346,6 +344,10 @@ if [[ -n "$fhirServiceExists" ]]; then
     fi
 fi
 
+# If we have a valid FHIR Service Name, then create the FHIR Service Client name variable from it
+#
+fhirServiceClientAppName=$fhirServiceName"-svc-client"
+
 # Set a Default KeyVault Name 
 #
 defKeyVaultName=${defKeyVaultName:0:14}
@@ -392,6 +394,9 @@ else
     useExistingKeyVault="no"
 fi
 
+
+# Check for Postman Environment Variable 
+#
 echo " "
 if [[ -z "$genpostman" ]]; then
 	echo "Do you want to generate a Postman Environment? [y/n]:"
@@ -407,13 +412,15 @@ fi
 #
 echo "Ready to start deployment of ["$fhirServiceName"] with the following values:"
 echo "Subscription ID: " $subscriptionId
+echo "Use Existing Resource Group: "$useExistingResourceGroup
 echo "Resource Group Name: " $resourceGroupName 
 echo "Resource Group Location: " $resourceGroupLocation 
 echo "Use Existing Key Vault: "$useExistingKeyVault
 echo "KeyVault Name:  " $keyVaultName
+echo "FHIR Service Client Application Name: "$fhirServiceClientAppName
 echo "Generate Postman Env: "$genpostman  
 echo " "
-echo "Please validate the settings before continuing"
+echo "Please validate the settings above before continuing"
 read -p 'Press Enter to continue, or Ctrl+C to exit'
 
 
@@ -425,9 +432,167 @@ healthCheck subscriptionId=$subscriptionId
 healthCheck resourceGroupName=$resourceGroupName
 healthCheck resourceGroupLocation=$resourceGroupLocation
 healthCheck keyVaultName=$keyVaultName
-
+healthCheck fhirServiceClientAppName=$fhirServiceClientAppName
 
 #############################################################
-#  Deployment sub-execution blocks (start deployments here)
+#  Deploy Resources (start deployments here)
 #############################################################
 
+#############################################################
+#  Deploy Resource Group 
+#############################################################
+#
+(
+    if [[ "$useExistingResourceGroup" == "no" ]]; then
+        echo " "
+        echo "Creating Resource Group ["$resourceGroupName"] in location ["$resourceGroupLocation"]"
+        set -x
+        az group create --name $resourceGroupName --location $resourceGroupLocation --output none --tags $TAG 
+    fi
+)
+
+	
+if [ $?  != 0 ];
+ then
+	echo "Resource Group create failed.  Please check your permissions in this Subscription and try again"
+    result "fail" ;
+else 
+    echo " "
+    echo "Deployment of Resource Group completed successfully"
+fi
+
+#############################################################
+#  Deploy Key Vault 
+#############################################################
+#
+(
+    if [[ "$useExistingKeyVault" == "no" ]]; then
+        echo " "
+        echo "Creating Key Vault ["$keyVaultName"] in location ["$resourceGroupName"]"
+        set -x
+        stepresult=$(az keyvault create --name $kvname --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none)) 
+    fi
+)
+
+	
+if [ $?  != 0 ];
+ then
+	echo "Key Vault create failed.  Please check your permissions in this Subscription and try again"
+    result "fail" ;
+else
+    echo " "
+    echo "Deployment of Key Vault completed successfully"
+fi
+
+#############################################################
+#  Deploy FHIR Service
+#############################################################
+#
+(
+    # Deploy API
+    #
+    echo " "
+    echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
+    stepresult=$(az healthcareapis service create --name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4"  --cosmos-db-configuration offer-throughput=1000 --tags $TAG)
+
+    healthCheck fhirServiceProperties=$stepresult
+    
+    # Set FHIR Service Audience
+    #
+    fhirServiceAudience=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "properties.authenticationConfiguration.audience" --out tsv)
+
+    echo "  FHIR Service Audience set to ["$fhiresserviceAudienceience"]"
+    healthCheck fhirServiceAudience=$fhirServiceAudience
+    
+    # Set FHIR Service Resource ID 
+    #
+    fhirResourceId=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "id" --out tsv)
+
+    echo "  FHIR Service Resource ID set to ["$fhirResourceId"]" 
+    healthCheck fhirResourceId=$fhirResourceId
+
+    sleep 10
+
+    # Setup the FHIR Service Client Application 
+    #
+    echo " "
+    echo "Creating FHIR Service Client Application ["$fhirServiceClientAppName"]"
+    stepresult=$(az ad sp create-for-rbac -n $fhirServiceClientAppName --skip-assignment)
+
+    healthCheck fhirServiceClientAppName=$stepresult
+
+    # Seriously hate doing this, but Azure doesn't have a way to get the client ID out of the response 
+    # a better way is to us az ad sp show with the app ID... will solve next iteration 
+    fhirServiceClientId=$(echo $stepresult | jq -r '.appId')
+    fhirServiceClientSecret=$(echo $stepresult | jq -r '.password')
+    fhirServiceTenantId=$(echo $stepresult | jq -r '.tenant')
+
+    echo "  FHIR Service Client Application ID is ["$fhirServiceClientId"]"
+    
+    # Set the FHIR Service Client Object ID for role assignment 
+    #
+    echo " "
+    echo "Setting FHIR Service Client Object ID"
+    fhirServiceClientObjectId=$(az ad sp show --id $fhirServiceClientId --query "objectId" --out tsv)
+
+    healthCheck fhirServiceClientObjectId=$fhirServiceClientObjectId
+
+    # Save the FHIR Service Client Application information to the Key Vault 
+    # 
+    echo " "
+    echo "Saving FHIR Service Client Information to Key Vault ["$keyVaultName"]"
+    stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-TENANT-NAME" --value $fhirServiceTenantId)
+    stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-CLIENT-ID" --value $fhirServiceClientId)
+    stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-CLIENT-SECRET" --value $fhirServiceClientSecret)
+    stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-SECRET" --value $fhirServiceClientSecret)
+    stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-RESOURCE" --value $fhirServiceAudience)
+    stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-URL" --value $fhirServiceAudience)
+
+    # Granting FHIR Service Client Application FHIR Data Contributor Role
+    # 
+    echo " "
+    echo "Granting FHIR Service Client Application FHIR Data Contributor Role"
+    stepresult=$(az role assignment create --assignee-object-id $fhirServiceClientObjectId --role "Fhir Data Contributor" --scope $fhirResourceId)
+
+    healthCheck fhirServiceClientRoleAssignment=$stepresult
+
+    # Generate Postman Environment File if requested
+    # 
+    if [[ "$generatePostmanEnvironmentFile" == "yes" ]]; then
+        echo " "
+        echo "Generating Postman Environment File"
+            pmuuid=$(cat /proc/sys/kernel/random/uuid)
+		    pmenv=$(<postmantemplate.json)
+			pmfhirurl=$fhirServiceAudience
+			pmenv=${pmenv/~guid~/$pmuuid}
+			pmenv=${pmenv/~envname~/$fhirServiceName}
+			pmenv=${pmenv/~tenentid~/$fhirServiceTenantId}
+			pmenv=${pmenv/~clientid~/$fhirServiceClientId}
+			pmenv=${pmenv/~clientsecret~/$fhirServiceClientSecret}
+			pmenv=${pmenv/~fhirurl~/$pmfhirurl}
+			pmenv=${pmenv/~resource~/$fhirServiceAudience}
+			echo $pmenv >> $fhirServiceName".postman_environment.json"
+        
+            echo " "
+        	echo "The Postman environment ["$fhirServiceName".postman_environment.json] has been generated"
+			echo "The environment file along with the FHIR-CALLS-Sample-postman-collection.json can be used to access ["$fhirServiceName"]"
+            echo " "
+            echo "Download Files from Cloud Shell"
+            echo "https://docs.microsoft.com/en-us/azure/cloud-shell/using-the-shell-window#upload-and-download-files"
+            echo " "
+            echo "Importing Postman files"
+			echo "https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#importing-postman-data"
+    fi   
+)
+
+	
+if [ $?  != 0 ];
+ then
+	echo "Deployment of FHIR Service failed.  Please check your permissions in this Subscription and try again"
+    result "fail" ;
+else 
+    echo " "
+    echo "Deployment of FHIR Service completed successfully"
+fi
+
+   

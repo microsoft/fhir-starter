@@ -288,7 +288,8 @@ echo "  Checking for existing Resource Group named ["$resourceGroupName"]... "
 resourceGroupExists=$(az group exists --name $resourceGroupName)
 if [[ "$resourceGroupExists" == "true" ]]; then
     echo "  Resource Group ["$resourceGroupName"] found"
-    useExistingResourceGroup="yes" ;
+    useExistingResourceGroup="yes" 
+    createNewResourceGroup="no" ;
 else
     echo "  Resource Group ["$resourceGroupName"] not found a new Resource group will be created"
     useExistingResourceGroup="no" 
@@ -389,6 +390,7 @@ if [[ -n "$keyVaultExists" ]]; then
 		echo "  unable to read FS-URL from ["$keyVaultName"]" 
         echo "  setting script to create new FS-URL Entry in existing Key Vault ["$keyVaultName"]"
         useExistingKeyVault="yes"
+        createNewKeyVault="no"
 	fi 
 else
 	echo "  Script will deploy new Key Vault ["$keyVaultName"] for FHIR Service ["$fhirServiceName"]" 

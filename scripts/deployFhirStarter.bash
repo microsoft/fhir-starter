@@ -373,7 +373,7 @@ fi
 # Check KV exists and load information 
 #
 echo " "
-echo "Checking for existing Key Vault named ["$keyVaultName"] "
+echo "Checking for existing Key Vault named ["$keyVaultName"] ...it is ok to ignore warnings"
 keyVaultExists=$(az keyvault list --query "[?name == '$keyVaultName'].name" --out tsv)
 if [[ -n "$keyVaultExists" ]]; then
 	set +e
@@ -476,7 +476,7 @@ echo "Deploying Key Vault (if needed)"
         echo " "
         echo "Creating Key Vault ["$keyVaultName"] in location ["$resourceGroupName"]"
         set -x
-        stepresult=$(az keyvault create --name $kvname --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none)) 
+        stepresult=$(az keyvault create --name $kvname --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none) 
     fi
 )
 

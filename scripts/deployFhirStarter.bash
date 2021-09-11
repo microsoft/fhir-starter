@@ -21,7 +21,6 @@ declare distribution="../distribution/publish.zip"
 #########################################
 declare defAppInstallName="fhir"$RANDOM
 declare defKeyVaultName=$defAppInstallName"kv"
-declare useExistingKeyVault=""
 
 
 #########################################
@@ -40,6 +39,7 @@ declare subscriptionId=""
 declare resourceGroupName=""
 declare resourceGroupExists=""
 declare useExistingResourceGroup=""
+declare createNewResourceGroup=""
 declare resourceGroupLocation=""
 declare storageAccountNameSuffix="store"
 declare storageConnectionString=""
@@ -91,6 +91,8 @@ declare count="0"
 declare keyVaultNameAccountNameSuffix="kv"$RANDOM
 declare keyVaultName=""
 declare keyVaultExists=""
+declare createNewKeyVault=""
+declare useExistingKeyVault=""
 
 # Postman 
 declare genpostman=""
@@ -243,9 +245,8 @@ intro
 
 #Prompt for common parameters if some required parameters are missing
 #
-echo " "
+echo "--- "
 echo "Collecting Azure Parameters (unless supplied on the command line) "
-echo "---"
 
 if [[ -z "$subscriptionId" ]]; then
 	echo "Enter your subscription ID <press Enter to accept default> ["$defSubscriptionId"]: "
@@ -265,6 +266,7 @@ if [[ -z "$resourceGroupName" ]]; then
 fi
 
 if [[ -z "$resourceGroupLocation" ]]; then
+    echo " "
 	echo "If creating a *new* resource group, you need to set a location "
 	echo "You can lookup locations with the CLI using: az account list-locations "
 	echo "Enter resource group location []: "
@@ -288,16 +290,15 @@ if [[ "$resourceGroupExists" == "true" ]]; then
     echo "  Resource Group ["$resourceGroupName"] found"
     useExistingResourceGroup="yes" ;
 else
-    echo "  Resource Group ["$resourceGroupName"] not found"
-    echo "  a new Resource Group will be created"
+    echo "  Resource Group ["$resourceGroupName"] not found a new Resource group will be created"
     useExistingResourceGroup="no" 
+    createNewResourceGroup="yes"
 fi
 
 # Prompt for script parameters if some required parameters are missing
 #
-echo " "
-echo "Collecting Script Parameters (unless supplied on the command line).."
 echo "--- "
+echo "Collecting Script Parameters (unless supplied on the command line).."
 
 # Set a Default App Name
 #
@@ -340,7 +341,9 @@ if [[ -n "$fhirServiceExists" ]]; then
     else 
         echo "Please select another name and try again"
         exit 1
-    fi
+    fi 
+else 
+    echo "  FHIR Service ["$fhirServiceName"] not found, a new FHIR Service will be created"
 fi
 
 # If we have a valid FHIR Service Name, then create the FHIR Service Client name variable from it
@@ -388,8 +391,9 @@ if [[ -n "$keyVaultExists" ]]; then
         useExistingKeyVault="yes"
 	fi 
 else
-	echo "Script will deploy new Key Vault ["$keyVaultName"] for FHIR Service ["$fhirServiceName"]" 
+	echo "  Script will deploy new Key Vault ["$keyVaultName"] for FHIR Service ["$fhirServiceName"]" 
     useExistingKeyVault="no"
+    createNewKeyVault="yes"
 fi
 
 
@@ -397,7 +401,7 @@ fi
 #
 echo " "
 if [[ -z "$genpostman" ]]; then
-	echo "Do you want to generate a Postman Environment for API access? [y/n]:"
+	echo "Do you want to generate a Postman Environment for FHIR Service access? [y/n]:"
 	read genpostman
 	if [[ "$genpostman" == "y" ]]; then
         genpostman="yes" ;
@@ -412,12 +416,14 @@ echo "--- "
 echo "Ready to start deployment of ["$fhirServiceName"] with the following values:"
 echo "Subscription ID:....................... "$subscriptionId
 echo "Use Existing Resource Group:........... "$useExistingResourceGroup
+echo "Create New Resource Group:............. "$createNewResourceGroup
 echo "Resource Group Name:................... "$resourceGroupName 
 echo "Resource Group Location:............... "$resourceGroupLocation 
 echo "Use Existing Key Vault:................ "$useExistingKeyVault
+echo "Create New Key Vault:.................. "$createNewKeyVault
 echo "KeyVault Name:......................... "$keyVaultName
 echo "FHIR Service Client Application Name:.. "$fhirServiceClientAppName
-echo "Generate Postman Env:.................. "$genpostman  
+echo "Generate Postman Environment:.......... "$genpostman  
 echo " "
 echo "Please validate the settings above before continuing"
 read -p 'Press Enter to continue, or Ctrl+C to exit'
@@ -442,24 +448,22 @@ read -p 'Press Enter to continue, or Ctrl+C to exit'
 #############################################################
 #
 echo "--- "
-echo "Starting Deployments..."
-echo "Deploying Resource Group (if needed)"
+echo "Starting Deployments "
 (
     if [[ "$useExistingResourceGroup" == "no" ]]; then
         echo " "
         echo "Creating Resource Group ["$resourceGroupName"] in location ["$resourceGroupLocation"]"
         set -x
-        az group create --name $resourceGroupName --location $resourceGroupLocation --output none --tags $TAG 
+        az group create --name $resourceGroupName --location $resourceGroupLocation --output none --tags $TAG ;
+    else
+        echo "Using Existing Resource Group ["$resourceGroupName"]"
     fi
 )
 	
 if [ $?  != 0 ];
  then
 	echo "Resource Group create failed.  Please check your permissions in this Subscription and try again"
-    result "fail" ;
-else 
-    echo " "
-    echo "Deployment of Resource Group completed successfully"
+    result "fail" 
 fi
 
 sleep 3
@@ -469,13 +473,14 @@ sleep 3
 #############################################################
 #
 echo "--- "
-echo "Deploying Key Vault (if needed)"
 (
     if [[ "$useExistingKeyVault" == "no" ]]; then
         echo " "
         echo "Creating Key Vault ["$keyVaultName"] in location ["$resourceGroupName"]"
         set -x
-        stepresult=$(az keyvault create --name $keyVaultName --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none) 
+        stepresult=$(az keyvault create --name $keyVaultName --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none) ;
+    else
+        echo "Using Existing Key Vault ["$keyVaultName"]"
     fi
 )
 
@@ -483,10 +488,7 @@ echo "Deploying Key Vault (if needed)"
 if [ $?  != 0 ];
  then
 	echo "Key Vault create failed.  Please check your permissions in this Subscription and try again"
-    result "fail" ;
-else
-    echo " "
-    echo "Deployment of Key Vault completed successfully"
+    result "fail" 
 fi
 
 sleep 5
@@ -497,6 +499,7 @@ sleep 5
 #
 echo "--- "
 echo "Deploying FHIR Service ["$fhirServiceName"]"
+echo "... note that warnings here are expected and can be safely ignored ..."
 (
     # Deploy API
     #
@@ -510,17 +513,20 @@ echo "Deploying FHIR Service ["$fhirServiceName"]"
     #
     fhirServiceAudience=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "properties.authenticationConfiguration.audience" --out tsv)
 
-    echo "  FHIR Service Audience set to ["$fhirServiceAudience"]"
+    echo "FHIR Service Audience set to ["$fhirServiceAudience"]"
     #healthCheck fhirServiceAudience=$fhirServiceAudience
     
+    echo " "
+    sleep 3
+
     # Set FHIR Service Resource ID 
     #
     fhirResourceId=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "id" --out tsv)
 
-    echo "  FHIR Service Resource ID set to ["$fhirResourceId"]" 
+    echo "FHIR Service Resource ID set to ["$fhirResourceId"]" 
     #healthCheck fhirResourceId=$fhirResourceId
 
-    sleep 10
+    sleep 5
 
     # Setup the FHIR Service Client Application 
     #
@@ -536,7 +542,7 @@ echo "Deploying FHIR Service ["$fhirServiceName"]"
     fhirServiceClientSecret=$(echo $stepresult | jq -r '.password')
     fhirServiceTenantId=$(echo $stepresult | jq -r '.tenant')
 
-    echo "  FHIR Service Client Application ID is ["$fhirServiceClientId"]"
+    echo "FHIR Service Client Application ID is ["$fhirServiceClientId"]"
     
     # Set the FHIR Service Client Object ID for role assignment 
     #
@@ -600,8 +606,12 @@ if [ $?  != 0 ];
 	echo "Deployment of FHIR Service failed.  Please check your permissions in this Subscription and try again"
     result "fail" ;
 else 
-    echo " "
-    echo "Deployment of FHIR Service completed successfully"
+    echo "************************************************************************************************************"
+    echo "Deployment of FHIR Service ["$fhirServiceName"] and ["$fhirServiceClientAppName"] completed successfully"
+    echo "The FHIR Service Client Application can be used for OAuth2 client_credentials flow authentication to the FHIR Server"
+    echo "Client Credentials have been securely stored as Secrets in the Key Vault ["$keyVaultName"]"
+    echo "The secret prefix is FS (for FHIR Service)"
+    echo "************************************************************************************************************"
 fi
 
    

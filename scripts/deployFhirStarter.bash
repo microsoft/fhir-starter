@@ -476,7 +476,7 @@ echo "Deploying Key Vault (if needed)"
         echo " "
         echo "Creating Key Vault ["$keyVaultName"] in location ["$resourceGroupName"]"
         set -x
-        stepresult=$(az keyvault create --name $kvname --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none) 
+        stepresult=$(az keyvault create --name $keyVaultName --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none) 
     fi
 )
 
@@ -511,7 +511,7 @@ echo "Deploying FHIR Service ["$fhirServiceName"]"
     #
     fhirServiceAudience=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "properties.authenticationConfiguration.audience" --out tsv)
 
-    echo "  FHIR Service Audience set to ["$fhiresserviceAudienceience"]"
+    echo "  FHIR Service Audience set to ["$fhirServiceAudience"]"
     #healthCheck fhirServiceAudience=$fhirServiceAudience
     
     # Set FHIR Service Resource ID 

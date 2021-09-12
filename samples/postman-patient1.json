@@ -1,0 +1,148 @@
+{
+    "resourceType": "Patient",
+    "id": "D000000003",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+        ]
+    },
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Donald Duck</div>"
+    },
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "valueCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v3/Race",
+                        "code": "2106-3",
+                        "display": "White"
+                    }
+                ],
+                "text": "race"
+            }
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "valueCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/v3/Ethnicity",
+                        "code": "2186-5",
+                        "display": "Nonhispanic"
+                    }
+                ],
+                "text": "ethnicity"
+            }
+        },
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+            "valueCode": "M"
+        }
+    ],
+    "identifier": [
+        {
+            "use": "official",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MI",
+                        "display": "Military ID number"
+                    }
+                ]
+            },
+            "value": "VA-103",
+            "assigner": {
+                "display": "Veterans Affairs"
+            },
+            "period": {
+                "start": "2012-01-01"
+            }
+        },
+        {
+            "use": "official",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "PI",
+                        "display": "Patient internal identifier"
+                    }
+                ]
+            },
+            "value": "D000000003",
+            "period": {
+                "start": "1931-06-09"
+            },
+            "assigner": {
+                "display": "EMPI - Enterprise ID system"
+            }
+        }
+    ],
+    "name": [
+        {
+            "use": "official",
+            "text": "Donald Duck",
+            "family": "Duck",
+            "given": [
+                "Donald"
+            ],
+            "prefix": [
+                "Mr."
+            ]
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "004-871-6779",
+            "use": "mobile"
+        },
+        {
+            "system": "email",
+            "value": "dd@disney.com"
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1931-06-09",
+    "address": [
+        {
+            "use": "home",
+            "line": [
+                "1500 Epcot Resorts Blvd"
+            ],
+            "city": "Bay Lake",
+            "state": "FL",
+            "postalCode": "32830",
+            "country": "USA"
+        }
+    ],
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+                "code": "M",
+                "display": "M"
+            }
+        ],
+        "text": "M"
+    },
+    "multipleBirthBoolean": false,
+    "communication": [
+        {
+            "language": {
+                "coding": [
+                    {
+                        "system": "urn:ietf:bcp:47",
+                        "code": "en-US",
+                        "display": "English"
+                    }
+                ],
+                "text": "English"
+            }
+        }
+    ]
+}

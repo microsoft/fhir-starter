@@ -507,24 +507,28 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     #
     echo " "
     echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
-    stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4"  --cosmos-db-configuration offer-throughput=1000 --tags $TAG)
+    stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=1000 --identity-type "none" --tags $TAG)
 
     #healthCheck fhirServiceProperties=$stepresult
     
+    sleep 5
+
     # Set FHIR Service Audience
     #
     fhirServiceAudience=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "properties.authenticationConfiguration.audience" --out tsv)
 
+    echo " "
     echo "FHIR Service Audience set to ["$fhirServiceAudience"]"
     #healthCheck fhirServiceAudience=$fhirServiceAudience
     
     echo " "
-    sleep 3
+    sleep 5
 
     # Set FHIR Service Resource ID 
     #
     fhirResourceId=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "id" --out tsv)
 
+    echo " "
     echo "FHIR Service Resource ID set to ["$fhirResourceId"]" 
     #healthCheck fhirResourceId=$fhirResourceId
 
@@ -534,7 +538,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     #
     echo " "
     echo "Creating FHIR Service Client Application ["$fhirServiceClientAppName"]"
-    stepresult=$(az ad sp create-for-rbac -n $fhirServiceClientAppName --skip-assignment)
+    stepresult=$(az ad sp create-for-rbac --name $fhirServiceClientAppName --skip-assignment)
 
     #healthCheck fhirServiceClientAppName=$stepresult
 
@@ -569,7 +573,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     # 
     echo "--- "
     echo "Granting FHIR Service Client Application FHIR Data Contributor Role"
-    stepresult=$(az role assignment create --assignee-object-id $fhirServiceClientObjectId --role "Fhir Data Contributor" --scope $fhirResourceId)
+    stepresult=$(az role assignment create --assignee-object-id $fhirServiceClientObjectId --assignee-principal-type ServicePrincipal --role "Fhir Data Contributor" --scope $fhirResourceId)
 
     #healthCheck fhirServiceClientRoleAssignment=$stepresult
 

@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accessPolicies": {
+            "type": "array"
+        },
+        "audience": {
+            "type": "string"
+        },
+        "authority": {
+            "type": "string"
+        },
+        "fhirVersion": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "keyVaultKeyUri": {
+            "type": "string"
+        },
+        "offerThroughput": {
+            "type": "int"
+        },
+        "smartProxyEnabled": {
+            "type": "bool"
+        },
+        "publicNetworkAccess": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-03-30",
+            "kind": "[parameters('fhirVersion')]",
+            "location": "[parameters('location')]",
+            "name": "[parameters('name')]",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "accessPolicies": "[parameters('accessPolicies')]",
+                "authenticationConfiguration": {
+                    "audience": "[parameters('audience')]",
+                    "authority": "[parameters('authority')]",
+                    "smartProxyEnabled": "[parameters('smartProxyEnabled')]"
+                },
+                "cosmosDbConfiguration": {
+                    "offerThroughput": "[parameters('offerThroughput')]",
+                    "keyVaultKeyUri": "[parameters('keyVaultKeyUri')]"
+                },
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "exportConfiguration": {
+                    "storageAccountName": null
+                }
+            },
+            "tags": {
+                "HealthArchitectures": "FHIR-Starter"
+            },
+            "type": "Microsoft.HealthcareApis/services"
+        }
+    ]
+}

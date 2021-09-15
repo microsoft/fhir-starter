@@ -1,14 +1,44 @@
-# Project
+# FHIR-Starter
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+## Introduction 
 
-As the maintainer of this project, please make a few updates:
+The goal of the **FHIR-Starter** is to ease the deployment of an Azure Healthcare API FHIR Service along with a Service Client to get users up and running with FHIR in minutes rather than days.   
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+
+## Repository Contents 
+
+The table below lists items contained within this repository 
+
+Directory       | Contains                                                
+----------------|--------------------------------------------------
+main            | Readme, Security and compliance documents 
+docs            | Getting started documents  
+scripts         | Readme + Deployment, Setup and Control scripts  
+templates       | ARM Templates for customers without Cloud Shell access (__in progress__)
+
+
+## Deployment
+The FHIR-Starter script is designed for and tested from the Azure Cloud Shell - Bash Shell environment.  The following services are required as part of **FHIR-Starter** --  Detailed deployment instuctions are located in the [Readme.md](./scripts/Readme.md) within the scripts directory.
+
+1) Azure Active Directory
+2) Azure Healthcare API's for FHIR
+3) Azure Key Vault
+
+If you are ready to continue, you can find the repo cloning instructions [here](./docs/repo-instructions.md), and deployment documentation [here](./scripts/Readme.md)
+
+
+## Tracking Changes & Updates
+We continue to monitor questions, feature requests and of course, bugs/issues.   You can review the issues list [here](https://github.com/microsoft/fhir-starter/issues)
+
+If you are interested in receiving notifications when we publish updates then please follow this repo. 
+
+## Resources
+The following is a list of references that might be useful to the reader
+
+* [Azure for the healthcare industry](https://azure.microsoft.com/en-us/industries/healthcare/)
+* [Azure Healthcare APIs for FHIR](https://azure.microsoft.com/en-us/services/azure-api-for-fhir/)
+* [Microsoft Cloud for Healthcare](https://www.microsoft.com/en-us/industry/health/microsoft-cloud-for-healthcare)
+
 
 ## Contributing
 

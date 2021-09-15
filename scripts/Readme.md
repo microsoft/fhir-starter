@@ -7,7 +7,7 @@ There are no open issues at this time.
 ## Prerequisites 
 
 These scripts will gather (and export) information necessary to the proper deployment and configuration of Azure Healthcare API for FHIR, an Application Service Client, Key Vault and Resource Groups secure information will be stored in the Keyvault.  
- - Prerequisites:  User must have rights to deploy resoruces at the Subscription scope 
+ - Prerequisites:  User must have rights to deploy resources at the Subscription scope 
 
 __Note__
 A Keyvault is necessary for securing Service Client Credentials used with the FHIR Service and FHIR-Proxy.  Only 1 Keyvault should be used as this script scans the keyvault for FHIR Service and FHIR-Proxy values. If multiple Keyvaults have been used, please use the [backup and restore](https://docs.microsoft.com/en-us/azure/key-vault/general/backup?tabs=azure-cli) option to copy values to 1 keyvault.

@@ -14,26 +14,39 @@ IFS=$'\n\t'
 # HealthArchitecture Deployment Settings 
 #########################################
 declare TAG="HealthArchitectures FHIRStarter"
-declare distribution="../distribution/publish.zip"
 
 #########################################
-# Script / App Default Name settings (sf = secure function, fhir = fhir api, kv = key vault) 
+# FHIR Starter Default App Settings 
 #########################################
-declare defAppInstallName="fhir"$RANDOM
-declare defKeyVaultName=$defAppInstallName"kv"
+declare suffix=$RANDOM
+declare defresourceGroupLocation="eastus"
+declare defresourceGroupName="api-fhir-"$suffix
+declare deffhirServiceName="fhir"$suffix
+declare defkeyVaultName=$deffhirServiceName"-kv"
+declare genPostmanEnv="yes"
+
+
+
+#########################################
+# Function App Settings
+#########################################
 
 
 #########################################
-# Script Control Variables
+# Queue Default Settings 
 #########################################
-# set for workflow
+
 
 
 #########################################
-# Variables
+# Sync Agent Variables 
 #########################################
 
-# Common 
+
+
+#########################################
+# Common Variables
+#########################################
 declare defSubscriptionId=""
 declare subscriptionId=""
 declare resourceGroupName=""
@@ -60,32 +73,6 @@ declare fhirServiceClientAppName=""
 declare fhirServiceClientObjectId=""
 declare fhirServiceClientRoleAssignment=""
 
-# SyncAgent
-declare syncAgentServicePrincipalId=""
-
-# Proxy 
-declare deployPrefix=""
-declare defDeployPrefix=""
-declare stepresult=""
-declare functionAppName=""
-declare functionAppHost=""
-declare functionAppKey=""
-declare functionAppResourceId=""
-declare roleAdmin="Administrator"
-declare roleReader="Reader"
-declare roleWriter="Writer"
-declare rolePatient="Patient"
-declare roleParticipant="Practitioner,RelatedPerson"
-declare roleGlobal="DataScientist"
-declare spappid=""
-declare spsecret=""
-declare sptenant=""
-declare spreplyurls=""
-declare tokeniss=""
-declare preprocessors=""
-declare postprocessors=""
-declare msi=""
-declare count="0"
 
 # Keyvault
 declare keyVaultNameAccountNameSuffix="kv"$RANDOM
@@ -118,17 +105,14 @@ function intro {
 	#
 	echo " "
 	echo "FHIR API Application deployment script... "
-	echo " - Prerequisite:  User must have rights to provision Resources within the Subscription scope (ie Contributor) "
+	echo " - Prerequisite:  Must have rights to provision Resources within the Subscription (ie Contributor) "
     echo " - Prerequisite:  Azure CLI (bash) access from the Azure Portal"
 	echo " "
-	echo "The script gathers information then lets users choose to use a template or script deployment.  Users without CLI Access "
-    echo "can use the template deployment from the templates directory in this repo."
+	echo "The script gathers information then lets users choose to use a template or script deployment.  "
+    echo "Users without CLI Access can use the template deployment from the templates directory in this repo."
 	echo " "
 	read -p 'Press Enter to continue, or Ctrl+C to exit'
 }
-
-usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p (to generate postman environment)" 1>&2; exit 1; }
-
 
 function retry {
 	# Retry logic  
@@ -187,9 +171,7 @@ function healthCheck () {
 	((count++))
 }
 
-
-
-
+usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>" 1>&2; exit 1; }
 
 
 
@@ -199,7 +181,7 @@ function healthCheck () {
 
 # Initialize parameters specified from command line
 #
-while getopts ":k:n:p" arg; do
+while getopts ":i:g:l:k:n:p:" arg; do
 	case "${arg}" in
 		k)
 			keyVaultName=${OPTARG}
@@ -208,7 +190,7 @@ while getopts ":k:n:p" arg; do
 			fhirServiceName=${OPTARG}
 			;;
 		p)
-			genpostman="yes"
+			genpostman=${OPTARG}
 			;;
 		i)
 			subscriptionId=${OPTARG}
@@ -222,11 +204,10 @@ while getopts ":k:n:p" arg; do
 	esac
 done
 shift $((OPTIND-1))
-echo "Deploy FHIR-Starter..."
+echo "Executing "$0"..."
 echo "Checking Azure Authentication..."
 
 # login to azure using your credentials
-#
 az account show 1> /dev/null
 
 if [ $? != 0 ];
@@ -235,15 +216,14 @@ then
 fi
 
 # set default subscription information
-#
 defSubscriptionId=$(az account show --query "id" --out json | sed 's/"//g') 
 
 
 # Call the Introduction function 
-#
 intro
 
-#Prompt for common parameters if some required parameters are missing
+# ---------------------------------------------------------------------
+# Prompt for common parameters if some required parameters are missing
 #
 echo "--- "
 echo "Collecting Azure Parameters (unless supplied on the command line) "
@@ -260,17 +240,22 @@ fi
 if [[ -z "$resourceGroupName" ]]; then
 	echo "This script will look for an existing resource group, otherwise a new one will be created "
 	echo "You can create new resource groups with the CLI using: az group create "
-	echo "Enter a resource group name []: "
+	echo "Enter a resource group name <press Enter to accept default> ["$defresourceGroupName"]: "
 	read resourceGroupName
+	if [ -z "$resourceGroupName" ] ; then
+		resourceGroupName=$defresourceGroupName
+	fi
 	[[ "${resourceGroupName:?}" ]]
 fi
 
 if [[ -z "$resourceGroupLocation" ]]; then
-    echo " "
 	echo "If creating a *new* resource group, you need to set a location "
 	echo "You can lookup locations with the CLI using: az account list-locations "
-	echo "Enter resource group location []: "
+	echo "Enter resource group location <press Enter to accept default> ["$defresourceGroupLocation"]: "
 	read resourceGroupLocation
+	if [ -z "$resourceGroupLocation" ] ; then
+		resourceGroupLocation=$defresourceGroupLocation
+	fi
 	[[ "${resourceGroupLocation:?}" ]]
 fi
 
@@ -278,7 +263,7 @@ fi
 #
 if [ -z "$subscriptionId" ] || [ -z "$resourceGroupName" ]; then
 	echo "Either one of subscriptionId, resourceGroupName is empty, exiting..."
-	exit 1
+	usage
 fi
 
 # Check if the resource group exists
@@ -303,6 +288,7 @@ echo "Collecting Script Parameters (unless supplied on the command line).."
 
 # Set a Default App Name
 #
+declare defAppInstallName="fhir"$RANDOM
 declare defFhirServiceName=""
 defFhirServiceName=${defAppInstallName:0:12}
 defFhirServiceName=${defFhirServiceName//[^[:alnum:]]/}
@@ -431,22 +417,9 @@ echo "Please validate the settings above before continuing"
 read -p 'Press Enter to continue, or Ctrl+C to exit'
 
 
-#############################################
-#  Setup healthCheck variables file  
-#############################################
-#healthCheck fhirServiceName=$fhirServiceName
-#healthCheck subscriptionId=$subscriptionId
-#healthCheck resourceGroupName=$resourceGroupName
-#healthCheck resourceGroupLocation=$resourceGroupLocation
-#healthCheck keyVaultName=$keyVaultName
-#healthCheck fhirServiceClientAppName=$fhirServiceClientAppName
 
 #############################################################
-#  Deploy Resources (start deployments here)
-#############################################################
-
-#############################################################
-#  Deploy Resource Group 
+#  Start Azure Setup  
 #############################################################
 #
 echo "--- "
@@ -508,8 +481,6 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     echo " "
     echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
     stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=1000 --identity-type "none" --tags $TAG)
-
-    #healthCheck fhirServiceProperties=$stepresult
     
     sleep 5
 
@@ -519,7 +490,6 @@ echo "... note that warnings here are expected and can be safely ignored ..."
 
     echo " "
     echo "FHIR Service Audience set to ["$fhirServiceAudience"]"
-    #healthCheck fhirServiceAudience=$fhirServiceAudience
     
     echo " "
     sleep 5
@@ -530,7 +500,6 @@ echo "... note that warnings here are expected and can be safely ignored ..."
 
     echo " "
     echo "FHIR Service Resource ID set to ["$fhirResourceId"]" 
-    #healthCheck fhirResourceId=$fhirResourceId
 
     sleep 5
 
@@ -539,8 +508,6 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     echo " "
     echo "Creating FHIR Service Client Application ["$fhirServiceClientAppName"]"
     stepresult=$(az ad sp create-for-rbac --name $fhirServiceClientAppName --skip-assignment)
-
-    #healthCheck fhirServiceClientAppName=$stepresult
 
     # Seriously hate doing this, but Azure doesn't have a way to get the client ID out of the response 
     # a better way is to us az ad sp show with the app ID... will solve next iteration 
@@ -556,9 +523,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     echo "Setting FHIR Service Client Object ID"
     fhirServiceClientObjectId=$(az ad sp show --id $fhirServiceClientId --query "objectId" --out tsv)
 
-    #healthCheck fhirServiceClientObjectId=$fhirServiceClientObjectId
-
-    # Save the FHIR Service Client Application information to the Key Vault 
+     # Save the FHIR Service Client Application information to the Key Vault 
     # 
     echo "--- "
     echo "Saving FHIR Service Client Information to Key Vault ["$keyVaultName"]"
@@ -574,8 +539,6 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     echo "--- "
     echo "Granting FHIR Service Client Application FHIR Data Contributor Role"
     stepresult=$(az role assignment create --assignee-object-id $fhirServiceClientObjectId --assignee-principal-type ServicePrincipal --role "Fhir Data Contributor" --scope $fhirResourceId)
-
-    #healthCheck fhirServiceClientRoleAssignment=$stepresult
 
     # Generate Postman Environment File if requested
     # 

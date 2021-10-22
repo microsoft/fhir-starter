@@ -153,23 +153,6 @@ function appState () {
 	sleep 2
 }
 
-function healthCheck () {
-	# Create a healthcheck varibales list to test the FHIR-SyncAgent deployment 
-	#
-	local functionname1=""
-	local functionname2=""
-
-	functionname1=$(echo $1 | awk -F= '{ print $1 }')
-	functionname2=$(echo $1 | awk -F= '{ print $2 }')
-
-	if [[ $count -eq 0 ]]; then
-		echo "# FHIR Starter Healthcheck variables" > ./healthcheck.txt
-		echo "declare $functionname1=\"$functionname2\"" >> ./healthcheck.txt ;
-	else 
-		echo "declare $functionname1=\"$functionname2\"" >> ./healthcheck.txt 
-	fi 
-	((count++))
-}
 
 usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>" 1>&2; exit 1; }
 

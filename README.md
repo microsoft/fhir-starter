@@ -4,6 +4,9 @@
 
 The goal of the **FHIR-Starter** is to ease the deployment of an Azure Healthcare API FHIR Service along with a Service Client to get users up and running with FHIR in minutes rather than days.   
 
+## Components 
+![deployment](./docs/images/architecture/deployment.png)
+
 
 ## Repository Contents 
 
@@ -24,7 +27,7 @@ The FHIR-Starter script is designed for and tested from the Azure Cloud Shell - 
 2) Azure Healthcare API's for FHIR
 3) Azure Key Vault
 
-If you are ready to continue, you can find the repo cloning instructions [here](./docs/repo-instructions.md), and deployment documentation [here](./scripts/Readme.md)
+If you are ready to continue, you can find the deployment documentation [here](./scripts/Readme.md)
 
 
 ## Tracking Changes & Updates

@@ -14,9 +14,41 @@ A Keyvault is necessary for securing Service Client Credentials used with the FH
 
 __Note__ The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment.
 
+## Step 1. Setup 
+Please note you should deploy these components into a tenant that you have appropriate permissions to create and manage Application Registrations, Enterprise Applications, Permissions and Role Definitions Assignments
 
-## Step 1.  deployFhirStarter.bash
+1. [Get or Obtain a valid Azure Subscription](https://azure.microsoft.com/en-us/free/)
+
+2. [Open Azure Cloud Shell](https://shell.azure.com) you can also access this from [azure portal](https://portal.azure.com)
+
+3. Select Bash Shell 
+
+4. Clone this repo 
+```azurecli
+git clone https://github.com/microsoft/fhir-starter
+```
+5. Change to the new directory to keep files organized within the fhir-starter directory
+```azurecli
+cd ./fhir-starter
+```
+6. Make the bash scripts executable
+```azurecli
+chmod +x ./scripts/*.bash
+``` 
+
+## Step 2.  deployFhirStarter.bash
 This is the main component deployment script for the Azure Components.    
+
+Run the deployment script and follow the prompts
+```azurecli
+./scripts/deployFhirStarter.bash 
+```
+
+Optionally the deployment script can be used with command line options 
+```azurecli
+./scripts/deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> 
+```
+
 
 Azure Components installed 
  - Resource Group (if needed)
@@ -43,6 +75,9 @@ FS-URL            | Application Endpoint for Clients     | Endpoint for FHIR Ser
 
 
 
-## Step 2.  Setup Postman
+## Step 3.  Setup Postman
 Once the script finishes deployment, users can use Postman to test access to the new FHIR Service.  Instructions on setting up Postman can be found in the docs directory [here](../docs/postman.md).
 
+### Auth Layout
+
+![auth](../docs/images/architecture/starter_auth.png)

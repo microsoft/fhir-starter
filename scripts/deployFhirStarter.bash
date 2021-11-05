@@ -75,7 +75,7 @@ declare fhirServiceClientRoleAssignment=""
 
 
 # Keyvault
-declare keyVaultNameAccountNameSuffix="kv"$RANDOM
+declare keyVaultNameAccountNameSuffix="kv"$suffix
 declare keyVaultName=""
 declare keyVaultExists=""
 declare createNewKeyVault=""
@@ -272,7 +272,7 @@ echo "Collecting Script Parameters (unless supplied on the command line).."
 
 # Set a Default App Name
 #
-declare defAppInstallName="fhir"$RANDOM
+declare defAppInstallName="fhir"$suffix
 declare defFhirServiceName=""
 defFhirServiceName=${defAppInstallName:0:12}
 defFhirServiceName=${defFhirServiceName//[^[:alnum:]]/}

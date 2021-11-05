@@ -75,7 +75,7 @@ declare fhirServiceClientRoleAssignment=""
 
 
 # Keyvault
-declare keyVaultNameAccountNameSuffix="kv"$RANDOM
+declare keyVaultNameAccountNameSuffix="kv"$suffix
 declare keyVaultName=""
 declare keyVaultExists=""
 declare createNewKeyVault=""
@@ -234,6 +234,7 @@ fi
 if [[ -z "$resourceGroupLocation" ]]; then
 	echo "If creating a *new* resource group, you need to set a location "
 	echo "You can lookup locations with the CLI using: az account list-locations "
+    echo "Azure API is currently availalbe in: East US, East US 2, North Central US, South Central US, West US, West US 2 "
 	echo "Enter resource group location <press Enter to accept default> ["$defresourceGroupLocation"]: "
 	read resourceGroupLocation
 	if [ -z "$resourceGroupLocation" ] ; then
@@ -271,7 +272,7 @@ echo "Collecting Script Parameters (unless supplied on the command line).."
 
 # Set a Default App Name
 #
-declare defAppInstallName="fhir"$RANDOM
+declare defAppInstallName="fhir"$suffix
 declare defFhirServiceName=""
 defFhirServiceName=${defAppInstallName:0:12}
 defFhirServiceName=${defFhirServiceName//[^[:alnum:]]/}
@@ -509,7 +510,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
      # Save the FHIR Service Client Application information to the Key Vault 
     # 
     echo "--- "
-    echo "Saving FHIR Service Client Information to Key Vault ["$keyVaultName"]"
+    echo "Saving FHIR Service Client Information (FS-name) to Key Vault ["$keyVaultName"]"
     stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-TENANT-NAME" --value $fhirServiceTenantId)
     stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-CLIENT-ID" --value $fhirServiceClientId)
     stepresult=$(az keyvault secret set --vault-name $keyVaultName --name "FS-CLIENT-SECRET" --value $fhirServiceClientSecret)
@@ -521,7 +522,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     # 
     echo "--- "
     echo "Granting FHIR Service Client Application FHIR Data Contributor Role"
-    stepresult=$(az role assignment create --assignee-object-id $fhirServiceClientObjectId --assignee-principal-type ServicePrincipal --role "Fhir Data Contributor" --scope $fhirResourceId)
+    stepresult=$(az role assignment create --assignee-object-id $fhirServiceClientObjectId --assignee-principal-type ServicePrincipal --role "FHIR Data Contributor" --scope $fhirResourceId)
 
     # Generate Postman Environment File if requested
     # 

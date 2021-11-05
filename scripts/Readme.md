@@ -12,7 +12,9 @@ These scripts will gather (and export) information necessary to the proper deplo
 __Note__
 A Keyvault is necessary for securing Service Client Credentials used with the FHIR Service and FHIR-Proxy.  Only 1 Keyvault should be used as this script scans the keyvault for FHIR Service and FHIR-Proxy values. If multiple Keyvaults have been used, please use the [backup and restore](https://docs.microsoft.com/en-us/azure/key-vault/general/backup?tabs=azure-cli) option to copy values to 1 keyvault.
 
-__Note__ The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment.
+__Note__ 
+The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment.
+
 
 ## Step 1. Setup 
 Please note you should deploy these components into a tenant that you have appropriate permissions to create and manage Application Registrations, Enterprise Applications, Permissions and Role Definitions Assignments
@@ -46,9 +48,8 @@ Run the deployment script and follow the prompts
 
 Optionally the deployment script can be used with command line options 
 ```azurecli
-./scripts/deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> 
+./scripts/deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>
 ```
-
 
 Azure Components installed 
  - Resource Group (if needed)

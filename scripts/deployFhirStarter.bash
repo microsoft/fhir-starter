@@ -237,7 +237,10 @@ fi
 if [[ -z "$resourceGroupLocation" ]]; then
 	echo "If creating a *new* resource group, you need to set a location "
 	echo "You can lookup locations with the CLI using: az account list-locations "
-    echo "Azure API is currently availalbe in: East US, East US 2, North Central US, South Central US, West US, West US 2 "
+    echo "Azure API is currently availalbe in NorthAmerica regions: eastus,eastus2,northcentralus,southcentralus,westcentralus,westus2,canadacentral"
+    echo "Azure API is currently availalbe in European regions : ukwest,uksouth,westeurope,northeurope,germanywestcentral,switzerlandnorth"
+    echo "Azure API is currently availalbe in Asia-Pacific regions: australiaeast,southeastasia,japaneast,southafricanorth"
+
 	echo "Enter resource group location <press Enter to accept default> ["$defresourceGroupLocation"]: "
 	read resourceGroupLocation
 	if [ -z "$resourceGroupLocation" ] ; then

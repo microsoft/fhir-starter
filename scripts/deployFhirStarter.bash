@@ -381,8 +381,6 @@ if [[ -z "$genpostman" ]]; then
 	read genpostman
     if [ -z "$genpostman" ] ; then
 		genpostman=$defpostmanEnv
-    else
-        genpostman="no"
     fi
 fi
 

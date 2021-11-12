@@ -377,10 +377,10 @@ fi
 
 # Check for Postman Environment Variable 
 #
-declare defpostmanEnv="y"
+declare defpostmanEnv="yes"
 echo " "
 if [[ -z "$genpostman" ]]; then
-	echo "Do you want to generate a Postman Environment for FHIR Service access? (y/n): ["$defpostmanEnv"]"
+	echo "Do you want to generate a Postman Environment for FHIR Service access? (yes/no): ["$defpostmanEnv"]"
 	read genpostman
     if [ -z "$genpostman" ] ; then
 		genpostman=$defpostmanEnv

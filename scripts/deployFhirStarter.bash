@@ -24,7 +24,7 @@ declare defresourceGroupName="api-fhir-"$suffix
 declare deffhirServiceName="fhir"$suffix
 declare defkeyVaultName=$deffhirServiceName"-kv"
 declare genPostmanEnv="yes"
-
+declare scriptlogfile="fhirstarter.txt"
 
 
 #########################################
@@ -61,6 +61,7 @@ declare stepresult=""
 
 # FHIR
 declare fhirServiceUrl=""
+declare fhirServicClientDisplayName=""
 declare fhirServiceClientId=""
 declare fhirServiceClientSecret=""
 declare fhirServiceTenantId=""
@@ -107,9 +108,8 @@ function intro {
 	echo "FHIR API Application deployment script... "
 	echo " - Prerequisite:  Must have rights to provision Resources within the Subscription (ie Contributor) "
     echo " - Prerequisite:  Azure CLI (bash) access from the Azure Portal"
-	echo " "
-	echo "The script gathers information then lets users choose to use a template or script deployment.  "
-    echo "Users without CLI Access can use the template deployment from the templates directory in this repo."
+    echo " "
+	echo "Note: Service names will be truncated at 14 characters"
 	echo " "
 	read -p 'Press Enter to continue, or Ctrl+C to exit'
 }
@@ -204,6 +204,9 @@ defSubscriptionId=$(az account show --query "id" --out json | sed 's/"//g')
 
 # Call the Introduction function 
 intro
+
+# Initialize the log file 
+echo " "$0" " > $scriptlogfile
 
 # ---------------------------------------------------------------------
 # Prompt for common parameters if some required parameters are missing
@@ -371,12 +374,13 @@ fi
 
 # Check for Postman Environment Variable 
 #
+declare defpostmanEnv="y"
 echo " "
 if [[ -z "$genpostman" ]]; then
-	echo "Do you want to generate a Postman Environment for FHIR Service access? [y/n]:"
+	echo "Do you want to generate a Postman Environment for FHIR Service access? (y/n): ["$defpostmanEnv"]"
 	read genpostman
-	if [[ "$genpostman" == "y" ]]; then
-        genpostman="yes" ;
+    if [ -z "$genpostman" ] ; then
+		genpostman=$defpostmanEnv
     else
         genpostman="no"
     fi
@@ -458,7 +462,8 @@ sleep 5
 #
 echo "--- "
 echo "Deploying FHIR Service ["$fhirServiceName"]"
-echo "... note that warnings here are expected and can be safely ignored ..."
+echo "... note that warnings here are expected and can be safely ignored as we rename Azure API for FHIR to Healthcare APIs for FHIR ..."
+sleep 2
 (
     # Deploy API
     #
@@ -491,15 +496,23 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     #
     echo " "
     echo "Creating FHIR Service Client Application ["$fhirServiceClientAppName"]"
-    stepresult=$(az ad sp create-for-rbac --name $fhirServiceClientAppName --skip-assignment)
+    stepresult=$(az ad sp create-for-rbac --name $fhirServiceClientAppName --skip-assignment --only-show-errors)
 
-    # Seriously hate doing this, but Azure doesn't have a way to get the client ID out of the response 
+    # Seriously hate doing this, better to use --> az ad sp show --id 00000000-0000-0000-0000-000000000000 
     # a better way is to us az ad sp show with the app ID... will solve next iteration 
     fhirServiceClientId=$(echo $stepresult | jq -r '.appId')
     fhirServiceClientSecret=$(echo $stepresult | jq -r '.password')
     fhirServiceTenantId=$(echo $stepresult | jq -r '.tenant')
+    fhirServicClientDisplayName=$(echo $stepresult | jq -r '.displayName')
 
+    echo "FHIR Service Client DisplayName is ["$fhirServiceClientDisplayName"]"
     echo "FHIR Service Client Application ID is ["$fhirServiceClientId"]"
+
+    echo "Logging FHIR Service Client Information to... "$scriptlogfile
+    echo "FHIR Service Client DisplayName is ["$fhirServiceClientDisplayName"]" >> $scriptlogfile
+    echo "FHIR Service Client Application ID is ["$fhirServiceClientId"]" >> $scriptlogfile
+    echo "Use az ad sp show --id "$fhirServiceClientId" for more details" >> $scriptlogfile
+    echo " " >> $scriptlogfile
     
     # Set the FHIR Service Client Object ID for role assignment 
     #

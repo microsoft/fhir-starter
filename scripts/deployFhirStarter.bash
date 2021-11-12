@@ -61,7 +61,7 @@ declare stepresult=""
 
 # FHIR
 declare fhirServiceUrl=""
-declare fhirServicClientDisplayName=""
+declare fhirServiceClientDisplayName=""
 declare fhirServiceClientId=""
 declare fhirServiceClientSecret=""
 declare fhirServiceTenantId=""

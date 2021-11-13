@@ -256,7 +256,7 @@ if [ -z "$subscriptionId" ] || [ -z "$resourceGroupName" ]; then
 	usage
 fi
 
-# Check if the resource group exists
+# Check if the resource group exists, set variable to create a new one if not found
 #
 echo " "
 echo "  Checking for existing Resource Group named ["$resourceGroupName"]... "

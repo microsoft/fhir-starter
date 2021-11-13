@@ -24,7 +24,7 @@ declare defresourceGroupName="api-fhir-"$suffix
 declare deffhirServiceName="fhir"$suffix
 declare defkeyVaultName=$deffhirServiceName"-kv"
 declare genPostmanEnv="yes"
-declare fhirscriptlogfile="fhirstarter.txt"
+declare scriptlogfile="fhirstarter.txt"
 
 
 #########################################
@@ -206,7 +206,7 @@ defSubscriptionId=$(az account show --query "id" --out json | sed 's/"//g')
 intro
 
 # Initialize the log file 
-echo " "$0" " > $fhirscriptlogfile
+echo " "$0" " > $scriptlogfile
 
 # ---------------------------------------------------------------------
 # Prompt for common parameters if some required parameters are missing
@@ -509,11 +509,11 @@ sleep 2
     echo "FHIR Service Client DisplayName is ["$fhirServiceClientDisplayName"]"
     echo "FHIR Service Client Application ID is ["$fhirServiceClientId"]"
 
-    echo "Logging FHIR Service Client Information to... "$fhirscriptlogfile
-    echo "FHIR Service Client DisplayName is ["$fhirServiceClientDisplayName"]" >> $fhirscriptlogfile
-    echo "FHIR Service Client Application ID is ["$fhirServiceClientId"]" >> $fhirscriptlogfile
-    echo "Use az ad sp show --id "$fhirServiceClientId" for more details" >> $fhirscriptlogfile
-    echo " " >> $fhirscriptlogfile
+    echo "Logging FHIR Service Client Information to... "$scriptlogfile
+    echo "FHIR Service Client DisplayName is ["$fhirServiceClientDisplayName"]" >> $scriptlogfile
+    echo "FHIR Service Client Application ID is ["$fhirServiceClientId"]" >> $scriptlogfile
+    echo "Use az ad sp show --id "$fhirServiceClientId" for more details" >> $scriptlogfile
+    echo " " >> $scriptlogfile
     
     # Set the FHIR Service Client Object ID for role assignment 
     #

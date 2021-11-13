@@ -42,12 +42,12 @@ git clone https://github.com/microsoft/fhir-starter
 
 5. Change to the new directory to keep files organized within the fhir-starter directory
 ```azurecli
-cd ./fhir-starter
+cd ./fhir-starter/scripts
 ```
 
 6. Make the bash scripts executable
 ```azurecli
-chmod +x ./scripts/*.bash
+chmod +x *.bash
 ``` 
 
 ## Step 2.  deployFhirStarter.bash
@@ -55,12 +55,12 @@ This is the main component deployment script for the Azure Components.
 
 Run the deployment script and follow the prompts
 ```azurecli
-./scripts/deployFhirStarter.bash 
+./deployFhirStarter.bash 
 ```
 
 Optionally the deployment script can be used with command line options 
 ```azurecli
-./scripts/deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>
+./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>
 ```
 
 Azure Components installed 

@@ -1,1 +1,0 @@
-healthcheck file - use tail -f ./healthcheck.txt to follow the deployment progress

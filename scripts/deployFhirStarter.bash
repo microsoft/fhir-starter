@@ -154,7 +154,7 @@ function appState () {
 }
 
 
-usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>" 1>&2; exit 1; }
+usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <postman - yes -or- no>" 1>&2; exit 1; }
 
 
 

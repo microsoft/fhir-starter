@@ -354,9 +354,9 @@ fi
 echo "  Checking for existing Key Vault named ["$keyVaultName"]..."
 keyVaultExists=$(az keyvault list --query "[?name == '$keyVaultName'].name" --out tsv)
 if [[ -n "$keyVaultExists" ]]; then
-	set +e
 	echo "  "$keyVaultName "found"
 	echo "  Checking ["$keyVaultName"] for FHIR Service configuration..."
+	set +e
 	fhirServiceUrl=$(az keyvault secret show --vault-name $keyVaultName --name FS-URL --query "value" --out tsv)
 	if [ -n "$fhirServiceUrl" ]; then
 		echo "  found FHIR Service ["$fhirServiceUrl"]"

@@ -19,34 +19,18 @@ declare TAG="HealthArchitectures FHIRStarter"
 # FHIR Starter Default App Settings 
 #########################################
 declare suffix=$RANDOM
-declare defresourceGroupLocation="eastus"
+declare defresourceGroupLocation="eastus2"
 declare defresourceGroupName="api-fhir-"$suffix
 declare deffhirServiceName="fhir"$suffix
-declare defkeyVaultName=$deffhirServiceName"-kv"
+declare defkeyVaultName=$deffhirServiceName"kv"
 declare genPostmanEnv="yes"
-
-
-
-#########################################
-# Function App Settings
-#########################################
-
-
-#########################################
-# Queue Default Settings 
-#########################################
-
-
-
-#########################################
-# Sync Agent Variables 
-#########################################
 
 
 
 #########################################
 # Common Variables
 #########################################
+declare script_dir="$( cd -P -- "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd -P )"
 declare defSubscriptionId=""
 declare subscriptionId=""
 declare resourceGroupName=""
@@ -58,6 +42,8 @@ declare storageAccountNameSuffix="store"
 declare storageConnectionString=""
 declare serviceplanSuffix="asp"
 declare stepresult=""
+declare distribution="distribution/publish.zip"
+declare postmanTemplate="postmantemplate.json"
 
 # FHIR
 declare fhirServiceUrl=""
@@ -75,7 +61,7 @@ declare fhirServiceClientRoleAssignment=""
 
 
 # Keyvault
-declare keyVaultNameAccountNameSuffix="kv"$suffix
+declare keyVaultNameAccountNameSuffix="kv"
 declare keyVaultName=""
 declare keyVaultExists=""
 declare createNewKeyVault=""
@@ -382,10 +368,22 @@ if [[ -z "$genpostman" ]]; then
     fi
 fi
 
+
+# Test for correct directory path / destination 
+if [ -f "./$postmantemplate" ] ; then
+	echo "Found Postman Template file at "./$postmantemplate
+else
+	echo "Unable to find Postman Template file at "../$postmantemplate
+	echo "Please ensure you launch this script from within the ./scripts directory"
+	usage ;
+fi
+
+
+
 # Prompt for final confirmation
 #
 echo "--- "
-echo "Ready to start deployment of ["$fhirServiceName"] with the following values:"
+echo "Ready to start deployment of new FHIR Service: ["$fhirServiceName"] with the following values:"
 echo "Subscription ID:....................... "$subscriptionId
 echo "Use Existing Resource Group:........... "$useExistingResourceGroup
 echo "Create New Resource Group:............. "$createNewResourceGroup

@@ -489,7 +489,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
     #
     echo " "
     echo "Creating FHIR Service Client Application ["$fhirServiceClientAppName"]"
-    stepresult=$(az ad sp create-for-rbac --name $fhirServiceClientAppName --skip-assignment)
+    stepresult=$(az ad sp create-for-rbac --name $fhirServiceClientAppName --skip-assignment --only-show-errors)
 
     # Seriously hate doing this, but Azure doesn't have a way to get the client ID out of the response 
     # a better way is to us az ad sp show with the app ID... will solve next iteration 

@@ -19,34 +19,18 @@ declare TAG="HealthArchitectures FHIRStarter"
 # FHIR Starter Default App Settings 
 #########################################
 declare suffix=$RANDOM
-declare defresourceGroupLocation="eastus"
+declare defresourceGroupLocation="eastus2"
 declare defresourceGroupName="api-fhir-"$suffix
 declare deffhirServiceName="fhir"$suffix
-declare defkeyVaultName=$deffhirServiceName"-kv"
+declare defkeyVaultName=$deffhirServiceName"kv"
 declare genPostmanEnv="yes"
-
-
-
-#########################################
-# Function App Settings
-#########################################
-
-
-#########################################
-# Queue Default Settings 
-#########################################
-
-
-
-#########################################
-# Sync Agent Variables 
-#########################################
 
 
 
 #########################################
 # Common Variables
 #########################################
+declare script_dir="$( cd -P -- "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd -P )"
 declare defSubscriptionId=""
 declare subscriptionId=""
 declare resourceGroupName=""
@@ -75,7 +59,7 @@ declare fhirServiceClientRoleAssignment=""
 
 
 # Keyvault
-declare keyVaultNameAccountNameSuffix="kv"$suffix
+declare keyVaultNameAccountNameSuffix="kv"
 declare keyVaultName=""
 declare keyVaultExists=""
 declare createNewKeyVault=""

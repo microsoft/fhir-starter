@@ -16,46 +16,66 @@ __Note__
 The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment.
 
 
-## Step 1. Setup 
-Please note you should deploy these components into a tenant that you have appropriate permissions to create and manage Application Registrations, Enterprise Applications, Permissions and Role Definitions Assignments
+### Naming & Tagging
+All Azure resource types have a scope that defines the level that resource names must be unique.  Some resource names, such as PaaS services with public endpoints have global scopes so they must be unique across the entire Azure platform.    Our deployment scripts strive to suggest naming standards that group logial connections while aligning with Azure Best Practices.  Customers are prompted to accept a default or suppoly their own names during installation, examples include:
 
-1. [Get or Obtain a valid Azure Subscription](https://azure.microsoft.com/en-us/free/)
+Prefix      | Workload        |  Number     | Resource Type 
+------------|-----------------|-------------|---------------
+NA          | fhir            | random      | NA 
+User input  | secure function | random      | storage 
 
-2. [Open Azure Cloud Shell](https://shell.azure.com) you can also access this from [azure portal](https://portal.azure.com)
+Resources are tagged with their deployment script and origin.  Customers are able to add Tags after installation, examples include::
 
-3. Select Bash Shell 
+Origin              |  Deployment       
+--------------------|-----------------
+HealthArchitectures | FHIR-Starter   
 
-4. Clone this repo 
-```azurecli
-git clone https://github.com/microsoft/fhir-starter
+---
+
+## Setup 
+Please note you should deploy these components into a tenant and subscriotion where you have appropriate permissions to create and manage Application Registrations (ie Application Adminitrator RBAC Role), and can deploy Resources at the Subscription Scope. 
+
+Launch Azure Cloud Shell (Bash Environment)  
+  
+[![Launch Azure Shell](/docs/images/launchcloudshell.png "Launch Cloud Shell")](https://shell.azure.com/bash?target="_blank")
+
+Clone the repo to your Bash Shell (CLI) environment 
+```azurecli-interactive
+git clone https://github.com/microsoft/fhir-starter 
 ```
-5. Change to the new directory to keep files organized within the fhir-starter directory
-```azurecli
+Change working directory to the repo Scripts directory
+```azurecli-interactive
 cd ./fhir-starter/scripts
 ```
-6. Make the bash scripts executable
-```azurecli
-chmod +x *.bash
-``` 
 
-## Step 2.  deployFhirStarter.bash
+Make the Bash Shell Scripts used for Deployment and Setup executable 
+```azurecli-interactive
+chmod +x *.bash 
+```
+
+## Step 1.  deployFhirStarter.bash
 This is the main component deployment script for the Azure Components.    
 
-Run the deployment script and follow the prompts
-```azurecli
+Ensure you are in the proper directory 
+```azurecli-interactive
+cd $HOME/fhir-starter/scripts
+``` 
+
+Launch the deployFhirStarter.bash shell script 
+```azurecli-interactive
 ./deployFhirStarter.bash 
-```
+``` 
 
 Optionally the deployment script can be used with command line options 
 ```azurecli
-./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>
+./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no for postman setup>
 ```
 
 Azure Components installed 
  - Resource Group (if needed)
  - Healthcare API for FHIR 
- - Key Vault 
- - Azure AD Application Service Client 
+ - Key Vault (customers can choose to use an existing Keyvault as long as they have Purge Secrets access)
+ - Azure AD Application Service Principal for RBAC 
 
 Information needed by this script 
  - FHIR Service Name
@@ -76,7 +96,7 @@ FS-URL            | Application Endpoint for Clients     | Endpoint for FHIR Ser
 
 
 
-## Step 3.  Setup Postman
+## Step 2.  Setup Postman
 Once the script finishes deployment, users can use Postman to test access to the new FHIR Service.  Instructions on setting up Postman can be found in the docs directory [here](../docs/postman.md).
 
 ### Auth Layout

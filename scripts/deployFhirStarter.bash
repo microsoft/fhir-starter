@@ -317,11 +317,6 @@ fi
 #
 fhirServiceClientAppName=$fhirServiceName"-svc-client"
 
-# Set a Default KeyVault Name 
-#
-defkeyVaultName=${defkeyVaultName:0:14}
-defkeyVaultName=${defkeyVaultName//[^[:alnum:]]/}
-defkeyVaultName=${defkeyVaultName,,}
 
 # Prompt for remaining details 
 #
@@ -332,9 +327,6 @@ if [[ -z "$keyVaultName" ]]; then
 	if [ -z "$keyVaultName" ] ; then
 		keyVaultName=$defkeyVaultName
 	fi
-	keyVaultName=${keyVaultName:0:14}
-	keyVaultName=${keyVaultName//[^[:alnum:]]/}
-    keyVaultName=${keyVaultName,,}
 	[[ "${keyVaultName:?}" ]]
 fi
 

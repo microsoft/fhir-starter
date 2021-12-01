@@ -13,7 +13,7 @@ IFS=$'\n\t'
 #########################################
 # HealthArchitecture Deployment Settings 
 #########################################
-declare TAG="HealthArchitectures: FHIRStarter"
+declare TAG="HealthArchitectures = FHIRStarter"
 
 
 #########################################

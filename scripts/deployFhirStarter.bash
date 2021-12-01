@@ -13,7 +13,8 @@ IFS=$'\n\t'
 #########################################
 # HealthArchitecture Deployment Settings 
 #########################################
-declare TAG="HealthArchitectures FHIRStarter"
+declare TAG="HealthArchitectures: FHIRStarter"
+
 
 #########################################
 # FHIR Starter Default App Settings 
@@ -21,9 +22,10 @@ declare TAG="HealthArchitectures FHIRStarter"
 declare suffix=$RANDOM
 declare defresourceGroupLocation="eastus2"
 declare defresourceGroupName="api-fhir-"$suffix
-declare deffhirServiceName="fhir"$suffix
-declare defkeyVaultName=$deffhirServiceName"kv"
+declare defFhirServiceName="fhir"$suffix
+declare defkeyVaultName="kv-"$defFhirServiceName
 declare genPostmanEnv="yes"
+
 
 
 
@@ -156,7 +158,9 @@ while getopts ":i:g:l:k:n:p:" arg; do
 			keyVaultName=${OPTARG}
 			;;
 		n)
-			fhirServiceName=${OPTARG}
+			fhirServiceName=${OPTARG:0:14}
+			fhirServiceName=${fhirServiceName,,}
+			fhirServiceName=${fhirServiceName//[^[:alnum:]]/}
 			;;
 		p)
 			genpostman=${OPTARG}
@@ -187,6 +191,13 @@ fi
 # set default subscription information
 defSubscriptionId=$(az account show --query "id" --out json | sed 's/"//g') 
 
+# Test for correct directory path / destination 
+if [ -f "${script_dir}/$0" ] && [ -f "${script_dir}/postmantemplate.json" ] ; then
+	echo "Checking Script execution directory..."
+else
+	echo "Please ensure you launch this script from within the ./scripts directory"
+	usage ;
+fi
 
 # Call the Introduction function 
 intro
@@ -251,16 +262,15 @@ else
     createNewResourceGroup="yes"
 fi
 
+# ---------------------------------------------------------------------
 # Prompt for script parameters if some required parameters are missing
 #
 echo "--- "
 echo "Collecting Script Parameters (unless supplied on the command line).."
 
-# Set a Default App Name
+# Set a Default values for App Name and Keyvault
 #
-declare defAppInstallName="fhir"$suffix
-declare defFhirServiceName=""
-defFhirServiceName=${defAppInstallName:0:12}
+defFhirServiceName=${defFhirServiceName:0:14}
 defFhirServiceName=${defFhirServiceName//[^[:alnum:]]/}
 defFhirServiceName=${defFhirServiceName,,}
 
@@ -272,7 +282,7 @@ if [[ -z "$fhirServiceName" ]]; then
 	if [ -z "$fhirServiceName" ] ; then
 		fhirServiceName=$defFhirServiceName
 	fi
-	fhirServiceName=${fhirServiceName:0:12}
+	fhirServiceName=${fhirServiceName:0:14}
 	fhirServiceName=${fhirServiceName//[^[:alnum:]]/}
     fhirServiceName=${fhirServiceName,,}
 	[[ "${fhirServiceName:?}" ]]
@@ -369,29 +379,18 @@ if [[ -z "$genpostman" ]]; then
 fi
 
 
-# Test for correct directory path / destination 
-if [ -f "./$postmantemplate" ] ; then
-	echo "Found Postman Template file at "./$postmantemplate
-else
-	echo "Unable to find Postman Template file at "../$postmantemplate
-	echo "Please ensure you launch this script from within the ./scripts directory"
-	usage ;
-fi
-
-
-
 # Prompt for final confirmation
 #
 echo "--- "
 echo "Ready to start deployment of new FHIR Service: ["$fhirServiceName"] with the following values:"
 echo "Subscription ID:....................... "$subscriptionId
-echo "Use Existing Resource Group:........... "$useExistingResourceGroup
-echo "Create New Resource Group:............. "$createNewResourceGroup
 echo "Resource Group Name:................... "$resourceGroupName 
+echo " Use Existing Resource Group:.......... "$useExistingResourceGroup
+echo " Create New Resource Group:............ "$createNewResourceGroup
 echo "Resource Group Location:............... "$resourceGroupLocation 
-echo "Use Existing Key Vault:................ "$useExistingKeyVault
-echo "Create New Key Vault:.................. "$createNewKeyVault
 echo "KeyVault Name:......................... "$keyVaultName
+echo " Use Existing Key Vault:............... "$useExistingKeyVault
+echo " Create New Key Vault:................. "$createNewKeyVault
 echo "FHIR Service Client Application Name:.. "$fhirServiceClientAppName
 echo "Generate Postman Environment:.......... "$genpostman  
 echo " "

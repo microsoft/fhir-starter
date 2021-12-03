@@ -20,7 +20,7 @@ declare TAG="HealthArchitectures = FHIRStarter"
 # FHIR Starter Default App Settings 
 #########################################
 declare suffix=$RANDOM
-declare defresourceGroupLocation="eastus2"
+declare defresourceGroupLocation="westus2"
 declare defresourceGroupName="api-fhir-"$suffix
 declare defFhirServiceName="fhir"$suffix
 declare defkeyVaultName="kv-"$defFhirServiceName

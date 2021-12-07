@@ -4,16 +4,16 @@
 
 The goal of the **FHIR-Starter** is to ease the deployment of an Azure Healthcare API FHIR Service along with a Service Client to get users up and running with FHIR in minutes rather than days.  
 
-Azure API for FHIr is generally availability for both public and government in multiple [geo-regions](https://azure.microsoft.com/en-us/global-infrastructure/services/?products=azure-api-for-fhir&regions=non-regional%2Cus-east%2Cus-east-2%2Cus-central%2Cus-north-central%2Cus-south-central%2Cus-west-central%2Cus-west%2Cus-west-2%2Ccanada-east%2Ccanada-central%2Cusgov-non-regional%2Cus-dod-central%2Cus-dod-east%2Cusgov-arizona%2Cusgov-texas%2Cusgov-virginia). For information about government cloud services at Microsoft, check out Azure services by [FedRAMP](https://docs.microsoft.com/en-us/azure/azure-government/compliance/azure-services-in-fedramp-auditscope). 
+Azure API for FHIR is generally available for both public and government in multiple [geo-regions](https://azure.microsoft.com/en-us/global-infrastructure/services/?products=azure-api-for-fhir&regions=non-regional%2Cus-east%2Cus-east-2%2Cus-central%2Cus-north-central%2Cus-south-central%2Cus-west-central%2Cus-west%2Cus-west-2%2Ccanada-east%2Ccanada-central%2Cusgov-non-regional%2Cus-dod-central%2Cus-dod-east%2Cusgov-arizona%2Cusgov-texas%2Cusgov-virginia). For information about government cloud services at Microsoft, check out Azure services by [FedRAMP](https://docs.microsoft.com/en-us/azure/azure-government/compliance/azure-services-in-fedramp-auditscope). 
 
 
 ## FHIR-Starter Details
-The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment.  The following services are required as part of **FHIR-Starter** --  detailed deployment instuctions are located in the [Readme.md](./scripts/Readme.md) within the scripts directory.
+The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the **FHIR-Starter** deploy process. Detailed deployment instuctions are located in the [Readme.md](./scripts/Readme.md) within the scripts directory.
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing keyvault as long as they have Purge Secrets access)
 3) Azure AD Service Principle for RBAC [link](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli)
-4) Azure Resource Group 
+4) Azure Resource Group
 5) Postman (for testing)
 
 ---
@@ -27,27 +27,27 @@ The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell 
 ## Deployment
 To clone a GitHub Repo, you must use a GitHub Account.  Read [Getting Started](https://docs.github.com/en/get-started) for more information.
 
-To deploy resources in Azure, you must have a valid Subscription.  Read [Get or Obtain a valid Azure Subscription](https://azure.microsoft.com/en-us/free/)
+To deploy resources in Azure, you must have a valid Subscription.  Read [Get or Obtain a valid Azure Subscription](https://azure.microsoft.com/en-us/free/).
 
 
-__Next Steps__ Complete Setup steps detailed **[here](./scripts/Readme.md)**
+__Next Steps__ Complete Setup steps detailed **[here](./scripts/Readme.md)**.
 
 
 ## Tracking Changes & Updates
-We continue to monitor questions, feature requests and of course, bugs/issues.   You can review the issues list [here](https://github.com/microsoft/fhir-starter/issues)
+We continue to monitor questions, feature requests and of course, bugs/issues. You can review the issues list [here](https://github.com/microsoft/fhir-starter/issues).
 
 If you are interested in receiving notifications when we publish updates then please follow this repo. 
 
 ## Resources
-The following is a list of references that might be useful to the reader
+Below are some references that might be useful for the reader.
 
 * [Azure for the healthcare industry](https://azure.microsoft.com/en-us/industries/healthcare/)
-* [Azure Healthcare APIs for FHIR](https://azure.microsoft.com/en-us/services/azure-api-for-fhir/)
+* [Azure API for FHIR](https://azure.microsoft.com/en-us/services/azure-api-for-fhir/)
 * [Microsoft Cloud for Healthcare](https://www.microsoft.com/en-us/industry/health/microsoft-cloud-for-healthcare)
 
 ## Repository Contents 
 
-The table below lists items contained within this repository 
+The table below lists items contained within this repository:
 
 Directory       | Contains                                                
 ----------------|--------------------------------------------------

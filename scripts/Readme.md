@@ -1,28 +1,28 @@
-# FHIR-Starter Getting started scripts Readme
-Script purpose, order of execution and other steps necessary to get up and running with FHIR-SyncAgent
+# FHIR-Starter Getting Started with Deploy Scripts
+In this document we go over the ```deployFhirStarter.bash``` for deploying Azure API for FHIR. We cover the order of script execution and the steps needed to get up and running.
 
 ## Errata 
 There are no open issues at this time. 
 
 ## Prerequisites 
 
-These scripts will gather (and export) information necessary to the proper deployment and configuration of Azure Healthcare API for FHIR, an Application Service Client, Key Vault and Resource Groups secure information will be stored in the Keyvault.  
- - Prerequisites:  User must have rights to deploy resources at the Subscription scope 
+These scripts will gather (and export) information necessary for the proper deployment and configuration of Azure API for FHIR, an Application Service Client, Key Vault, and a Resource Group. Credential secrets will be stored in the Key Vault.  
+ - User must have rights to deploy resources at the Subscription scope (i.e., Contributor role).
+ - User must have Application Administrator rights in AAD to assign Consent at the Service Principal scope in Step 2.
 
 __Note__
-A Keyvault is necessary for securing Service Client Credentials used with the FHIR Service and FHIR-Proxy.  Only 1 Keyvault should be used as this script scans the keyvault for FHIR Service and FHIR-Proxy values. If multiple Keyvaults have been used, please use the [backup and restore](https://docs.microsoft.com/en-us/azure/key-vault/general/backup?tabs=azure-cli) option to copy values to 1 keyvault.
+A Key Vault is necessary for securing Service Client Credentials used with the FHIR Service and FHIR-Proxy.  Only one Key Vault should be used as this script scans the Key Vault for FHIR Service and FHIR-Proxy values. If multiple Key Vaults have been deployed, please use the [backup and restore](https://docs.microsoft.com/en-us/azure/key-vault/general/backup?tabs=azure-cli) option to copy values to one Key Vault.
 
 __Note__ 
 The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment.
 
 
 ### Naming & Tagging
-All Azure resource types have a scope that defines the level that resource names must be unique.  Some resource names, such as PaaS services with public endpoints have global scopes so they must be unique across the entire Azure platform.    Our deployment scripts strive to suggest naming standards that group logial connections while aligning with Azure Best Practices.  Customers are prompted to accept a default or suppoly their own names during installation, examples include:
+All Azure resource types have a scope that defines the level at which resource names must be unique. Some resource names, such as PaaS services with public endpoints, have global scopes so they must be unique across the entire Azure platform. Our deployment scripts strive to suggest naming standards that group logical connections while aligning with Azure best practices. Customers are prompted to accept a default name or supply their own names during installation. See below for the Azure API for FHIR resource naming convention.
 
-Prefix      | Workload        |  Number     | Resource Type 
-------------|-----------------|-------------|---------------
-NA          | fhir            | random      | NA 
-User input  | secure function | random      | storage 
+Resource Type | Deploy App Name | Number      | Resource Name Example (automatically generated)
+------------|-----------------|-------------|------------------------------------------------
+sf-         | fhir           | random      | sf-fhir123456
 
 Resources are tagged with their deployment script and origin.  Customers are able to add Tags after installation, examples include::
 
@@ -33,7 +33,7 @@ HealthArchitectures | FHIR-Starter
 ---
 
 ## Setup 
-Please note you should deploy these components into a tenant and subscriotion where you have appropriate permissions to create and manage Application Registrations (ie Application Adminitrator RBAC Role), and can deploy Resources at the Subscription Scope. 
+Please note you should deploy these components into a tenant and subscriotion where you have appropriate permissions to create and manage Application Registrations (ie Application Adminitrator RBAC Role in AAD), and can deploy Resources at the Subscription Scope (ie Contributor role). 
 
 Launch Azure Cloud Shell (Bash Environment)  
   

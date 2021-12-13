@@ -45,7 +45,7 @@ git clone https://github.com/microsoft/fhir-starter
 ```
 Change working directory to the repo Scripts directory
 ```azurecli-interactive
-cd ./fhir-starter/scripts
+cd $HOME/fhir-starter/scripts
 ```
 
 Make the Bash Shell Scripts used for Deployment and Setup executable 

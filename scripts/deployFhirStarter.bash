@@ -99,7 +99,7 @@ function intro {
 	echo "The script gathers information then lets users choose to use a template or script deployment.  "
     echo "Users without CLI Access can use the template deployment from the templates directory in this repo."
 	echo " "
-	read -p 'Press Enter to continue, or Ctrl+C to exit'
+	read -p 'Press Enter to continue, or Ctrl+C to exit...'
 }
 
 function retry {
@@ -107,6 +107,7 @@ function retry {
     local n=1
     local max=5
     local delay=20
+    echo "Starting retry logic..."
     while true; do
       "$@" && break || {
         if [[ $n -lt $max ]]; then
@@ -119,6 +120,7 @@ function retry {
         fi
       }
     done
+    echo "Completed retry logic..."
 }
 
 function keyVaultUri {
@@ -191,9 +193,10 @@ fi
 # set default subscription information
 defSubscriptionId=$(az account show --query "id" --out json | sed 's/"//g') 
 
+echo "Checking Execution Directory..."
 # Test for correct directory path / destination 
-if [ -f "${script_dir}/$0" ] && [ -f "${script_dir}/postmantemplate.json" ] ; then
-	echo "Checking Script execution directory..."
+if [ -f "${script_dir}/postmantemplate.json" ] ; then
+	echo "Found postman template, continuning..."
 else
 	echo "Please ensure you launch this script from within the ./scripts directory"
 	usage ;
@@ -387,7 +390,7 @@ echo "FHIR Service Client Application Name:.. "$fhirServiceClientAppName
 echo "Generate Postman Environment:.......... "$genpostman  
 echo " "
 echo "Please validate the settings above before continuing"
-read -p 'Press Enter to continue, or Ctrl+C to exit'
+read -p 'Press Enter to continue, or Ctrl+C to exit...'
 
 
 

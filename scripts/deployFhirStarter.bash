@@ -465,7 +465,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
 
     # Set FHIR Service Audience
     #
-    fhirServiceAudience=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "properties.authenticationConfiguration.audience" --out tsv)
+    fhirServiceAudience=$(az healthcareapis service show --subscription $subscriptionId --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "properties.authenticationConfiguration.audience" --out tsv)
 
     echo " "
     echo "FHIR Service Audience set to ["$fhirServiceAudience"]"
@@ -475,7 +475,7 @@ echo "... note that warnings here are expected and can be safely ignored ..."
 
     # Set FHIR Service Resource ID 
     #
-    fhirResourceId=$(az healthcareapis service show --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "id" --out tsv)
+    fhirResourceId=$(az healthcareapis service show --subscription $subscriptionId --resource-name "$fhirServiceName" --resource-group "$resourceGroupName" --query "id" --out tsv)
 
     echo " "
     echo "FHIR Service Resource ID set to ["$fhirResourceId"]" 

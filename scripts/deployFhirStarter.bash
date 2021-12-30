@@ -176,6 +176,9 @@ while getopts ":i:g:l:k:n:p:" arg; do
 		l)
 			resourceGroupLocation=${OPTARG}
 			;;
+        *) 
+            usage
+            ;;
 	esac
 done
 shift $((OPTIND-1))
@@ -405,7 +408,7 @@ echo "Starting Deployments "
         echo " "
         echo "Creating Resource Group ["$resourceGroupName"] in location ["$resourceGroupLocation"]"
         set -x
-        az group create --name $resourceGroupName --location $resourceGroupLocation --output none --tags $TAG ;
+        az group create --subscription $subscriptionId --name $resourceGroupName --location $resourceGroupLocation --output none --tags $TAG ;
     else
         echo "Using Existing Resource Group ["$resourceGroupName"]"
     fi
@@ -429,7 +432,7 @@ echo "--- "
         echo " "
         echo "Creating Key Vault ["$keyVaultName"] in location ["$resourceGroupName"]"
         set -x
-        stepresult=$(az keyvault create --name $keyVaultName --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none) ;
+        stepresult=$(az keyvault create --name $keyVaultName --subscription $subscriptionId --resource-group $resourceGroupName --location  $resourceGroupLocation --tags $TAG --output none) ;
     else
         echo "Using Existing Key Vault ["$keyVaultName"]"
     fi

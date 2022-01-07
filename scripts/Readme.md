@@ -1,5 +1,5 @@
 # FHIR-Starter Getting Started with Deploy Scripts
-In this document we go over the ```deployFhirStarter.bash``` for deploying Azure API for FHIR. We cover the order of script execution and the steps needed to get up and running.
+In this document we go over the ```deployFhirStarter.bash``` script for deploying Azure API for FHIR. We cover the order of script execution and the steps needed to get up and running.
 
 ## Errata 
 There are no open issues at this time. 

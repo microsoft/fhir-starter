@@ -169,9 +169,7 @@ while getopts ":i:g:e:l:k:n:p:" arg; do
 			keyVaultName=${OPTARG}
 			;;
 		n)
-			fhirServiceName=${OPTARG:0:14}
-			fhirServiceName=${fhirServiceName,,}
-			fhirServiceName=${fhirServiceName//[^[:alnum:]]/}
+			fhirServiceName=${OPTARG}
 			;;
 		p)
 			genpostman=${OPTARG}

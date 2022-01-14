@@ -18,7 +18,7 @@ Files to download to your desktop from Azure Cloud Shell:
 
 ## Using Postman to Connect to FHIR Server
 
-1. [Download and Install Postman API App](https://www.postman.com/downloads/) if you haven't already.
+1. [Download and Install Postman API App](https://www.postman.com/downloads/) (if you haven't already).
 
 2. Create a new Postman Workspace (or select an existing one if already created).
 

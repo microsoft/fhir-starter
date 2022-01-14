@@ -8,7 +8,7 @@ Azure API for FHIR is generally available for both public and government in mult
 
 
 ## FHIR-Starter Details
-The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the **FHIR-Starter** deploy process. Detailed deployment instuctions are located in the [Readme.md](./scripts/Readme.md) within the scripts directory.
+The FHIR-Starter scripts are designed and tested for the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the **FHIR-Starter** deploy process. Detailed deployment instuctions are located in the [Readme.md](./scripts/Readme.md) within the scripts directory.
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing keyvault as long as they have Purge Secrets access)

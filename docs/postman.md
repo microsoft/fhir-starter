@@ -17,7 +17,7 @@ File Names to download to your desktop from Azure Cloud Shell are:
 
 2. Create a new Postman Workspace (or select an existing one)
 
-3. Click the Import button next to your workspace name ![Import Postman](./images/postman1.png)
+3. Click the ```Import``` button next to your workspace name ![Import Postman](./images/postman1.png)
 
 4. Import the ```servername.postman_environment.json``` file (see Download the Postman files above):
     + Upload the file using the upload file button or

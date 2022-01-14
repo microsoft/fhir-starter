@@ -25,9 +25,9 @@ The FHIR-Starter scripts are designed and tested for the Azure Cloud Shell - Bas
 ---
 
 ## Deployment
-To clone a GitHub Repo, you must use a GitHub Account.  Read [Getting Started](https://docs.github.com/en/get-started) for more information.
+To clone a GitHub Repo, you must have a GitHub Account.  Read [Getting Started](https://docs.github.com/en/get-started) for more information.
 
-To deploy resources in Azure, you must have a valid Subscription.  Read [Get or Obtain a valid Azure Subscription](https://azure.microsoft.com/en-us/free/).
+To deploy resources in Azure, you must have a valid Subscription.  Read [here](https://azure.microsoft.com/en-us/free/) about obtaining an Azure Subscription.
 
 
 __Next Steps__ Complete Setup steps detailed **[here](./scripts/Readme.md)**.

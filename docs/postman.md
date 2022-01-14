@@ -31,7 +31,7 @@ Files to download to your desktop from Azure Cloud Shell:
 5. Import the ```FHIR-CALLS-Sample-postman-collection.json``` file that you downloaded to your desktop environment (see above):
     + Add the file to Postman using the ```Upload Files``` button or paste in the contents of the file using the ```Raw text``` tab.
 
-6. Select the ```servername``` postman environment in the workspace. (For Example my workspance name is stocore).
+6. Select the ```$fhirServiceName```` Postman environment in the workspace. (For Example my workspance name is stocore).
    ![Import Postman](./images/postman3.png)
 
 7. Select the ```AuthorizationGetToken``` call from the ```FHIR Calls-Sample``` collection.

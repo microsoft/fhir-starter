@@ -12,7 +12,7 @@ Files to download to your desktop from Azure Cloud Shell:
  - ```/home/$username/fhir-starter/scripts/FHIR-CALLS-Sample-postman-collection.json```
  - ```/home/$username/fhir-starter/scripts/$fhirServiceName.postman_environment.json``` 
 
-(```$fhirServiceName``` is a placeholder for the name you chose for your Azure API for FHIR Resource)
+(```$fhirServiceName``` is a placeholder for the name given to your Azure API for FHIR Resource)
 
 
 

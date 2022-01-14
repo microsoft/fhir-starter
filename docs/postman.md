@@ -30,8 +30,8 @@ Files to download to your desktop from Azure Cloud Shell:
     ![Import Postman](./images/postman2.png)
 
 5. Import the ```FHIR-CALLS-Sample-postman-collection.json``` file (see Download the Postman files above):
-    + Upload the file using the upload file button or
-    + Paste in the contents of the file useing the Raw Text tab
+    + Add the file to Postman using the ```Upload Files``` button or
+    + Paste in the contents of the file useing the ```Raw Text``` tab
 
 6. Select the ```servername``` postman environment in the workspace. (For Example my workspance name is stocore)
    ![Import Postman](./images/postman3.png)

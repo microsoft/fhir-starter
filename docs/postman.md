@@ -43,7 +43,7 @@ Files to download to your desktop from Azure Cloud Shell:
 9. Select the ```List Patients``` call from the ```FHIR Calls-Samples``` collection.
    ![Import Postman](./images/postman6.png)
 
-__NOTE:__ For your convenience, a Sample Patient file is included in the ```Save Patients``` call.  Simply obtain a Token (see 7 above), and Press send to create a patient. 
+__Note:__ For your convenience, a Sample Patient file is included in the ```Save Patients``` call.  Simply obtain a Token (see 7 above), and Press send to create a patient. 
 
 10. Press send. You should receive an empty bundle of patients from the FHIR Server (unless you created a Patient in Step 9).
    ![Import Postman](./images/postman7.png)

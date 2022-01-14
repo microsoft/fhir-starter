@@ -1,9 +1,9 @@
 # Instructions 
 
 ## Download the Postman files 
-Use the download feature in Azure Cloud Shell to download* the following **Postman** configuration files.
+Use the Download feature in Azure Cloud Shell to download* two **Postman** configuration files.
 
-\*Detailed instructions for using the upload/download feature in Azure Cloud Shell can found [here](https://docs.microsoft.com/en-us/azure/cloud-shell/using-the-shell-window#upload-and-download-files).
+\*Detailed instructions for using the Upload/Download feature in Azure Cloud Shell can found [here](https://docs.microsoft.com/en-us/azure/cloud-shell/using-the-shell-window#upload-and-download-files).
 
 
 __Note:__ Each file must be downloaded individually. 

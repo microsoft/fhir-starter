@@ -34,7 +34,7 @@ Files to download to your desktop from Azure Cloud Shell:
 6. Select the ```$fhirServiceName``` Postman environment in the workspace. (e.g. ```stocore``` as seen below is a Postman environment name).
    ![Import Postman](./images/postman3.png)
 
-7. Select the ```POST AuthorizeGetToken``` call from the ```FHIR Calls-Sample``` collection.
+7. Select the ```POST AuthorizeGetToken``` call from the ```FHIR CALLS-Sample``` collection.
    ![Import Postman](./images/postman4.png)
 
 8. Press ```Send```. You should receive a valid token which automatically gets set in the bearerToken variable for the Postman environment.

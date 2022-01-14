@@ -25,7 +25,7 @@ Files to download to your desktop from Azure Cloud Shell:
 3. Click the ```Import``` button next to your workspace name. ![Import Postman](./images/postman1.png)
 
 4. Import the ```$fhirServiceName.postman_environment.json``` file (see Download the Postman files above):
-    + Upload the file using the upload file button or
+    + Upload the file using the ```Upload Files``` button or
     + Paste in the contents of the file useing the Raw Text tab
     ![Import Postman](./images/postman2.png)
 

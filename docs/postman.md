@@ -25,28 +25,30 @@ Files to download to your desktop from Azure Cloud Shell:
 3. Click the ```Import``` button next to your workspace name. ![Import Postman](./images/postman1.png)
 
 4. Import the ```$fhirServiceName.postman_environment.json``` file (see above):
-    + Add the file to Postman using the ```Upload Files``` button or paste in the contents of the file using the ```Raw text``` tab
+    + Add the file to Postman using the ```Upload Files``` button or paste in the contents of the file using the ```Raw text``` tab.
     ![Import Postman](./images/postman2.png)
 
 5. Import the ```FHIR-CALLS-Sample-postman-collection.json``` file (see above):
-    + Add the file to Postman using the ```Upload Files``` button or paste in the contents of the file using the ```Raw text``` tab
+    + Add the file to Postman using the ```Upload Files``` button or paste in the contents of the file using the ```Raw text``` tab.
 
-6. Select the ```servername``` postman environment in the workspace. (For Example my workspance name is stocore)
+6. Select the ```servername``` postman environment in the workspace. (For Example my workspance name is stocore).
    ![Import Postman](./images/postman3.png)
 
-7. Select the ```AuthorizationGetToken``` call from the ```FHIR Calls-Sample``` collection
+7. Select the ```AuthorizationGetToken``` call from the ```FHIR Calls-Sample``` collection.
    ![Import Postman](./images/postman4.png)
 
-8. Press __send__ you should receive a valid token it will be automatically set in the bearerToken variable for the environment
+8. Press __send__. You should receive a valid token which will automatically be set in the bearerToken variable for the environment.
    ![Import Postman](./images/postman5.png)
 
-9. Select the ```List Patients``` call from the ```FHIR Calls-Samples``` collection
+9. Select the ```List Patients``` call from the ```FHIR Calls-Samples``` collection.
    ![Import Postman](./images/postman6.png)
 
-__NOTE__  For your convenience a Sample Patient file is included in the ```Save Patients``` call.  Simply obtain a Token (see 7 above), and Press send to create a patient. 
+__NOTE:__ For your convenience, a Sample Patient file is included in the ```Save Patients``` call.  Simply obtain a Token (see 7 above), and Press send to create a patient. 
 
-10. Press send you should receive and empty bundle of patients from the FHIR Server (unless you created a Patient in Step 9)
+10. Press send. You should receive an empty bundle of patients from the FHIR Server (unless you created a Patient in Step 9).
    ![Import Postman](./images/postman7.png)
 
-11. You may now use the token received for the other sample calls or your own calls.  Note: After token expiry (60 min), use the ```AuthorizationGetToken``` call to get another token
+11. You may now use the token received for the other sample calls or your own calls.  
+
+__Note:__ After token expiry (60 min), use the ```AuthorizationGetToken``` call to get another token.
 

@@ -47,8 +47,10 @@ __Note:__ For your convenience, a Sample Patient file is included in the ```POST
 
 10. Press ```Send```. You should receive an empty bundle of patients from Azure API for FHIR (unless you created a Patient in Step 9).
    ![Import Postman](./images/postman7.png)
+   
+11. For your convenience, a Sample Patient file is included in the ```POST Save Patient``` call. Select ```POST Save Patient``` and press ```Send``` to create a patient.  
 
-11. You may now use the token received for other sample calls or your own calls.  
+12. You may now experiment with other sample calls or your own calls.  
 
-__Note:__ After token expiry (60 min), use the ```AuthorizationGetToken``` call to get another token.
+__Note:__ After token expiry (60 min), use the ```POST AuthorizeGetToken``` call again to get another token.
 

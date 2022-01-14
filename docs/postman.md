@@ -46,7 +46,7 @@ Files to download to your desktop from Azure Cloud Shell:
 10. Press ```Send```. You should receive an empty bundle of patients from Azure API for FHIR.
    ![Import Postman](./images/postman7.png)
    
-11. For your convenience, a Sample Patient file is included in the ```POST Save Patient``` call. Select ```POST Save Patient``` and press ```Send``` to create a patient.  
+11. For your convenience, a sample Patient record is included in the ```POST Save Patient``` call. Select ```POST Save Patient``` and press ```Send``` to create a Patient Resource in Azure API for FHIR.  
 
 12. You may now experiment with other sample calls or your own calls.  
 

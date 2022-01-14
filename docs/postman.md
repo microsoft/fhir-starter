@@ -3,11 +3,13 @@
 ## Download the Postman files 
 Instructions for downloading the Postman files from the Azure Cloud Shell environment to your desktop can found [here](https://docs.microsoft.com/en-us/azure/cloud-shell/using-the-shell-window#upload-and-download-files).
 
-__Note:__ Each file must be downloaded individually (you can not use a wild card character for downloading from the Cloud shell). 
+__Note:__ Each file must be downloaded individually. 
 
-File Names to download to your desktop from Azure Cloud Shell are:
- - /home/$username/fhir-starter/scripts/FHIR-CALLS-Sample-postman-collection.json
- - /home/$username/fhir-starter/scripts/$fhirServiceName.postman_environment.json 
+Files to download to your desktop from Azure Cloud Shell:
+ - ```/home/$username/fhir-starter/scripts/FHIR-CALLS-Sample-postman-collection.json```
+ - ```/home/$username/fhir-starter/scripts/$fhirServiceName.postman_environment.json``` 
+
+(```$fhirServiceName``` is a placeholder for the name you chose for your Azure API for FHIR Resource)
 
 
 
@@ -15,11 +17,11 @@ File Names to download to your desktop from Azure Cloud Shell are:
 
 1. [Download and Install Postman API App](https://www.postman.com/downloads/)
 
-2. Create a new Postman Workspace (or select an existing one)
+2. Create a new Postman Workspace (or select an existing one if available)
 
 3. Click the ```Import``` button next to your workspace name ![Import Postman](./images/postman1.png)
 
-4. Import the ```servername.postman_environment.json``` file (see Download the Postman files above):
+4. Import the ```$fhirServiceName.postman_environment.json``` file (see Download the Postman files above):
     + Upload the file using the upload file button or
     + Paste in the contents of the file useing the Raw Text tab
     ![Import Postman](./images/postman2.png)

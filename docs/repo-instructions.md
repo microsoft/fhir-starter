@@ -1,6 +1,6 @@
 # Instructions 
 
-1. [Open Azure Cloud Shell](https://shell.azure.com) you can also access this from [Azure Portal](https://portal.azure.com)
+1. [Open Azure Cloud Shell](https://shell.azure.com) (you can also access this directly from [Azure Portal](https://portal.azure.com))
 
 2. Select Bash Shell for the environment 
 
@@ -8,22 +8,22 @@
 ```azurecli
 git clone https://github.com/microsoft/fhir-starter
 ```
-4. Change Directory to the scripts working directory 
+4. Change the working directory to the ```./fhir-starter/scripts``` directory
 ```azurecli
-cd ./fhir-starter/scripts 
+cd $HOME/fhir-starter/scripts 
 ```
-5. Make the bash script executable
+5. Make the Bash script executable
 ```azurecli
 chmod +x *.bash
 ```
-6. Execute the script with (or without) command line parameters)
+6. Execute the ```deployFhirStarter.bash``` script with or without command line parameters
 
-Without Command line parameters will prompt the user for necessary information 
+If you call the script without entering the command line parameters, the script will prompt you for necessary information (```subscriptionId```, ```resourceGroupName```, ```resourceGroupLocation```, ```keyVaultName```, ```fhirServiceName```). 
 ```azurecli
 ./deployFhirStarter.bash
 ```
 
-With Command line parameters will not prompt the user for necessary information (unless there is an issue)
+If you execute the script with command line parameters, the script will take the values you enter and use them to complete the deployment. 
 ```azurecli
 ./deployFhirStarter.bash  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p
 ```

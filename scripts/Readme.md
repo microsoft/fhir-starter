@@ -6,7 +6,7 @@ There are no open issues at this time.
 
 ## Prerequisites 
 
-These scripts will gather (and export) information necessary for the proper deployment and configuration of Azure API for FHIR and associated Azure Resources. Please make sure to have the following credentials before going forward with the deploy process.
+These scripts will gather (and export) information necessary for the proper deployment and configuration of **Azure API for FHIR** and associated Azure Resources. Please make sure to have the following credentials before going forward with the deploy process.
 
  - User must have rights to deploy these Resources at the Subscription scope (i.e., Contributor role).
 

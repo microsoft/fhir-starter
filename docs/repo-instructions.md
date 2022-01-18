@@ -1,6 +1,6 @@
 # Instructions 
 
-1. [Open Azure Cloud Shell](https://shell.azure.com) (you can also access this directly from [Azure Portal](https://portal.azure.com))
+1. [Open Azure Cloud Shell](https://shell.azure.com) (you can also access the Azure Cloud Shell CLI directly from [Azure Portal](https://portal.azure.com))
 
 2. Select Bash Shell for the environment 
 

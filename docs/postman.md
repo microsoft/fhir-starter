@@ -1,4 +1,4 @@
-# Instructions 
+# Postman Instructions 
 
 ## Download the Postman files 
 You will use the Download feature in Azure Cloud Shell to download* the two **Postman** configuration files needed to get started. These files will download to your local desktop environment.

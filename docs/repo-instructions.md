@@ -23,7 +23,7 @@ If you call the script without entering command line option parameters, the scri
 ./deployFhirStarter.bash
 ```
 
-If you call the script and include command line option parameters, the script will take the values you enter and use them to finish the deployment. 
+If you call the script and include command line option parameters, the script will take the values you enter and use them in the deployment. 
 ```azurecli
 ./deployFhirStarter.bash  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p
 ```

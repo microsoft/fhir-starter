@@ -8,7 +8,7 @@
 ```azurecli
 git clone https://github.com/microsoft/fhir-starter.git
 ```
-4. Change the working directory to the ```./fhir-starter/scripts``` directory
+4. Change the working directory in your Azure Cloud Shell environment to the ```./fhir-starter/scripts``` directory
 ```azurecli
 cd $HOME/fhir-starter/scripts 
 ```

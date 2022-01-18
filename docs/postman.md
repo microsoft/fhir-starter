@@ -50,5 +50,5 @@ Files to download to your desktop from Azure Cloud Shell:
 
 12. You may now experiment with other sample calls or your own calls.  
 
-__Note:__ After token expiry (60 min), use the ```POST AuthorizeGetToken``` call again to get another token.
+__Note:__ After token expiry (60 min), use the ```POST AuthorizeGetToken``` call again to obtain another token.
 

@@ -8,7 +8,7 @@ There are no open issues at this time.
 
 This script will gather (and export) information necessary for the proper deployment and configuration of **Azure API for FHIR** and associated Azure Resources. Please make sure to have the following credentials before going forward with the deploy process.
 
- - User must have rights to deploy these Resources at the Subscription scope (i.e., Contributor role).
+ - User must have rights to deploy these Azure Resources at the Subscription scope (i.e., Contributor role).
 
 __Note:__
 This script will prompt the user with the option to create a new Resrouce Group for Azure API for FHIR, and within the Resource Group, the user will also have the option to deploy a new Key Vault. Alternatively, the script gives the user the option to input the name of an existing Resource Group to deploy Azure API for FHIR into, and the script gives the option to use an existing Key Vault instead of deploying a new one. The Key Vault is needed for securing Service Client Credentials used with Azure API for FHIR and FHIR-Proxy, and if you opt to use an existing Resource Group and Key Vault, it is important that only one Key Vault be in the Resource Group where Azure API for FHIR is deployed. If multiple Key Vaults are in the Azure API for FHIR Resource Group, problems will arrise later when deploying FHIR-Proxy and other tools. If necessary, please use the [backup and restore](https://docs.microsoft.com/en-us/azure/key-vault/general/backup?tabs=azure-cli) option to copy the stored values to just one Key Vault.

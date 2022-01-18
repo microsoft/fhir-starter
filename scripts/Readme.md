@@ -6,12 +6,12 @@ There are no open issues at this time.
 
 ## Prerequisites 
 
-These scripts will gather (and export) information necessary for the proper deployment and configuration of Azure API for FHIR, an Application Service Client, Key Vault, and a Resource Group. Credential secrets will be stored in the Key Vault.  
- - User must have rights to deploy resources at the Subscription scope (i.e., Contributor role).
- - User must have Application Administrator rights in AAD to assign Consent at the Service Principal scope in Step 2.
+These scripts will gather (and export) information necessary for the proper deployment and configuration of Azure API for FHIR and associated Azure Resources. Please make sure to have the following credentials before going forward with the deploy process.
+
+ - User must have rights to deploy these Resources at the Subscription scope (i.e., Contributor role).
 
 __Note__
-A Key Vault is necessary for securing Service Client Credentials used with the FHIR Service and FHIR-Proxy.  Only one Key Vault should be used as this script scans the Key Vault for FHIR Service and FHIR-Proxy values. If multiple Key Vaults have been deployed, please use the [backup and restore](https://docs.microsoft.com/en-us/azure/key-vault/general/backup?tabs=azure-cli) option to copy values to one Key Vault.
+This script will deploy a Key Vault as one of the supporting Azure resources. The Key Vault is necessary for securing Service Client Credentials used with the Azure API for FHIR and FHIR-Proxy. Only one Key Vault should be used as this script scans the Key Vault for FHIR Service and FHIR-Proxy values. If multiple Key Vaults have been deployed, please use the [backup and restore](https://docs.microsoft.com/en-us/azure/key-vault/general/backup?tabs=azure-cli) option to copy values to one Key Vault.
 
 __Note__ 
 The FHIR-Starter scripts are designed for and tested from the Azure Cloud Shell - Bash Shell environment.
@@ -73,9 +73,9 @@ Optionally the deployment script can be used with command line options
 
 Azure Components installed 
  - Resource Group (if needed)
- - Healthcare API for FHIR 
+ - Azure API for FHIR 
  - Key Vault (customers can choose to use an existing Keyvault as long as they have Purge Secrets access)
- - Azure AD Application Service Principal for RBAC 
+ - Azure AD Application Service Principal for RBAC
 
 Information needed by this script 
  - FHIR Service Name

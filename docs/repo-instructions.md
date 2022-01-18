@@ -1,10 +1,10 @@
-# Instructions 
+# Deployment Instructions 
 
 1. [Open Azure Cloud Shell](https://shell.azure.com) (you can also access the Azure Cloud Shell CLI directly from [Azure Portal](https://portal.azure.com))
 
 2. Select Bash Shell for the environment 
 
-3. Clone this repo
+3. In your Azure Cloud Shell environment, clone this repo
 ```azurecli
 git clone https://github.com/microsoft/fhir-starter.git
 ```
@@ -12,7 +12,7 @@ git clone https://github.com/microsoft/fhir-starter.git
 ```azurecli
 cd $HOME/fhir-starter/scripts 
 ```
-5. Make the Bash script executable
+5. Make the Bash script in the directory executable
 ```azurecli
 chmod +x *.bash
 ```

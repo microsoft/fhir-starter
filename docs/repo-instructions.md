@@ -27,6 +27,6 @@ If you execute the script with command line parameters, the script will take the
 ```azurecli
 ./deployFhirStarter.bash  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p
 ```
-__Note__ -p will create a Postman Environment file for access from Postman
+__Note:__ ```-p``` will create a Postman Environment file for access from Postman.
 
 

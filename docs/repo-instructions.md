@@ -6,7 +6,7 @@
 
 3. Clone this repo
 ```azurecli
-git clone https://github.com/microsoft/fhir-starter
+git clone https://github.com/microsoft/fhir-starter.git
 ```
 4. Change the working directory to the ```./fhir-starter/scripts``` directory
 ```azurecli

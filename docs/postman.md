@@ -40,7 +40,7 @@ Files to download to your desktop from Azure Cloud Shell:
 8. Press ```Send```. You should receive a valid token automatically set in the bearerToken variable for the Postman environment.
    ![Import Postman](./images/postman5.png)
 
-9. Select the ```GET List Patients``` call from the ```FHIR CALLS-Samples``` collection.
+9. Select the ```GET List Patients``` call from the ```FHIR CALLS-Sample``` collection.
    ![Import Postman](./images/postman6.png)
 
 10. Press ```Send```. You should receive an empty bundle of patients from Azure API for FHIR.

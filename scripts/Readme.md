@@ -6,7 +6,7 @@ There are no open issues at this time.
 
 ## Prerequisites 
 
-The ```deployFhirStarter.bash``` script will gather (and export) information necessary for the proper deployment and configuration of **Azure API for FHIR** and associated Azure Resources. Please make sure to have the following credentials before going forward with the deploy process.
+The ```deployFhirStarter.bash``` script will gather (and export) information necessary for the proper deployment and configuration of **Azure API for FHIR** and associated Azure Resources. Please make sure to have the following in place before going forward with the deploy process.
 
  - User must have rights to deploy Azure Resources at the Subscription scope (i.e., [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles) role).
 

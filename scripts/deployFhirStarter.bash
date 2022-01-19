@@ -396,6 +396,7 @@ fi
 echo "--- "
 echo "Ready to start deployment of new FHIR Service: ["$fhirServiceName"] with the following values:"
 echo "Subscription ID:....................... "$subscriptionId
+echo "Environment:........................... "$environment
 echo "Resource Group Name:................... "$resourceGroupName 
 echo " Use Existing Resource Group:.......... "$useExistingResourceGroup
 echo " Create New Resource Group:............ "$createNewResourceGroup
@@ -471,10 +472,13 @@ echo "... note that warnings here are expected and can be safely ignored ..."
 (
     # Deploy API
     #
-    echo " "
-    echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
-    stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=1000 --identity-type "none" --tags $TAG)
-    
+     if [[ "$environment" == "dev" ]]; then
+        echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
+        stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=400 --identity-type "none" --tags $TAG)
+    else 
+        echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
+        stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=1000 --identity-type "none" --tags $TAG)
+    fi
     sleep 5
 
     # Set FHIR Service Audience

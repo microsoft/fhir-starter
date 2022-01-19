@@ -245,6 +245,11 @@ if [[ -z "$environment" ]]; then
 	[[ "${environment:?}" ]]
 fi
 
+# Updating the varialbes to carry forward inputs 
+declare defresourceGroupName="rg-fhir-"$environment"-"$defresourceGroupLocation"-"$suffix
+declare defFhirServiceName="api-fhir-"$environment"-"$suffix
+declare defkeyVaultName="kv-"$defFhirServiceName
+
 
 if [[ -z "$resourceGroupLocation" ]]; then
 	echo "If creating a *new* resource group, you need to set a location "
@@ -257,6 +262,8 @@ if [[ -z "$resourceGroupLocation" ]]; then
 	[[ "${resourceGroupLocation:?}" ]]
 fi
 
+# Updating the varialbes to carry forward inputs 
+declare defresourceGroupName="rg-fhir-"$environment"-"$resourceGroupLocation"-"$suffix
 
 if [[ -z "$resourceGroupName" ]]; then
 	echo "This script will look for an existing resource group, otherwise a new one will be created "

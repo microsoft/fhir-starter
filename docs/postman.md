@@ -1,4 +1,4 @@
-# Postman Instructions 
+# Postman Setup Instructions 
 
 ## Download the Postman files 
 You will use the ```Download``` feature in [Azure Cloud Shell](https://shell.azure.com/bash?target="_blank") to download* the two **Postman** configuration files needed to get started. These files will download to your local desktop environment.

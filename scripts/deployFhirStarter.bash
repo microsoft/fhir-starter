@@ -245,6 +245,14 @@ if [[ -z "$environment" ]]; then
 	[[ "${environment:?}" ]]
 fi
 
+ if [[ "$environment" == "dev" ]] || [[ "$environment" == "qa" ]] || [[ "$environment" == "prod" ]] ;
+then
+    echo "Environment is valid, continuing..." ;
+else   
+    echo "Environment must be either dev, qa or prod..."
+    exit 1 ;  
+fi  
+
 # Updating the varialbes to carry forward inputs 
 declare defresourceGroupName="rg-fhir-"$environment"-"$defresourceGroupLocation"-"$suffix
 declare defFhirServiceName="api-fhir-"$environment"-"$suffix

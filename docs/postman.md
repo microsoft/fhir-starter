@@ -48,7 +48,7 @@ Files to download to your desktop from Azure Cloud Shell:
    
 11. For your convenience, a sample Patient FHIR Resource is included in the ```POST Save Patient``` call. Select ```POST Save Patient``` and press ```Send``` to create a Patient Resource in Azure API for FHIR.  
 
-12. Select ```GET List Patients``` again and you should receive a JSON response with information about the sample patient you imported (see step 11).
+12. Select ```GET List Patients``` again and press ```Send```. You should receive a JSON response with information about the sample patient you imported (see step 11).
 
 13. Now you can experiment with other sample calls or your own calls.  
 

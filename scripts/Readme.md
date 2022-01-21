@@ -18,11 +18,11 @@ The ```deployFhirStarter.bash``` script is designed and tested for the [Azure Cl
 
 
 ### Naming & Tagging
-All Azure resource types have a scope that defines the level at which resource names must be unique. Some resource names, such as PaaS services with public endpoints, have global scopes. Therefore, these resource names must be unique across the entire Azure platform. Our deployment scripts strive to suggest resource names in alignment with Azure best practices. Customers are prompted to accept a default (automatically generated) resource name, or they have the option to supply their own custom resource name during installation. See below for an example of the default Azure API for FHIR resource naming convention.
+All Azure resource types have a scope that defines the level at which resource names must be unique. Some resource names, such as PaaS services with public endpoints, have global scopes. Therefore, these resource names must be unique across the entire Azure platform. Our deployment scripts strive to suggest resource names in alignment with Azure best practices. Customers are prompted to accept a default (automatically generated) resource name, or they have the option to supply their own custom resource name during installation. See below for an example of the default **Azure API for FHIR** resource naming convention. Note that while the default Environment value is ```dev``` (representing a deployment for development purposes), the script also gives options to specify ```qa``` (for a quality assurance/test deployment), or ```prod``` (for a production deployment).
 
 Resource Type | Deploy App Name | Environment | Number      | Resource Name Example (automatically generated)
 --------------|-----------------|-------------|-------------|------------------------------------------------
-api-          | fhir-           | dev-        | random      | api-fhir-dev-12345
+api          | fhir           | dev        | random      | api-fhir-dev-12345
 
 Resources are tagged with their deployment script and origin.  Customers are able to add Tags after installation, examples include::
 

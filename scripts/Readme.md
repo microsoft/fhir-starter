@@ -18,17 +18,17 @@ The ```deployFhirStarter.bash``` script is designed and tested for the [Azure Cl
 
 
 ### Naming & Tagging
-All Azure resource types have a scope that defines the level at which resource names must be unique. Some resource names, such as PaaS services with public endpoints, have global scopes so they must be unique across the entire Azure platform. Our deployment scripts strive to suggest naming standards that group logical connections while aligning with Azure best practices. Customers are prompted to accept a default name or supply their own names during installation. See below for the Azure API for FHIR resource naming convention.
+All Azure resource types have a scope that defines the level at which resource names must be unique. Some resource names, such as PaaS services with public endpoints, have global scopes. Therefore, these resource names must be unique across the entire Azure platform. Our deployment scripts strive to suggest resource names in alignment with Azure best practices. Customers are prompted to accept a default (automatically generated) resource name, or they have the option to supply their own custom resource name during installation. See below for an example of the default Azure API for FHIR resource naming convention.
 
-Resource Type | Deploy App Name | Number      | Resource Name Example (automatically generated)
-------------|-----------------|-------------|------------------------------------------------
-sfp-         | fhir           | random      | sfp-fhir12345
+Resource Type | Deploy App Name | Environment | Number      | Resource Name Example (automatically generated)
+--------------|-----------------|-------------|-------------|------------------------------------------------
+api-          | fhir-           | dev-        | random      | api-fhir-dev-12345
 
 Resources are tagged with their deployment script and origin.  Customers are able to add Tags after installation, examples include::
 
-Origin              |  Deployment       
---------------------|-----------------
-HealthArchitectures | FHIR-Starter   
+Origin                 |  Deployment       
+-----------------------|-----------------
+deployFhirStarter.bash | FHIR-Starter   
 
 ---
 

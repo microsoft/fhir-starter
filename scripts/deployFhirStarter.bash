@@ -19,22 +19,31 @@ declare TAG="HealthArchitectures = FHIRStarter"
 #########################################
 # FHIR Starter Default App Settings 
 #########################################
-declare suffix=$RANDOM
+declare suffix="$( echo $(( RANDOM %500 + 1000)) )"
 declare defresourceGroupLocation="westus2"
-declare defresourceGroupName="api-fhir-"$suffix
-declare defFhirServiceName="fhir"$suffix
+declare defenvironment="dev"
+declare defresourceGroupName="rg-fhir-"$defenvironment"-"$defresourceGroupLocation"-"$suffix
+declare defFhirServiceName="api-fhir-"$defenvironment"-"$suffix
 declare defkeyVaultName="kv-"$defFhirServiceName
+declare defSubscriptionId=""
 declare genPostmanEnv="yes"
 
 
 
+#########################################
+# Azure App Config Settings 
+#########################################
+declare appConfigName="apc-"$defFhirServiceName
+
+
+
 
 #########################################
-# Common Variables
+# Common (non-default) Variables
 #########################################
 declare script_dir="$( cd -P -- "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd -P )"
-declare defSubscriptionId=""
 declare subscriptionId=""
+declare environment=""
 declare resourceGroupName=""
 declare resourceGroupExists=""
 declare useExistingResourceGroup=""
@@ -144,7 +153,7 @@ function appState () {
 }
 
 
-usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no>" 1>&2; exit 1; }
+usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -e <environment> -k <keyVaultName> -n <fhirServiceName> -p <postman yes -or- no>" 1>&2; exit 1; }
 
 
 
@@ -154,21 +163,22 @@ usage() { echo "Usage: $0  -i <subscriptionId> -g <resourceGroupName> -l <resour
 
 # Initialize parameters specified from command line
 #
-while getopts ":i:g:l:k:n:p:" arg; do
+while getopts ":i:g:e:l:k:n:p:" arg; do
 	case "${arg}" in
 		k)
 			keyVaultName=${OPTARG}
 			;;
 		n)
-			fhirServiceName=${OPTARG:0:14}
-			fhirServiceName=${fhirServiceName,,}
-			fhirServiceName=${fhirServiceName//[^[:alnum:]]/}
+			fhirServiceName=${OPTARG}
 			;;
 		p)
 			genpostman=${OPTARG}
 			;;
 		i)
 			subscriptionId=${OPTARG}
+			;;
+		e)
+			environment=${OPTARG}
 			;;
 		g)
 			resourceGroupName=${OPTARG}
@@ -208,8 +218,10 @@ fi
 # Call the Introduction function 
 intro
 
-# ---------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------
 # Prompt for common parameters if some required parameters are missing
+# NOTE:  Order of parameters is important as we are using environment and region in the name
+# -------------------------------------------------------------------------------------------
 #
 echo "--- "
 echo "Collecting Azure Parameters (unless supplied on the command line) "
@@ -223,9 +235,46 @@ if [[ -z "$subscriptionId" ]]; then
 	[[ "${subscriptionId:?}" ]]
 fi
 
+if [[ -z "$environment" ]]; then
+	echo "This script will name and deploy resources according to the environment the service is in "
+	echo "Enter dev, qa, or prod to specify the environment <press Enter to accept default> ["$defenvironment"]: "
+	read environment
+	if [ -z "$environment" ] ; then
+		environment=$defenvironment
+	fi
+	[[ "${environment:?}" ]]
+fi
+
+ if [[ "$environment" == "dev" ]] || [[ "$environment" == "qa" ]] || [[ "$environment" == "prod" ]] ;
+then
+    echo "Environment is valid, continuing..." ;
+else   
+    echo "Environment must be either dev, qa or prod..."
+    exit 1 ;  
+fi  
+
+# Updating the varialbes to carry forward inputs 
+declare defresourceGroupName="rg-fhir-"$environment"-"$defresourceGroupLocation"-"$suffix
+declare defFhirServiceName="api-fhir-"$environment"-"$suffix
+declare defkeyVaultName="kv-"$defFhirServiceName
+
+
+if [[ -z "$resourceGroupLocation" ]]; then
+	echo "If creating a *new* resource group, you need to set a location "
+	echo "See https://azure.microsoft.com/en-us/global-infrastructure/services/?products=azure-api-for-fhir for locations "
+	echo "Enter resource group location <press Enter to accept default> ["$defresourceGroupLocation"]: "
+	read resourceGroupLocation
+	if [ -z "$resourceGroupLocation" ] ; then
+		resourceGroupLocation=$defresourceGroupLocation
+	fi
+	[[ "${resourceGroupLocation:?}" ]]
+fi
+
+# Updating the varialbes to carry forward inputs 
+declare defresourceGroupName="rg-fhir-"$environment"-"$resourceGroupLocation"-"$suffix
+
 if [[ -z "$resourceGroupName" ]]; then
 	echo "This script will look for an existing resource group, otherwise a new one will be created "
-	echo "You can create new resource groups with the CLI using: az group create "
 	echo "Enter a resource group name <press Enter to accept default> ["$defresourceGroupName"]: "
 	read resourceGroupName
 	if [ -z "$resourceGroupName" ] ; then
@@ -234,17 +283,6 @@ if [[ -z "$resourceGroupName" ]]; then
 	[[ "${resourceGroupName:?}" ]]
 fi
 
-if [[ -z "$resourceGroupLocation" ]]; then
-	echo "If creating a *new* resource group, you need to set a location "
-	echo "You can lookup locations with the CLI using: az account list-locations "
-    echo "Azure API is currently availalbe in: East US, East US 2, North Central US, South Central US, West US, West US 2 "
-	echo "Enter resource group location <press Enter to accept default> ["$defresourceGroupLocation"]: "
-	read resourceGroupLocation
-	if [ -z "$resourceGroupLocation" ] ; then
-		resourceGroupLocation=$defresourceGroupLocation
-	fi
-	[[ "${resourceGroupLocation:?}" ]]
-fi
 
 # Ensure there are subscriptionId and resourcegroup names 
 #
@@ -274,12 +312,6 @@ fi
 echo "--- "
 echo "Collecting Script Parameters (unless supplied on the command line).."
 
-# Set a Default values for App Name and Keyvault
-#
-defFhirServiceName=${defFhirServiceName:0:14}
-defFhirServiceName=${defFhirServiceName//[^[:alnum:]]/}
-defFhirServiceName=${defFhirServiceName,,}
-
 # Prompt for deployment prefix, otherwise use the defaulf 
 #
 if [[ -z "$fhirServiceName" ]]; then
@@ -288,9 +320,6 @@ if [[ -z "$fhirServiceName" ]]; then
 	if [ -z "$fhirServiceName" ] ; then
 		fhirServiceName=$defFhirServiceName
 	fi
-	fhirServiceName=${fhirServiceName:0:14}
-	fhirServiceName=${fhirServiceName//[^[:alnum:]]/}
-    fhirServiceName=${fhirServiceName,,}
 	[[ "${fhirServiceName:?}" ]]
 fi
 
@@ -382,6 +411,7 @@ fi
 echo "--- "
 echo "Ready to start deployment of new FHIR Service: ["$fhirServiceName"] with the following values:"
 echo "Subscription ID:....................... "$subscriptionId
+echo "Environment:........................... "$environment
 echo "Resource Group Name:................... "$resourceGroupName 
 echo " Use Existing Resource Group:.......... "$useExistingResourceGroup
 echo " Create New Resource Group:............ "$createNewResourceGroup
@@ -457,10 +487,13 @@ echo "... note that warnings here are expected and can be safely ignored ..."
 (
     # Deploy API
     #
-    echo " "
-    echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
-    stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=1000 --identity-type "none" --tags $TAG)
-    
+     if [[ "$environment" == "dev" ]]; then
+        echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
+        stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=400 --identity-type "none" --tags $TAG)
+    else 
+        echo "Creating FHIR Service ["$fhirServiceName"] in location ["$resourceGroupName"]"
+        stepresult=$(az healthcareapis service create --resource-name $fhirServiceName --resource-group $resourceGroupName --location $resourceGroupLocation --subscription $subscriptionId --kind "fhir-R4" --cosmos-db-configuration offer-throughput=1000 --identity-type "none" --tags $TAG)
+    fi
     sleep 5
 
     # Set FHIR Service Audience

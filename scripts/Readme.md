@@ -24,7 +24,7 @@ Resource Type | Deploy App Name | Environment | Number      | Resource Name Exam
 --------------|-----------------|-------------|-------------|------------------------------------------------
 api          | fhir           | dev        | random      | api-fhir-dev-12345
 
-Resources are tagged with their origin and deployment script.  Customers are able to add Tags after installation. An example is provided below.
+Azure Resources deployed with this script are automatically tagged with their origin and deployment name. Customers are able to add/change [Tags](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/tag-resources?tabs=json) after installation. An example is provided below.
 
 Origin                 |  Deployment       
 -----------------------|-----------------

@@ -24,11 +24,11 @@ Resource Type | Deploy App Name | Environment | Number      | Resource Name Exam
 --------------|-----------------|-------------|-------------|------------------------------------------------
 api          | fhir           | dev        | random      | api-fhir-dev-12345
 
-Resources are tagged with their deployment script and origin.  Customers are able to add Tags after installation. Examples include:
+Resources are tagged with their origin and deployment script.  Customers are able to add Tags after installation. An example is provided below.
 
 Origin                 |  Deployment       
 -----------------------|-----------------
-deployFhirStarter.bash | FHIR-Starter   
+HealthArchitectures | FHIRStarter   
 
 ---
 

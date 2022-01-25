@@ -62,12 +62,12 @@ Ensure you are in the proper directory
 cd $HOME/fhir-starter/scripts
 ``` 
 
-Launch the deployFhirStarter.bash shell script 
+Launch the ```deployFhirStarter.bash``` shell script 
 ```azurecli-interactive
 ./deployFhirStarter.bash 
 ``` 
 
-Optionally the deployment script can be used with command line options 
+Alternatively, the ```deployFhirStarter.bash``` script can launch with command line options. Use this method to pre-specify the ```<value>``` for any parameter shown below.
 ```azurecli
 ./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no for postman setup>
 ```

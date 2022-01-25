@@ -40,11 +40,11 @@ Launch Azure Cloud Shell (Bash Environment)
   
 [![Launch Azure Shell](/docs/images/launchcloudshell.png "Launch Cloud Shell")](https://shell.azure.com/bash?target="_blank")
 
-Clone the repo to your Bash Shell (CLI) environment 
+Clone this repo in your Azure Cloud Shell environment 
 ```azurecli-interactive
 git clone https://github.com/microsoft/fhir-starter 
 ```
-Change working directory to the ```./fhir-starter/scripts``` directory.
+Change the working directory to the ```./fhir-starter/scripts``` directory.
 ```azurecli-interactive
 cd $HOME/fhir-starter/scripts
 ```
@@ -55,7 +55,7 @@ chmod +x *.bash
 ```
 
 ## Step 1.  deployFhirStarter.bash
-This is the main component deployment script for the Azure Components.    
+This is the main deployment script for **Azure API for FHIR** and associated components..    
 
 Ensure you are in the proper directory 
 ```azurecli-interactive

@@ -49,7 +49,7 @@ Change the working directory in your Azure Cloud Shell environment to the ```./f
 cd $HOME/fhir-starter/scripts
 ```
 
-Make the Bash scripts inside the ```./fhir-starter/scripts``` directory executable.
+Make the Bash script inside the ```./fhir-starter/scripts``` directory executable.
 ```azurecli-interactive
 chmod +x *.bash 
 ```

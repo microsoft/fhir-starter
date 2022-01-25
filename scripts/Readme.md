@@ -40,7 +40,7 @@ Launch Azure Cloud Shell (Bash Environment)
   
 [![Launch Azure Shell](/docs/images/launchcloudshell.png "Launch Cloud Shell")](https://shell.azure.com/bash?target="_blank")
 
-Clone this repo in your Azure Cloud Shell environment 
+Clone this repo in your Azure Cloud Shell environment. 
 ```azurecli-interactive
 git clone https://github.com/microsoft/fhir-starter.git 
 ```

@@ -62,7 +62,7 @@ Ensure you are in the proper directory
 cd $HOME/fhir-starter/scripts
 ``` 
 
-Launch the ```deployFhirStarter.bash``` shell script 
+Launch the ```deployFhirStarter.bash``` shell script inside the ```fhir-starter/scripts``` directory
 ```azurecli-interactive
 ./deployFhirStarter.bash 
 ``` 

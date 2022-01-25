@@ -44,12 +44,12 @@ Clone the repo to your Bash Shell (CLI) environment
 ```azurecli-interactive
 git clone https://github.com/microsoft/fhir-starter 
 ```
-Change working directory to the repo Scripts directory
+Change working directory to the ```./fhir-starter/scripts``` directory.
 ```azurecli-interactive
 cd $HOME/fhir-starter/scripts
 ```
 
-Make the Bash Shell Scripts used for Deployment and Setup executable 
+Make the Bash scripts inside the ```./fhir-starter/scripts``` directory executable.
 ```azurecli-interactive
 chmod +x *.bash 
 ```

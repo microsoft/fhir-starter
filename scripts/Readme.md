@@ -55,7 +55,7 @@ chmod +x *.bash
 ```
 
 ## Step 1.  deployFhirStarter.bash
-This is the main deployment script for **Azure API for FHIR** and associated components.    
+The ```deployFhirStarter.bash``` script is the main deployment script for **Azure API for FHIR** and associated components.    
 
 Ensure you are in the proper directory 
 ```azurecli-interactive

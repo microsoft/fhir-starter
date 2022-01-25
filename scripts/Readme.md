@@ -72,8 +72,11 @@ Alternatively, the ```deployFhirStarter.bash``` script can launch with command l
 ./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no for postman setup>
 ```
 
+
+
+
 Azure Components installed 
- - Resource Group (if needed)
+ - Resource Group (if needed - see the *Prerequisites* section above if you choose to opt out of creating a new Resource Group)
  - Azure API for FHIR 
  - Key Vault (customers can choose to use an existing Keyvault as long as they have Purge Secrets access)
  - Azure AD Application Service Principal for RBAC

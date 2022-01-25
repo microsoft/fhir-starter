@@ -44,7 +44,7 @@ Clone this repo in your Azure Cloud Shell environment
 ```azurecli-interactive
 git clone https://github.com/microsoft/fhir-starter.git 
 ```
-Change the working directory to the ```./fhir-starter/scripts``` directory.
+Change the working directory in your Azure Cloud Shell environment to the ```./fhir-starter/scripts``` directory.
 ```azurecli-interactive
 cd $HOME/fhir-starter/scripts
 ```

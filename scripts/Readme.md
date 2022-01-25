@@ -67,7 +67,7 @@ Launch the ```deployFhirStarter.bash``` shell script
 ./deployFhirStarter.bash 
 ``` 
 
-Alternatively, the ```deployFhirStarter.bash``` script can launch with command line options. Use this method to pre-specify the ```<value>``` for any parameter shown below.
+Alternatively, the ```deployFhirStarter.bash``` script can launch with command line options. You can pre-specify the ```<value>``` for any of the supported parameters (see below).
 ```azurecli
 ./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no for postman setup>
 ```

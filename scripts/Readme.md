@@ -78,7 +78,7 @@ Alternatively, the ```deployFhirStarter.bash``` script can launch with command l
 Azure Components installed 
  - Resource Group (if needed - see the *Prerequisites* section above if you choose to opt out of creating a new Resource Group)
  - Azure API for FHIR 
- - Key Vault (customers can choose to use an existing Keyvault as long as they have Purge Secrets access)
+ - Key Vault (customers can choose to use an existing Key Vault as long as they have Purge Secrets access)
  - Azure AD Application Service Principal for RBAC
 
 Information needed by this script 

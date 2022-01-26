@@ -27,6 +27,7 @@ chmod +x *.bash
       ```azurecli
       ./deployFhirStarter.bash  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p
       ```
-      __Note:__ the ```-p``` option will create a Postman Environment file for access from Postman. See [here](https://github.com/microsoft/fhir-       starter/blob/main/docs/postman.md) for Postman setup instructions.
+      
+      __Note:__ the ```-p``` option will create a Postman Environment file for access from Postman. See [here](https://github.com/microsoft/fhir-starter/blob/main/docs/postman.md) for Postman setup instructions.
 
 

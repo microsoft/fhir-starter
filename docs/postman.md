@@ -37,7 +37,7 @@ __Note:__ Each file must be downloaded individually.
 7. Select the ```POST AuthorizeGetToken``` call from the ```FHIR CALLS-Sample``` collection.
    ![Import Postman](./images/postman4.png)
 
-8. Press ```Send```. You should receive a valid token set automatically in the ```bearerToken``` variable for the Postman environment.
+8. Press ```Send```. You should receive a valid token automatically set in the ```bearerToken``` variable for the Postman environment.
    ![Import Postman](./images/postman5.png)
 
 9. Select the ```GET List Patients``` call from the ```FHIR CALLS-Sample``` collection.

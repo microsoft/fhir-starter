@@ -102,7 +102,7 @@ FS-URL            | Application Endpoint for Clients     | Endpoint for FHIR Ser
 
 
 
-## Step 2.  Setup Postman
+## Step 2.  Set up Postman
 Once the ```deployFhirStarter.bash``` script finishes deployment, customers can use Postman to test access to the new Azure API for FHIR instance. Instructions on setting up Postman can be found in the ```fhir-starter/docs``` directory [here](../docs/postman.md).
 
 ### Auth Layout

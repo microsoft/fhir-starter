@@ -78,7 +78,7 @@ Alternatively, the ```deployFhirStarter.bash``` script can launch with command l
 Azure Components installed 
  - Resource Group (if needed - see the *Prerequisites* section above if you choose to opt out of creating a new Resource Group)
  - Azure API for FHIR 
- - Key Vault (customers can choose to use an existing Key Vault as long as the Key Vault's [Purge Protection](https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-overview#:~:text=Purge%20protection%20is%20an%20optional,the%20retention%20period%20has%20passed.) is disabled)
+ - Key Vault (customers can choose to use an existing Key Vault as long as the Key Vault's [Purge Protection](https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-overview#:~:text=Purge%20protection%20is%20an%20optional,the%20retention%20period%20has%20passed.) is disabled, see the *Prerequisites* section above)
  - Azure AD Application [Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) for RBAC
 
 Information needed by this script 

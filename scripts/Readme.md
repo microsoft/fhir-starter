@@ -89,7 +89,7 @@ Alternatively, the ```deployFhirStarter.bash``` script can launch with command l
  - Resource Group Location 
  - Resource Group Name 
 
-**FHIR-Starter Key Vault values saved by this script** 
+**Key Vault values saved by this script ("FS" stands for "FHIR Server")** 
 
 Name              | Value                                | Use             
 ------------------|--------------------------------------|---------------------------------

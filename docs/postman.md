@@ -6,7 +6,7 @@ You will use the ```Download``` feature in [Azure Cloud Shell](https://shell.azu
 \*Detailed instructions for using the ```Upload/Download``` feature in Azure Cloud Shell can found [here](https://docs.microsoft.com/en-us/azure/cloud-shell/using-the-shell-window#upload-and-download-files).
 
 
-__Note:__ Each file must be downloaded individually. 
+
 
 Files to download to your desktop from Azure Cloud Shell:
  - ```/home/$username/fhir-starter/scripts/FHIR-CALLS-Sample-postman-collection.json```
@@ -14,7 +14,7 @@ Files to download to your desktop from Azure Cloud Shell:
 
 (```$fhirServiceName``` is a placeholder for the name given to your Azure API for FHIR deployment)
 
-
+__Note:__ Each file must be downloaded individually. 
 
 ## Using Postman to connect to Azure API for FHIR
 

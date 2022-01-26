@@ -18,7 +18,7 @@ chmod +x *.bash
 ```
 6. Execute the ```deployFhirStarter.bash``` script with or without command line option parameters:
 
-If you call the script without entering command line option parameters, the script will prompt you for necessary information (```subscriptionId```, ```resourceGroupName```, ```resourceGroupLocation```, ```keyVaultName```, ```fhirServiceName```). 
+The script will prompt you to enter custom values for the following parameters if you decide not to accept the script's default generated values (```subscriptionId```, ```resourceGroupName```, ```resourceGroupLocation```, ```keyVaultName```, ```fhirServiceName```). 
 ```azurecli
 ./deployFhirStarter.bash
 ```

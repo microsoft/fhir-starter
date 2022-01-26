@@ -18,15 +18,15 @@ chmod +x *.bash
 ```
 6. Execute the ```deployFhirStarter.bash``` script with or without command line option parameters:
 
-The script will prompt you to enter custom values for the following parameters if you decide not to accept the script's default generated values (```subscriptionId```, ```resourceGroupName```, ```resourceGroupLocation```, ```keyVaultName```, ```fhirServiceName```). 
-```azurecli
-./deployFhirStarter.bash
-```
+      The script will prompt you to enter custom values for the following parameters if you decide not to accept the script's default generated values (```subscriptionId```,         ```resourceGroupName```, ```resourceGroupLocation```, ```keyVaultName```, ```fhirServiceName```). 
+      ```azurecli
+      ./deployFhirStarter.bash
+      ```
 
-If you call the script and include command line option parameters, the script will take the values you enter and use them in the deployment. 
-```azurecli
-./deployFhirStarter.bash  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p
-```
-__Note:__ the ```-p``` option will create a Postman Environment file for access from Postman. See [here](https://github.com/microsoft/fhir-starter/blob/main/docs/postman.md) for Postman setup instructions.
+      If you call the script and include command line option parameters, the script will take the values you enter and use them in the deployment. 
+      ```azurecli
+      ./deployFhirStarter.bash  -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p
+      ```
+      __Note:__ the ```-p``` option will create a Postman Environment file for access from Postman. See [here](https://github.com/microsoft/fhir-       starter/blob/main/docs/postman.md) for Postman setup instructions.
 
 

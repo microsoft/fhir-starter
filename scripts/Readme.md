@@ -101,7 +101,7 @@ FS-URL            | Application Endpoint for Clients     | Endpoint for FHIR Ser
 
 
 ## Step 2.  Setup Postman
-Once the script finishes deployment, users can use Postman to test access to the new FHIR Service.  Instructions on setting up Postman can be found in the docs directory [here](../docs/postman.md).
+Once the script finishes deployment, customers can use Postman to test access to the new FHIR Service.  Instructions on setting up Postman can be found in the docs directory [here](../docs/postman.md).
 
 ### Auth Layout
 

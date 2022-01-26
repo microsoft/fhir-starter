@@ -67,12 +67,14 @@ Launch the ```deployFhirStarter.bash``` shell script inside the ```fhir-starter/
 ./deployFhirStarter.bash 
 ``` 
 
+The script will take you through the deployment steps and prompt you directly in the Azure Cloud Shell interface for your input (where needed).
+
+You will be prompted to accept the default generated values for the following parameters (```subscriptionId```, ```resourceGroupName```, ```resourceGroupLocation```, ```keyVaultName```, ```fhirServiceName```). At each prompt, you will also have the option to enter a custom parameter value if you choose not to accept the default generated value.
+
 Alternatively, the ```deployFhirStarter.bash``` script can launch with command line options. You can pre-specify the ```<value>``` for any of the supported parameters (see below).
 ```azurecli
 ./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no for postman setup>
 ```
-
-The script will take you through the deployment steps and prompt you directly in the Azure Cloud Shell interface for your input (where needed).
 
 **Azure Components installed** 
  - Resource Group (if needed - see the *Prerequisites* section above if you choose to opt out of creating a new Resource Group)

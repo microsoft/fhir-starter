@@ -72,8 +72,7 @@ Alternatively, the ```deployFhirStarter.bash``` script can launch with command l
 ./deployFhirStarter.bash -i <subscriptionId> -g <resourceGroupName> -l <resourceGroupLocation> -k <keyVaultName> -n <fhirServiceName> -p <yes -or - no for postman setup>
 ```
 
-
-
+The script will take you through the deployment steps and prompt you directly in the Azure Cloud Shell interface for your input (where needed).
 
 **Azure Components installed** 
  - Resource Group (if needed - see the *Prerequisites* section above if you choose to opt out of creating a new Resource Group)

@@ -87,7 +87,7 @@ The script will take you through the deployment steps and prompt you directly in
  - Resource Group Location 
  - Resource Group Name 
 
-__FHIR-Starter__ Key Vault values saved by this script 
+**FHIR-Starter Key Vault values saved by this script** 
 
 Name              | Value                                | Use             
 ------------------|--------------------------------------|---------------------------------

@@ -26,3 +26,50 @@ There are only a few required parameters
 ![Custom Deployment Page](./images/deploytrainenvportal.png)
 
 Once the deployment has completed additional steps are necessary to complete the authentication configuration of the FHIR Proxy function app.
+In the Azure Portal navigate to the function application that was deployed by the resource manager template
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH1.png)
+
+Select the function app and select **Authentication**
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH2.png)
+
+Select **Add Identity Provider**
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH3.png)
+
+Select **Microsoft**
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH4.png)
+
+Configure basic settings as follows
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH5.png)
+
+Accept the default permissions
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH6.png)
+
+At this point the application registration has been completed. Further configuration is required to define **App Roles and Permissions** click on the link next to the Microsoft identity provider, which will open the Azure AD blade.
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH7.png)
+
+Select the **Manifest** option
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH8.png)
+
+Update the **AppRoles** element using the data in the [app roles json](./fhirproxyroles.json) file
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH9.png)
+
+The **AppRoles** element should look something like the following
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH10.png)
+
+Select **API Permissions** and **Add a Permission**
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH11.png)
+
+Select **APIs my organization uses**
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH12.png)
+
+Filter the results to **Azure healthcare apis**
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH13.png)
+
+Select **Azure healthcare APIs** user_impersonation permission
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH14.png)
+
+Update the **API Permissions**
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
+
+Review/verify that the the **App Roles** were created properly
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH16.png)

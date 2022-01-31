@@ -9,6 +9,13 @@ The quickstart Azure Resource Manager templates contained in this folder are int
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FToddM2%2Ffhir-starter%2Fquickstarts%2Fquickstarts%2Fdeployfhirtrain.json)
 
+The Azure Resource Manager / Bicep templates located in this folder will deploy the following services and solutions:
++ API for FHIR
++ FHIR Proxy
++ FHIR Loader
+
+In an effort to simplify the deployment process Managed Service Identities are used wherevr possible. These templates currently link to a repo that contains modifications to ensure that MSI functions as expected. This repo is not in sync with the origin repos. The bicep code or corresponding ARM templates may be modified to update this reference.
+
 There are only a few required parameters 
 + Subscription
 + Resource Group
@@ -17,3 +24,5 @@ There are only a few required parameters
 
 
 ![Custom Deployment Page](./images/deploytrainenvportal.png)
+
+Once the deployment has completed additional steps are necessary to complete the authentication configuration of the FHIR Proxy function app.

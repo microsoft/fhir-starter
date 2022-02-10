@@ -2,14 +2,14 @@
 
 ## Introduction 
 
-The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for Azure API for FHIR and supporting tools. The `deployFhirStarter.bash` script is our current offering, available in the 
+The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for Azure API for FHIR and supporting components. The `deployFhirStarter.bash` script hosted in this repo is the recommended method for quickly setting up Azure API for FHIR with an Azure AD Service Principal.
 
-## deployFhirStarter.bash Details
-The FHIR-Starter scripts are designed and tested for the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the **FHIR-Starter** deploy process. Detailed deployment instuctions are located in the [scripts](./scripts) directory.
+## deployFhirStarter.bash information
+The `deployFhirStarter.bash` script is designed and tested for the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the deploy process. Detailed deployment instuctions are located in the [scripts](./scripts) directory.
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing keyvault as long as they have Purge Secrets access)
-3) Azure AD Service Principle for RBAC [link](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli)
+3) Azure AD Service Principal for RBAC [link](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli)
 4) Azure Resource Group
 5) Postman (for testing)
 

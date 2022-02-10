@@ -2,12 +2,9 @@
 
 ## Introduction 
 
-The goal of the **FHIR-Starter** is to ease the deployment of Azure API for FHIR along with a Service Client to get users up and running in short order.  
+The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for Azure API for FHIR and supporting tools. The `deployFhirStarter.bash` script is our current offering, available in the 
 
-Azure API for FHIR is generally available for both public and government in multiple [geo-regions](https://azure.microsoft.com/en-us/global-infrastructure/services/?products=azure-api-for-fhir&regions=non-regional%2Cus-east%2Cus-east-2%2Cus-central%2Cus-north-central%2Cus-south-central%2Cus-west-central%2Cus-west%2Cus-west-2%2Ccanada-east%2Ccanada-central%2Cusgov-non-regional%2Cus-dod-central%2Cus-dod-east%2Cusgov-arizona%2Cusgov-texas%2Cusgov-virginia). For information about government cloud services at Microsoft, check out Azure services by [FedRAMP](https://docs.microsoft.com/en-us/azure/azure-government/compliance/azure-services-in-fedramp-auditscope). 
-
-
-## FHIR-Starter Details
+## deployFhirStarter.bash Details
 The FHIR-Starter scripts are designed and tested for the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the **FHIR-Starter** deploy process. Detailed deployment instuctions are located in the [scripts](./scripts) directory.
 
 1) Azure API for FHIR  
@@ -18,19 +15,17 @@ The FHIR-Starter scripts are designed and tested for the Azure Cloud Shell - Bas
 
 ---
 
-## Deployment Components  
+## Deployed Components  
 
 ![deployment](./docs/images/architecture/deployment.png)
 
 ---
 
 ## Deployment
-To clone a GitHub Repo, you must have a GitHub Account.  Read [Getting Started](https://docs.github.com/en/get-started) for more information.
-
-To deploy resources in Azure, you must have a valid Subscription.  Read [here](https://azure.microsoft.com/en-us/free/) about obtaining an Azure Subscription.
+Go to the [scripts](./scripts) directory for detailed intstructions on getting started. To deploy resources in Azure, you must have an active Azure Subscription. Read [here](https://azure.microsoft.com/en-us/free/) about obtaining an Azure Subscription.
 
 
-__Next Steps__ Complete Setup steps detailed **[here](./scripts/Readme.md)**.
+__Next Steps__ Complete Setup steps detailed **[here](./scripts)**.
 
 
 ## Tracking Changes & Updates

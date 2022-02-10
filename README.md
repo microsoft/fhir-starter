@@ -4,7 +4,7 @@
 
 The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for Azure API for FHIR and supporting components. The `deployFhirStarter.bash` script hosted in this repo is the recommended method for quickly setting up Azure API for FHIR with an Azure AD Service Principal.
 
-## deployFhirStarter.bash information
+## Script details
 The `deployFhirStarter.bash` script is designed and tested for the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the deploy process. Detailed deployment instuctions are located in the [scripts](./scripts) directory.
 
 1) Azure API for FHIR  

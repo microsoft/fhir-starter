@@ -41,6 +41,8 @@ Supported Regions:
     
 + Deployment Prefix (3-7 characters that will be used as a prefix to all created resources)
 
+In order to successfully deploy the template the user must have the Owner role for the resource group where the template is being deployed and have the ability to create application registrations in Azure Active Directory.
+
 
 ![Custom Deployment Page](./images/deploytrainenvportal.png)
 

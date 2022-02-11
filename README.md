@@ -5,7 +5,7 @@
 The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for Azure API for FHIR and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is currently the recommended method for deploying Azure API for FHIR with automatic setup of an AAD Service Principal.
 
 ## Script details
-The following services will be set up in the deploy process. Detailed deployment instructions are available in the [scripts](./scripts) directory.
+The following Azure resources will be set up when you run `deployFhirStarter.bash`. Detailed deployment instructions are available in the [scripts](./scripts) directory.
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing keyvault as long as they have Purge Secrets access)

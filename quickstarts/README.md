@@ -20,6 +20,25 @@ There are only a few required parameters
 + Subscription
 + Resource Group
 + Azure Region
+Supported Regions:
+    South Africa North,
+    South East Asia,
+    Australia East,
+    Canada Central,
+    North Europe,
+    West Europe,
+    Germany West Central,
+    Japan East,
+    Switzerland North,
+    UK South,
+    UK West,
+    East US,
+    East US 2,
+    North Central US,
+    South Central US,
+    West Central US,
+    West US 2
+    
 + Deployment Prefix (3-7 characters that will be used as a prefix to all created resources)
 
 
@@ -38,8 +57,10 @@ Select **Add Identity Provider**
 Select **Microsoft**
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH4.png)
 
-Configure basic settings as follows
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH5.png)
+Configure basic settings as follows:
+![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH5a.png)
+
+
 
 Accept the default permissions
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH6.png)
@@ -68,7 +89,7 @@ Filter the results to **Azure healthcare apis**
 Select **Azure healthcare APIs** user_impersonation permission
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH14.png)
 
-Update the **API Permissions**
+Verify the **API Permissions**
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
 
 Review/verify that the the **App Roles** were created properly

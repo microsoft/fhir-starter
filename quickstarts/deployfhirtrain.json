@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "15269663654622450943"
+      "templateHash": "10244325422873162499"
     }
   },
   "parameters": {
@@ -14,8 +14,8 @@
       "defaultValue": {
         "environmentName": "Azure Healthcare APIs OpenHack",
         "challengeTitle": "Deploy Core Training Environment",
-        "eventId": "6070",
-        "expirationDate": "12/31/2021"
+        "eventId": "6071",
+        "expirationDate": "03/15/2021"
       },
       "metadata": {
         "description": "Tags to be applied to resources that are deployed in this template"
@@ -130,7 +130,7 @@
         "accessTier": "Hot",
         "supportsHttpsTrafficOnly": true,
         "allowBlobPublicAccess": false,
-        "isHnsEnabled": false,
+        "isHnsEnabled": true,
         "isNfsV3Enabled": false,
         "minimumTlsVersion": "TLS1_2"
       }
@@ -1012,6 +1012,7 @@
         "clientAffinityEnabled": false,
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "siteConfig": {
+          "use32BitWorkerProcess": false,
           "alwaysOn": true,
           "ftpsState": "FtpsOnly",
           "minTlsVersion": "1.2"
@@ -1070,6 +1071,7 @@
         "clientAffinityEnabled": false,
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "siteConfig": {
+          "use32BitWorkerProcess": false,
           "alwaysOn": true,
           "ftpsState": "FtpsOnly",
           "minTlsVersion": "1.2"

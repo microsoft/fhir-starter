@@ -6,8 +6,8 @@
 param resourceTags object  = {
   environmentName: 'Azure Healthcare APIs OpenHack'
   challengeTitle: 'Deploy Core Training Environment'
-  eventId: '6070'
-  expirationDate: '12/31/2021'
+  eventId: '6071'
+  expirationDate: '03/15/2021'
 }
 @description('Deployment Prefix - all resources names created by this template will start with this prefix')
 @minLength(3)
@@ -91,7 +91,7 @@ resource exportStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
     accessTier: 'Hot'
     supportsHttpsTrafficOnly: true
     allowBlobPublicAccess: false
-    isHnsEnabled: false
+    isHnsEnabled: true
     isNfsV3Enabled: false
     minimumTlsVersion: 'TLS1_2'
   }
@@ -139,6 +139,7 @@ resource anonymizationTriggerContainer 'Microsoft.Storage/storageAccounts/blobSe
   properties: {
   }
 }
+
 resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-06-01' = {
   name: '${exportStorageAccount.name}/default'
   properties: {
@@ -167,6 +168,7 @@ resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2021-06-
     }
   }
 }
+
 // enable diagnostics for export storage account
 resource exportSADiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   scope: exportStorageAccount
@@ -849,6 +851,7 @@ resource fhirProxyFunctionApp 'Microsoft.Web/sites@2021-02-01' = {
     clientAffinityEnabled: false
     serverFarmId: appServicePlan.id
     siteConfig: {
+      use32BitWorkerProcess: false
       alwaysOn: true
       ftpsState:'FtpsOnly'
       minTlsVersion: '1.2'
@@ -897,6 +900,7 @@ resource fhirLoaderFunctionApp 'Microsoft.Web/sites@2021-02-01' = {
     clientAffinityEnabled: false
     serverFarmId: appServicePlan.id
     siteConfig: {
+      use32BitWorkerProcess: false
       alwaysOn: true
       ftpsState:'FtpsOnly'
       minTlsVersion: '1.2'

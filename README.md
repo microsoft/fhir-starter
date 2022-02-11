@@ -20,7 +20,7 @@ The following services will be set up in the deploy process. Detailed deployment
 ![deployment](./docs/images/architecture/deployment.png)
 
 ---
-__Note:__ The `deployFhirStarter.bash` script is designed and tested for the Azure Cloud Shell - Bash Shell environment. 
+__Note:__ The `deployFhirStarter.bash` script is designed and tested for the [Azure Cloud Shell - Bash Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview) environment. 
 
 ## Deployment
 To deploy resources in Azure, you must have an active Azure Subscription. Read [here](https://azure.microsoft.com/en-us/free/) about obtaining an Azure Subscription. For instructions on getting started with the deployment, please visit the [scripts](./scripts) directory in this repo. 

@@ -2,10 +2,10 @@
 
 ## Introduction 
 
-The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for Azure API for FHIR and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is the recommended method for deploying Azure API for FHIR with an AAD Service Principal.
+The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for Azure API for FHIR and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is currently the recommended method for deploying Azure API for FHIR with automatic setup of an AAD Service Principal.
 
 ## Script details
-The `deployFhirStarter.bash` script is designed and tested for the Azure Cloud Shell - Bash Shell environment. The following services will be set up in the deploy process. Detailed deployment instructions are available in the [scripts](./scripts) directory.
+The following services will be set up in the deploy process. Detailed deployment instructions are available in the [scripts](./scripts) directory.
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing keyvault as long as they have Purge Secrets access)
@@ -20,9 +20,10 @@ The `deployFhirStarter.bash` script is designed and tested for the Azure Cloud S
 ![deployment](./docs/images/architecture/deployment.png)
 
 ---
+__Note:__ The `deployFhirStarter.bash` script is designed and tested for the Azure Cloud Shell - Bash Shell environment. 
 
 ## Deployment
-For instructions on getting started with the deployment, please go to the [scripts](./scripts) directory. To deploy resources in Azure, you must have an active Azure Subscription. Read [here](https://azure.microsoft.com/en-us/free/) about obtaining an Azure Subscription.
+To deploy resources in Azure, you must have an active Azure Subscription. Read [here](https://azure.microsoft.com/en-us/free/) about obtaining an Azure Subscription. For instructions on getting started with the deployment, please visit the [scripts](./scripts) directory in this repo. 
 
 
 __Next Steps__ Complete Setup steps detailed **[here](./scripts)**.

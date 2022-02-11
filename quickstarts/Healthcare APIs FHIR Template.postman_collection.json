@@ -1,0 +1,272 @@
+{
+	"info": {
+		"_postman_id": "a09f0846-316d-4e4c-985a-e396b9e9b939",
+		"name": "Healthcare APIs FHIR Template",
+		"description": "# Introduction\n\n# Prerequisites\n\nAn Azure API for FHIR or Azure Healthcare APIs instance that has been successfully deployed. If using or testing the Microsoft FHIR Proxy, service an instance of the service must also be deployed.\n\nAn Azure Active Directory application registration that will be used to complete the required OAuth 2.0 steps to obtain an access token. A sample walkthrough may be found here [Configure Postman to be easily used with any Azure AD protected API (SharePoint, Graph, custom etc.) (spblog.net)](https://spblog.net/post/2021/11/02/configure-postman-to-be-easily-used-with-any-azure-ad-protected-api-sharepoint-graph-etc)  \n  \n\n# Workflow Diagram\n\n# Environment Setup\n\nThis collection requires that the following variables be defined:\n\n| Key | Type | Description |\n| --- | --- | --- |\n| azureADTenantId | GUID | Azure Active Directory Tenant Id |\n| azureADTenantName | GUID | Azure Active Directory Tenant Name |\n| postmanClientId | GUID | Azure AD Application identifier |\n| postmanClientSecret | String | Application registration secret |\n| fhirServiceUrl | String | The URL of the FHIR server |\n| fhirProxyUrl | String | The URL of the FHIR Proxy instance |\n| fhirProxyResourceName | String | Name of the Azure AD resource that corresponds to the FHIR Proxy service |\n| fhirServiceResourceName | String | Name of the Azure AD resource that corresponds to the FHIR service |",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Capability",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}/metadata/",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"metadata",
+						""
+					]
+				},
+				"description": "Request FHIR service capability statement."
+			},
+			"response": []
+		},
+		{
+			"name": "Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}/Device",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"Device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "MedicationRequest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}/MedicationRequest",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"MedicationRequest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Organization",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}/Organization",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"Organization"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}/Patient",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"Patient"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Patient",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{fhirProxyUrl}}/Patient",
+							"host": [
+								"{{fhirProxyUrl}}"
+							],
+							"path": [
+								"Patient"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Patient Count",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}/Patient?_summary=count",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_summary",
+							"value": "count"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Patient",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{fhirProxyUrl}}/Patient",
+							"host": [
+								"{{fhirProxyUrl}}"
+							],
+							"path": [
+								"Patient"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Practitioner",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}//Practitioner",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"",
+						"Practitioner"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Schedule",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{fhirProxyUrl}}/Schedule",
+					"host": [
+						"{{fhirProxyUrl}}"
+					],
+					"path": [
+						"Schedule"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "clientSecret",
+				"value": "",
+				"type": "string"
+			},
+			{
+				"key": "authUrl",
+				"value": "https://login.microsoftonline.com/{{azureADTenantName}}/oauth2/v2.0/authorize",
+				"type": "string"
+			},
+			{
+				"key": "scope",
+				"value": "{{fhirProxyResourceName}}/.default",
+				"type": "string"
+			},
+			{
+				"key": "state",
+				"value": "{{$randomInt}}",
+				"type": "string"
+			},
+			{
+				"key": "client_authentication",
+				"value": "body",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "{{postmanClientId}}",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "https://login.microsoftonline.com/{{azureADTenantId}}/oauth2/v2.0/token",
+				"type": "string"
+			},
+			{
+				"key": "redirect_uri",
+				"value": "https://www.getpostman.com/oauth2/callback",
+				"type": "string"
+			},
+			{
+				"key": "tokenName",
+				"value": "fhirAuthToken",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

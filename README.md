@@ -30,9 +30,9 @@ __Next Steps__ Complete Setup steps detailed **[here](./scripts)**.
 
 
 ## Tracking Changes & Updates
-We continue to monitor questions, feature requests and of course, bugs/issues. You can review the issues list [here](https://github.com/microsoft/fhir-starter/issues).
+We continue to monitor questions, feature requests, and of course, bugs/issues. You can review the issues list [here](https://github.com/microsoft/fhir-starter/issues).
 
-If you are interested in receiving notifications when we publish updates then please follow this repo. 
+If you are interested in receiving notifications when we publish updates then please click the `Watch` button (top right) to follow this repo. 
 
 ## Resources
 Below are some references that might be useful for the reader.

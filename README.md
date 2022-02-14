@@ -49,7 +49,7 @@ Directory       | Contains
 ----------------|--------------------------------------------------
 main            | Readme, Security and compliance documents 
 docs            | Getting started documents  
-scripts         | Readme + Deployment, Setup and Control scripts  
+scripts         | Readme + Deployment, Setup, and Control scripts  
 templates       | ARM Templates for customers without Cloud Shell access (__in progress__)
 
 ---

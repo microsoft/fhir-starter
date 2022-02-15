@@ -13,7 +13,7 @@ The following Azure resources will be set up when you run `deployFhirStarter.bas
 4) Azure Resource Group
 
 ## Postman setup
-After running the `deployFhirStarter.bash` script, you can set up Postman following these instructions.
+After running the `deployFhirStarter.bash` script, you can set up Postman following [these instructions](https://github.com/microsoft/fhir-starter/blob/main/docs/postman.md).
 
 ---
 

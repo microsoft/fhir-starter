@@ -16,6 +16,8 @@ This script will prompt the user with the option to create a new [Resource Group
 __Note:__ 
 The ```deployFhirStarter.bash``` script is designed and tested for the [Azure Cloud Shell - Bash Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/features#:~:text=Azure%20Cloud%20Shell%20is%20a,and%20maintaining%20a%20machine%20yourself.) environment.
 
+__Note:__ 
+For testing Azure API for FHIR after it is deployed, we assume the user has access to the [Postman](https://www.postman.com/) (desktop or web client) API testing utility. Please visit [here](https://www.postman.com/downloads/) for information on obtaining Postman. Instructions for setting up Postman to test Azure API for FHIR are available [here](../docs/postman.md).
 
 ### Naming & Tagging
 All Azure resource types have a scope in which resource names must be unique. Some resource names, such as PaaS services with public endpoints, have global scopes. Therefore, their names must be unique across the entire Azure platform. Our deployment scripts suggest resource names in alignment with [Azure best practices](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming). Users are prompted to accept a default (automatically generated) resource name, or they have the option to supply their own custom resource name during installation. See below for an example of the default **Azure API for FHIR** resource naming convention used by the ```deployFhirStarter.bash``` script. Note that while the default Environment label is ```dev``` (for deploying in a development environment), the script also gives the option to select ```qa``` (for a quality assurance/test environment), or ```prod``` (for a production environment).

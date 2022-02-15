@@ -8,7 +8,7 @@ The goal of the **FHIR-Starter** repo is to provide users with a choice of deplo
 The following Azure resources will be set up when you run `deployFhirStarter.bash`. Detailed deployment instructions are available in the [scripts](./scripts) directory.
 
 1) Azure API for FHIR  
-2) Azure Key Vault (users can select to use an existing keyvault as long as they have Purge Secrets access)
+2) Azure Key Vault (users can select to use an existing Key Vault as long as they have Purge Secrets access)
 3) Azure AD Service Principal for RBAC [link](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli)
 4) Azure Resource Group
 5) Postman (for testing)

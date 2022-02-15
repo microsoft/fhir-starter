@@ -28,7 +28,8 @@ __Note:__ The `deployFhirStarter.bash` script is designed and tested for the [Az
 To deploy resources in Azure, you must have an active Azure Subscription. Read [here](https://azure.microsoft.com/en-us/free/) about obtaining a free Azure Subscription. For instructions on getting started with Azure API for FHIR deployment, please visit the [scripts](./scripts) directory in this repo. 
 
 
-__Next Steps__ Complete Setup steps detailed **[here](./scripts)**.
+__Next Steps__ 
+Complete the deployment and setup steps detailed **[here](./scripts)**.
 
 
 ## Tracking Changes & Updates

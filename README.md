@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview) and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is currently the recommended method for deploying Azure API for FHIR with automatic setup of an [AAD Service Client](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/register-confidential-azure-ad-client-app).
+The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview) and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is the recommended method for deploying Azure API for FHIR with automatic setup of an [AAD Service Client](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/register-confidential-azure-ad-client-app).
 
 ## Script details
 The following Azure resources will be deployed when you run the `deployFhirStarter.bash` script. Detailed deployment instructions are available in the [scripts](./scripts) directory.

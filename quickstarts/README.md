@@ -39,7 +39,7 @@ Supported Regions:
     West Central US,
     West US 2
     
-+ Deployment Prefix (3-7 characters that will be used as a prefix to all created resources)
++ Deployment Prefix (3-7 characters that will be used as a prefix to all created resources, e.g lrn01)
 
 In order to successfully deploy the template the user must have the Owner role for the resource group where the template is being deployed and have the ability to create application registrations in Azure Active Directory.
 
@@ -73,7 +73,7 @@ At this point the application registration has been completed. Further configura
 Select the **Manifest** option
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH8.png)
 
-Update the **AppRoles** element using the data in the [app roles json](./fhirproxyroles.json) file
+Update the **AppRoles** element using the data in the [app roles json](./fhirproxyroles.json) file and click on save
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH9.png)
 
 The **AppRoles** element should look something like the following

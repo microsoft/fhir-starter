@@ -18,7 +18,7 @@ In an effort to simplify the deployment process Managed Service Identities are u
 
 There are only a few required parameters 
 + Subscription
-+ Resource Group
++ [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
 + Azure Region
 Supported Regions:
     South Africa North,

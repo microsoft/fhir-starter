@@ -14,7 +14,7 @@ The Azure Resource Manager / Bicep templates located in this folder will deploy 
 + FHIR Proxy
 + FHIR Loader
 
-In an effort to simplify the deployment process Managed Service Identities are used wherevr possible. These templates currently link to a repo that contains modifications to ensure that MSI functions as expected. This repo is not in sync with the origin repos. The bicep code or corresponding ARM templates may be modified to update this reference.
+In an effort to simplify the deployment process Managed Service Identities are used wherever possible. These templates currently link to a repo that contains modifications to ensure that MSI functions as expected. This repo is not in sync with the origin repos. The bicep code or corresponding ARM templates may be modified to update this reference.
 
 There are only a few required parameters 
 + Subscription

@@ -14,9 +14,9 @@ The Azure Resource Manager / Bicep templates located in this folder will deploy 
 + FHIR Proxy
 + FHIR Loader
 
-In an effort to simplify the deployment process Managed Service Identities are used wherever possible. These templates currently link to a repo that contains modifications to ensure that MSI functions as expected. This repo is not in sync with the origin repos. The bicep code or corresponding ARM templates may be modified to update this reference.
+In an effort to simplify the deployment process, [Managed Service Identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) are used wherever possible. These templates currently link to a repo that contains modifications to ensure that the MSI functions as expected. This repo is not in sync with the origin repos. The bicep code or corresponding ARM templates may be modified to update this reference.
 
-There are only a few required parameters 
+There are only a few required parameters: 
 + Subscription
 + [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
 + Azure Region
@@ -39,24 +39,26 @@ Supported Regions:
     West Central US,
     West US 2
     
-+ Deployment Prefix (3-7 characters that will be used as a prefix to all created resources, e.g lrn01)
++ Deployment Prefix (3-7 characters that will be used as a prefix for all created resources, e.g lrn01)
 
-In order to successfully deploy the template the user must have the Owner role for the resource group where the template is being deployed and have the ability to create application registrations in Azure Active Directory.
+In order to successfully deploy this ARM template, the user must have the Owner role for the resource group where the template is being deployed and have the ability to create application registrations in Azure Active Directory. 
+
+It is recommended to create a new resource group first and to check to make sure that you have the Owner role for the resource group before running the template. If you have the Owner role for the resource group, then proceed to run the template and deploy into that resource group.
 
 
 ![Custom Deployment Page](./images/deploytrainenvportal.png)
 
-Once the deployment has completed additional steps are necessary to complete the authentication configuration of the FHIR Proxy function app.
-In the Azure Portal navigate to the function application that was deployed by the resource manager template
+Once the deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app.
+In the Azure Portal, navigate to the function application that was deployed by the resource manager template.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH1.png)
 
-Select the function app and select **Authentication**
+Select the function app and select **Authentication**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH2.png)
 
-Select **Add Identity Provider**
+Select **Add Identity Provider**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH3.png)
 
-Select **Microsoft**
+Select **Microsoft**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH4.png)
 
 Configure basic settings as follows:
@@ -64,35 +66,37 @@ Configure basic settings as follows:
 
 
 
-Accept the default permissions
+Accept the default permissions.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH6.png)
 
-At this point the application registration has been completed. Further configuration is required to define **App Roles and Permissions** click on the link next to the Microsoft identity provider, which will open the Azure AD blade.
+At this point the application registration is complete. 
+
+Further configuration is required to define **App Roles and Permissions**. Click on the link next to the Microsoft identity provider, which will open the Azure AD blade.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH7.png)
 
-Select the **Manifest** option
+Select the **Manifest** option.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH8.png)
 
-Update the **AppRoles** element using the data in the [app roles json](./fhirproxyroles.json) file and click on save
+Update the **AppRoles** element using the data in the [app roles json](./fhirproxyroles.json) file and click Save.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH9.png)
 
-The **AppRoles** element should look something like the following
+The **AppRoles** element should look something like the following:
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH10.png)
 
-Select **API Permissions** and **Add a Permission**
+Select **API Permissions** and **Add a Permission**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH11.png)
 
-Select **APIs my organization uses**
+Select **APIs my organization uses**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH12.png)
 
-Filter the results to **Azure healthcare apis**
+Filter the results to **Azure healthcare apis**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH13.png)
 
-Select **Azure healthcare APIs** user_impersonation permission
+Select **Azure healthcare APIs** user_impersonation permission.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH14.png)
 
-Verify the **API Permissions**
+Verify the **API Permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
 
-Review/verify that the the **App Roles** were created properly
+Review/verify that the the **App Roles** were created properly.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH16.png)

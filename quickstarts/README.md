@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-The quickstart Azure Resource Manager templates contained in this folder are intended to replicate, where possible, the fhir-starter bash scripts that are used and referenced by this repo.
+The quickstart Azure Resource Manager templates contained in this folder are intended to replicate, where possible, the fhir-starter Bash scripts that are used and referenced by this repo.
 
 
 ## Deploy Training Environmment

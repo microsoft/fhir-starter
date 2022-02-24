@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) templates contained in this folder are intended to replicate, where possible, the fhir-starter Bash scripts hosted in this repo. In addition to deploying Azure API for FHIR, these templates also deploy FHIR-Proxy and FHIR-Bulk Loader into your Azure environment.
+The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) templates contained in this folder are intended to replicate, where possible, the fhir-starter Bash scripts hosted in this repo. In addition to deploying Azure API for FHIR, these ARM templates also deploy FHIR-Proxy and FHIR-Bulk Loader into your Azure environment.
 
 
 ## Deploy Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader

@@ -71,7 +71,7 @@ Once the initial deployment has completed, additional steps are necessary to com
 5. Configure basic settings as follows and click **Next Permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH5a.png)
 
-6. Accept the default permissions and click **Add**.
+6. Click **Add**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH6.png)
 
 At this point, the FHIR-Proxy application registration is complete. 

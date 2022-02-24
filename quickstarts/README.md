@@ -84,10 +84,10 @@ Further configuration is required to define **App Roles and Permissions**. Click
 1. Click on **Manifest**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH8.png)
 
-2. Update the **AppRoles** element using the data in the [app roles json](./fhirproxyroles.json) file.
+2. Update the **appRoles** element using the data in the [app roles json](./fhirproxyroles.json) file.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH9.png)
 
-3. The **AppRoles** element should look something like shown below. Click **Save**.
+3. The **appRoles** element should look something like shown below. Click **Save**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH10.png)
 
 4. Select **API permissions** and **Add a Permission**.

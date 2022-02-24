@@ -74,7 +74,7 @@ Once the deployment has completed, additional steps are necessary to complete th
 6. Accept the default permissions.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH6.png)
 
-At this point the application registration is complete. 
+At this point the FHIR-Proxy application registration is complete. 
 
 ## Step 3 - Configure App Roles and API Permissions 
 

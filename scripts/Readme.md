@@ -38,7 +38,7 @@ HealthArchitectures | FHIRStarter
 
 Launch Azure Cloud Shell (Bash Environment)  
 
-**CTRL+click** (Windows or Linux) or **CMD+click** (Mac) to open in a new tab  
+**CTRL+click** (Windows or Linux) or **CMD+click** (Mac) to open in a new tab.  
   
 [![Launch Azure Shell](/docs/images/launchcloudshell.png "Launch Cloud Shell")](https://shell.azure.com/bash?target="_blank")
 

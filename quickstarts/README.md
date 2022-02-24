@@ -19,9 +19,7 @@ In an effort to simplify the deployment process, [Managed Service Identities](ht
 There are only a few required parameters for deployment: 
 + Subscription
 + [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
-+ Azure Region 
-
-Supported Regions: 
++ Azure Region (Supported Regions: 
     South Africa North, 
     South East Asia, 
     Australia East, 
@@ -38,7 +36,7 @@ Supported Regions:
     North Central US, 
     South Central US, 
     West Central US, 
-    West US 2 
+    West US 2) 
     
 + Deployment Prefix (3-7 characters that will be used as a prefix for all created resources, e.g lrn01)
 

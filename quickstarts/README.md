@@ -74,7 +74,7 @@ Once the initial deployment has completed, additional steps are necessary to com
 6. Accept the default permissions and click **Add**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH6.png)
 
-At this point the FHIR-Proxy application registration is complete. 
+At this point, the FHIR-Proxy application registration is complete. 
 
 ## Step 3 - Configure App Roles and API Permissions 
 

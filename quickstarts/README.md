@@ -102,8 +102,8 @@ Further configuration is required to define **App Roles and Permissions**. Click
 7. Select the **user_impersonation permission** box and click **Add permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH14.png)
 
-8. Verify the **API Permissions**.
+8. Verify the **API permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
 
-9. Review/verify that the the **App Roles** were created properly.
+9. Review/verify that the the **App roles** were created properly.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH16.png)

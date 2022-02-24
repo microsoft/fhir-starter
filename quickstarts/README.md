@@ -46,7 +46,9 @@ In order to successfully deploy this ARM template, the user must have the Owner 
 It is recommended to create a new resource group first and to check to make sure that you have the Owner role for the resource group before running the template. If you have the Owner role for the resource group, then proceed to run the template and deploy into that resource group.
 
 ## Step 1 - Fill in deployment parameters and start deployment 
+
 Click **Review + create** when ready, and then click **Create** on the next page. 
+
 ![Custom Deployment Page](./images/deploytrainenvportal.png)
 
 ## Step 2 - Complete FHIR-Proxy Authentication 

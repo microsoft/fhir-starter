@@ -78,32 +78,34 @@ At this point, the FHIR-Proxy application registration is complete.
 
 ## Step 3 - Configure App Roles and API Permissions 
 
-Further configuration is required to define **App Roles and Permissions**. Click on the link next to the Microsoft identity provider, which will open the Azure AD blade.
+Further configuration is required to define **App Roles and Permissions**. 
+
+1. Click on the link next to the Microsoft identity provider, which will open the Azure AD blade.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH7.png)
 
-1. Click on **Manifest**.
+2. Click on **Manifest**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH8.png)
 
-2. Update the **appRoles** element using the data in the [app roles json](./fhirproxyroles.json) file.
+3. Update the **appRoles** element using the data in the [app roles json](./fhirproxyroles.json) file.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH9.png)
 
-3. The **appRoles** element should look something like shown below. Click **Save**.
+4. The **appRoles** element should look something like shown below. Click **Save**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH10.png)
 
-4. Select **API permissions** and **Add a Permission**.
+5. Select **API permissions** and **Add a Permission**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH11.png)
 
-5. Select **APIs my organization uses**.
+6. Select **APIs my organization uses**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH12.png)
 
-6. Filter the results to **Azure healthcare apis**.
+7. Filter the results to **Azure healthcare apis**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH13.png)
 
-7. Select the **user_impersonation permission** box and click **Add permissions**.
+8. Select the **user_impersonation permission** box and click **Add permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH14.png)
 
-8. Verify the **API permissions**.
+9. Verify the **API permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
 
-9. Review/verify that the the **App roles** were created properly.
+10. Review/verify that the the **App roles** were created properly.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH16.png)

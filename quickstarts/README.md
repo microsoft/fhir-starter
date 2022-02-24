@@ -56,7 +56,7 @@ _Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader typica
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once the initial deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 
 
-1. In the Azure Portal, navigate to the function application that was deployed by the resource manager template. 
+1. In the Azure Portal, navigate to the FHIR-Proxy function app that was deployed by the resource manager template. 
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH1.png)
 
 2. Select the function app and select **Authentication**.

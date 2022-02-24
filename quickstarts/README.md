@@ -7,7 +7,7 @@ The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/a
 
 ## Deploy Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader
 
-To begin, **CTRL+click** (Windows or Linux) or **CMD+click** (Mac) on the **Deploy to Azure** link below to open the ARM template **Custom deployment** form in a new browser tab.
+To begin, **CTRL+click** (Windows or Linux) or **CMD+click** (Mac) on the **Deploy to Azure** button below to open the ARM template **Custom deployment** form in a new browser tab.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FToddM2%2Ffhir-starter%2Fquickstarts%2Fquickstarts%2Fdeployfhirtrain.json)
 

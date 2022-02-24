@@ -90,7 +90,7 @@ Further configuration is required to define **App Roles and Permissions**. Click
 3. The **AppRoles** element should look something like shown below. Click **Save**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH10.png)
 
-4. Select **API Permissions** and **Add a Permission**.
+4. Select **API permissions** and **Add a Permission**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH11.png)
 
 5. Select **APIs my organization uses**.

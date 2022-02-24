@@ -45,11 +45,13 @@ In order to successfully deploy this ARM template, the user must have the Owner 
 
 It is recommended to create a new resource group first and to check to make sure that you have the Owner role for the resource group before running the template. If you have the Owner role for the resource group, then proceed to run the template and deploy into that resource group.
 
-## Step 1 - Fill in deployment parameters and start deployment 
+## Step 1 - Initial deployment 
 
-Click **Review + create** when ready, and then click **Create** on the next page. 
+Fill in the parameter values. Click **Review + create** when ready, and then click **Create** on the next page. 
 
-![Custom Deployment Page](./images/deploytrainenvportal.png)
+![Custom Deployment Page](./images/deploytrainenvportal.png) 
+
+_Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader typically takes around 20 minutes._
 
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once the deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 

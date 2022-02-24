@@ -62,7 +62,7 @@ Once the initial deployment has completed, additional steps are necessary to com
 2. Select the function app and select **Authentication**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH2.png)
 
-3. Click **Add Identity Provider**.
+3. Click **Add identity provider**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH3.png)
 
 4. Select **Microsoft**.

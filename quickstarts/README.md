@@ -99,7 +99,7 @@ Further configuration is required to define **App Roles and Permissions**. Click
 6. Filter the results to **Azure healthcare apis**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH13.png)
 
-7. Select **Azure healthcare APIs** user_impersonation permission.
+7. Select the **user_impersonation permission** box and click **Add permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH14.png)
 
 8. Verify the **API Permissions**.

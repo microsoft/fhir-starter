@@ -9,7 +9,7 @@ The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/a
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FToddM2%2Ffhir-starter%2Fquickstarts%2Fquickstarts%2Fdeployfhirtrain.json)
 
-The Azure Resource Manager / Bicep templates located in this folder will deploy the following services and solutions:
+The Azure Resource Manager / Bicep templates located in this folder will deploy the following services:
 + Azure API for FHIR
 + FHIR-Proxy
 + FHIR-Bulk Loader

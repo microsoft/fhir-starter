@@ -68,7 +68,7 @@ Once the initial deployment has completed, additional steps are necessary to com
 4. Select **Microsoft**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH4.png)
 
-5. Configure basic settings as follows and click **Next Permissions**:
+5. Configure basic settings as follows and click **Next Permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH5a.png)
 
 6. Accept the default permissions and click **Add**.

@@ -20,7 +20,8 @@ There are only a few required parameters for deployment:
 + Subscription
 + [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
 + Azure Region 
-Supported Regions:
+
+Supported Regions: 
     South Africa North, 
     South East Asia, 
     Australia East, 

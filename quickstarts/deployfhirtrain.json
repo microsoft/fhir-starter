@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.1124.51302",
-      "templateHash": "10244325422873162499"
+      "version": "0.4.1272.37030",
+      "templateHash": "11211951081162533168"
     }
   },
   "parameters": {
@@ -35,12 +35,74 @@
       "metadata": {
         "description": "FHIR Server Azure AD Tenant ID (GUID)"
       }
+    },
+    "resourceLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure Region where the resources will be deployed. Default Value:  the resource group region"
+      }
+    },
+    "enableConsentOptOut": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Consent Opt Out module in FHIR PROXY"
+      }
+    },
+    "enableDateSort": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Date Sort module in FHIR PROXY"
+      }
+    },
+    "enableParticipantFilter": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Participant Filter module in FHIR PROXY"
+      }
+    },
+    "enableFhirCdsSyncAgent": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the FHIR to CDS Sync Agent module in FHIR PROXY"
+      }
+    },
+    "enablePublishFhirEvent": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Pubish FHIR Event module in FHIR PROXY"
+      }
+    },
+    "enableProfileValidation": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Profile Validation module in FHIR PROXY"
+      }
+    },
+    "enableTransformBundle": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable the Transform Bundle module in FHIR PROXY"
+      }
+    },
+    "enableEverythingPatient": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable the Patient Everything module in FHIR PROXY"
+      }
     }
   },
   "variables": {
     "tenantId": "[subscription().tenantId]",
-    "resourceLocation": "[resourceGroup().location]",
-    "uniqueId": "[take(uniqueString(subscription().id, resourceGroup().id, parameters('deploymentPrefix')), 6)]",
+    "uniqueId": "[take(uniqueString(subscription().id, resourceGroup().id, toLower(parameters('deploymentPrefix'))), 6)]",
     "kvName": "[format('{0}{1}kv', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "laName": "[format('{0}{1}la', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "apiForFhirServiceName": "[format('{0}{1}fhir', parameters('deploymentPrefix'), variables('uniqueId'))]",
@@ -61,8 +123,18 @@
     "fhirProxyRepoBranch": "MSIOnly",
     "fhirLoaderRepoUrl": "https://github.com/ToddM2/fhir-loader",
     "fhirLoaderRepoBranch": "MSIOnly",
-    "fhirProxyPreProcess": "FHIRProxy.preprocessors.TransformBundlePreProcess",
-    "fhirProxyPostProcess": "",
+    "profileValidationString": "[if(parameters('enableProfileValidation'), 'FHIRProxy.preprocessors.ProfileValidationPreProcess;', '')]",
+    "transformBundleString": "[if(parameters('enableTransformBundle'), 'FHIRProxy.preprocessors.TransformBundlePreProcess;', '')]",
+    "everythingPatientString": "[if(parameters('enableEverythingPatient'), 'FHIRProxy.preprocessors.EverythingPatientPreProcess;', '')]",
+    "proxyPreProcessSettings": "[format('{0}{1}{2}', variables('profileValidationString'), variables('transformBundleString'), variables('everythingPatientString'))]",
+    "fhirProxyPreProcess": "[take(variables('proxyPreProcessSettings'), sub(length(variables('proxyPreProcessSettings')), 1))]",
+    "consentOptOutString": "[if(parameters('enableConsentOptOut'), 'FHIRProxy.postprocessorsConsentOptOutFilter;', '')]",
+    "dateSortString": "[if(parameters('enableDateSort'), 'FHIRProxy.postprocessors.DateSortPostProcessor;', '')]",
+    "participantFilterString": "[if(parameters('enableParticipantFilter'), 'FHIRProxy.postprocessors.ParticipantFilterPostProcess;', '')]",
+    "fhirCdsSyncAgentString": "[if(parameters('enableFhirCdsSyncAgent'), 'FHIRProxy.postprocessors.FHIRCDSSyncAgentPostProcess2;', '')]",
+    "publishFhirEventString": "[if(parameters('enablePublishFhirEvent'), 'FHIRProxy.postprocessors.PublishFHIREventPostProcess;', '')]",
+    "proxyPostProcessSettings": "[format('{0}{1}{2}{3}{4}', variables('consentOptOutString'), variables('dateSortString'), variables('participantFilterString'), variables('fhirCdsSyncAgentString'), variables('publishFhirEventString'))]",
+    "fhirProxyPostProcess": "[take(variables('proxyPostProcessSettings'), sub(length(variables('proxyPostProcessSettings')), 1))]",
     "roleAdmin": "Administrator",
     "roleReader": "Reader",
     "roleWriter": "Writer",
@@ -75,7 +147,7 @@
       "type": "Microsoft.OperationalInsights/workspaces",
       "apiVersion": "2020-03-01-preview",
       "name": "[variables('laName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "properties": {
         "retentionInDays": 30,
@@ -120,7 +192,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2021-04-01",
       "name": "[variables('saName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "kind": "StorageV2",
       "sku": {
@@ -441,7 +513,7 @@
       "apiVersion": "2021-06-01-preview",
       "name": "[variables('containerRegistryName')]",
       "tags": "[parameters('resourceTags')]",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('resourceLocation')]",
       "sku": {
         "name": "Basic"
       }
@@ -491,7 +563,7 @@
       "type": "Microsoft.KeyVault/vaults",
       "apiVersion": "2019-09-01",
       "name": "[variables('kvName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "properties": {
         "tenantId": "[variables('tenantId')]",
         "sku": {
@@ -550,7 +622,7 @@
       "name": "[variables('apiForFhirServiceName')]",
       "tags": "[parameters('resourceTags')]",
       "kind": "fhir-R4",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "identity": "[variables('systemIdentity')]",
       "properties": {
         "authenticationConfiguration": {
@@ -643,7 +715,7 @@
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2021-04-01",
       "name": "[variables('proxyStorageAccountName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "kind": "StorageV2",
       "sku": {
@@ -909,7 +981,7 @@
       "type": "Microsoft.Cache/redis",
       "apiVersion": "2020-06-01",
       "name": "[variables('redisCacheName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "properties": {
         "minimumTlsVersion": "1.2",
@@ -965,7 +1037,7 @@
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2020-09-01",
       "name": "[variables('appServicePlanName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "sku": {
         "name": "S1"
@@ -1000,7 +1072,7 @@
       "type": "Microsoft.Web/sites",
       "apiVersion": "2021-02-01",
       "name": "[variables('proxyFunctionAppName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "identity": {
         "type": "SystemAssigned"
@@ -1059,7 +1131,7 @@
       "type": "Microsoft.Web/sites",
       "apiVersion": "2021-02-01",
       "name": "[variables('loaderFunctionAppName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "identity": {
         "type": "SystemAssigned"
@@ -1142,7 +1214,7 @@
       "type": "Microsoft.Insights/components",
       "apiVersion": "2020-02-02-preview",
       "name": "[variables('proxyAppInsightName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "kind": "web",
       "tags": "[parameters('resourceTags')]",
       "properties": {
@@ -1157,7 +1229,7 @@
       "type": "Microsoft.Insights/components",
       "apiVersion": "2020-02-02-preview",
       "name": "[variables('loaderAppInsightName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "kind": "web",
       "tags": "[parameters('resourceTags')]",
       "properties": {
@@ -1250,6 +1322,7 @@
         "FP-PATIENT-ACCESS-ROLES": "[variables('rolePatient')]",
         "FP-PARTICIPANT-ACCESS-ROLES": "[variables('roleParticipant')]",
         "FP-HOST": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-HOST/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
+        "FP-MOD-CONSENT-OPTOUT-CATEGORY": "[if(parameters('enableConsentOptOut'), 'http://loinc.org|59284-0', '')]",
         "FP-PRE-PROCESSOR-TYPES": "[if(empty(variables('fhirProxyPreProcess')), 'FHIRProxy.preprocessors.TransformBundlePreProcess', variables('fhirProxyPreProcess'))]",
         "FP-POST-PROCESSOR-TYPES": "[if(empty(variables('fhirProxyPostProcess')), '', variables('fhirProxyPostProcess'))]",
         "FP-RBAC-NAME": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-RBAC-NAME/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
@@ -1331,7 +1404,7 @@
       "type": "Microsoft.EventGrid/systemTopics",
       "apiVersion": "2021-06-01-preview",
       "name": "[variables('loaderEventGridTopicName')]",
-      "location": "[variables('resourceLocation')]",
+      "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "properties": {
         "source": "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
@@ -1537,8 +1610,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1124.51302",
-              "templateHash": "12291220464479205939"
+              "version": "0.4.1272.37030",
+              "templateHash": "6708801682825504859"
             }
           },
           "parameters": {
@@ -1728,8 +1801,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1124.51302",
-              "templateHash": "12291220464479205939"
+              "version": "0.4.1272.37030",
+              "templateHash": "6708801682825504859"
             }
           },
           "parameters": {
@@ -1919,8 +1992,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1124.51302",
-              "templateHash": "12291220464479205939"
+              "version": "0.4.1272.37030",
+              "templateHash": "6708801682825504859"
             }
           },
           "parameters": {
@@ -2110,8 +2183,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1124.51302",
-              "templateHash": "12291220464479205939"
+              "version": "0.4.1272.37030",
+              "templateHash": "6708801682825504859"
             }
           },
           "parameters": {
@@ -2301,8 +2374,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1124.51302",
-              "templateHash": "12291220464479205939"
+              "version": "0.4.1272.37030",
+              "templateHash": "6708801682825504859"
             }
           },
           "parameters": {

@@ -108,5 +108,5 @@ Further configuration is required to define **App Roles and Permissions**.
 9. Verify the **API permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
 
-10. Review/verify that the the **App roles** were created properly.
+10. Verify that the **App roles** were created properly.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH16.png)

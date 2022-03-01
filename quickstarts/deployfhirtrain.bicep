@@ -17,11 +17,35 @@ param deploymentPrefix string
 @description('FHIR Server Azure AD Tenant ID (GUID)')
 param fhirServerTenantName string = subscription().tenantId
 
-var tenantId = subscription().tenantId
-var resourceLocation = resourceGroup().location
+@description('Azure Region where the resources will be deployed. Default Value:  the resource group region')
+param resourceLocation string = resourceGroup().location
 
+@description('Enable the Consent Opt Out module in FHIR PROXY')
+param enableConsentOptOut bool = false
+
+@description('Enable the Date Sort module in FHIR PROXY')
+param enableDateSort bool = false
+
+@description('Enable the Participant Filter module in FHIR PROXY')
+param enableParticipantFilter bool = false
+
+@description('Enable the FHIR to CDS Sync Agent module in FHIR PROXY')
+param enableFhirCdsSyncAgent bool = false
+
+@description('Enable the Pubish FHIR Event module in FHIR PROXY')
+param enablePublishFhirEvent bool = false
+
+@description('Enable the Profile Validation module in FHIR PROXY')
+param enableProfileValidation bool = false
+@description('Enable the Transform Bundle module in FHIR PROXY')
+param enableTransformBundle bool = true
+@description('Enable the Patient Everything module in FHIR PROXY')
+param enableEverythingPatient bool = false
+
+
+var tenantId = subscription().tenantId
 // Unique Id used to generate resource names
-var uniqueId  = take(uniqueString(subscription().id, resourceGroup().id, deploymentPrefix),6)
+var uniqueId  = take(uniqueString(subscription().id, resourceGroup().id, toLower(deploymentPrefix)),6)
 
 // Default resource names
 
@@ -332,7 +356,7 @@ resource exportSAQueueDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05
 resource artifactContainerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
   name:containerRegistryName
   tags: resourceTags
-  location: resourceGroup().location
+  location: resourceLocation
   sku: {
     name: 'Basic'
   }
@@ -1056,14 +1080,30 @@ resource loaderAppInsightsDiagnostics 'Microsoft.Insights/diagnosticSettings@202
 
 // function app settings
 var keyVaultUri = keyVault.properties.vaultUri 
-var fhirProxyPreProcess  = 'FHIRProxy.preprocessors.TransformBundlePreProcess'
-var  fhirProxyPostProcess  = ''
+var profileValidationString = (enableProfileValidation) ? 'FHIRProxy.preprocessors.ProfileValidationPreProcess;' : '' 
+var transformBundleString = (enableTransformBundle) ? 'FHIRProxy.preprocessors.TransformBundlePreProcess;' : ''
+var everythingPatientString = (enableEverythingPatient) ? 'FHIRProxy.preprocessors.EverythingPatientPreProcess;' : ''
+
+var proxyPreProcessSettings  = '${profileValidationString}${transformBundleString}${everythingPatientString}' 
+var fhirProxyPreProcess = take(proxyPreProcessSettings, length(proxyPreProcessSettings)-1)
+
+var consentOptOutString = (enableConsentOptOut) ? 'FHIRProxy.postprocessorsConsentOptOutFilter;' : ''
+var dateSortString  = (enableDateSort) ? 'FHIRProxy.postprocessors.DateSortPostProcessor;' : ''
+var participantFilterString  = (enableParticipantFilter) ? 'FHIRProxy.postprocessors.ParticipantFilterPostProcess;' : ''
+var fhirCdsSyncAgentString = (enableFhirCdsSyncAgent) ? 'FHIRProxy.postprocessors.FHIRCDSSyncAgentPostProcess2;' : ''
+var publishFhirEventString = (enablePublishFhirEvent) ? 'FHIRProxy.postprocessors.PublishFHIREventPostProcess;' : ''
+
+
+var proxyPostProcessSettings = '${consentOptOutString}${dateSortString}${participantFilterString}${fhirCdsSyncAgentString}${publishFhirEventString}' 
+var fhirProxyPostProcess  = take(proxyPostProcessSettings, length(proxyPostProcessSettings)-1)
+
 var roleAdmin = 'Administrator'
 var roleReader = 'Reader'
 var roleWriter = 'Writer'
 var rolePatient = 'Patient'
 var roleParticipant = 'Practitioner,RelatedPerson'
 var roleGlobal = 'DataScientist'
+
 resource fhirProxyAppSettings 'Microsoft.Web/sites/config@2021-02-01' = {
   name: 'appsettings'
   parent: fhirProxyFunctionApp
@@ -1079,6 +1119,7 @@ resource fhirProxyAppSettings 'Microsoft.Web/sites/config@2021-02-01' = {
     'FP-PATIENT-ACCESS-ROLES': rolePatient
     'FP-PARTICIPANT-ACCESS-ROLES': roleParticipant
     'FP-HOST': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-HOST/)'
+    'FP-MOD-CONSENT-OPTOUT-CATEGORY' : (enableConsentOptOut) ? 'http://loinc.org|59284-0' : ''
     'FP-PRE-PROCESSOR-TYPES': empty(fhirProxyPreProcess) ? 'FHIRProxy.preprocessors.TransformBundlePreProcess' : fhirProxyPreProcess
     'FP-POST-PROCESSOR-TYPES': empty(fhirProxyPostProcess) ? '' : fhirProxyPostProcess
     'FP-RBAC-NAME':'@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-RBAC-NAME/)'

@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) templates contained in this folder are intended to replicate, where possible, the fhir-starter Bash scripts hosted in this repo. In addition to deploying Azure API for FHIR, these ARM templates also deploy FHIR-Proxy and FHIR-Bulk Loader into your Azure environment.
+The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) templates contained in this folder are intended to replicate, where possible, the fhir-starter Bash scripts hosted in this repo. In addition to deploying Azure API for FHIR, these ARM templates deploy FHIR-Proxy and FHIR-Bulk Loader all together in one resource group.
 
 
 ## Deploy Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader
@@ -108,5 +108,5 @@ Further configuration is required to define **App Roles and Permissions**.
 9. Verify the **API permissions**.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
 
-10. Review/verify that the the **App roles** were created properly.
+10. Verify that the **App roles** were created properly.
 ![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH16.png)

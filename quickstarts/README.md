@@ -40,7 +40,7 @@ There are only a few required parameters for deployment:
     West Central US, 
     West US 2) 
     
-+ Deployment Prefix (3-7 characters that will be used as a prefix for all created resources, e.g lrn01)
++ Deployment Prefix (3-7 characters that will be used as a prefix for all created resources - e.g., "lrn01")
 
 __Important:__ In order to successfully deploy this ARM template, the user must have the Owner role for the resource group where the template is being deployed and have the ability to create [application registrations](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#application-administrator) in Azure Active Directory. 
 

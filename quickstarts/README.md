@@ -52,7 +52,7 @@ Fill in the parameter values. Click **Review + create** when ready, and then cli
 
 ![Custom Deployment Page](./images/deploytrainenvportal.png) 
 
-_Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader typically takes around 20 minutes._
+_Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes._
 
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once the initial deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 

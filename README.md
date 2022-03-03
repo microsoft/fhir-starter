@@ -5,7 +5,7 @@
 The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview) and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is the recommended method for deploying Azure API for FHIR with an [AAD Service Client](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/register-confidential-azure-ad-client-app) for use with FHIR-Proxy.
 
 ## Script details
-The `deployFhirStarter.bash` script deploys the following resources. Detailed deployment instructions are available in the [scripts](./scripts) directory.
+The `deployFhirStarter.bash` script deploys the following resources (detailed deployment instructions are available in the [scripts](./scripts) directory).
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing Key Vault as long as the Key Vault's [Purge Protection](https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-overview#:~:text=Purge%20protection%20is%20an%20optional,the%20retention%20period%20has%20passed.) is disabled)

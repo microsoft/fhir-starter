@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 //
 // Healthcare APIs (API for FHIR) : Training starter template
 // 
@@ -7,7 +10,7 @@ param resourceTags object  = {
   environmentName: 'Azure Healthcare APIs OpenHack'
   challengeTitle: 'Deploy Core Training Environment'
   eventId: '6071'
-  expirationDate: '03/15/2021'
+  expirationDate: '03/30/2022'
 }
 @description('Deployment Prefix - all resources names created by this template will start with this prefix')
 @minLength(3)
@@ -1087,7 +1090,8 @@ var everythingPatientString = (enableEverythingPatient) ? 'FHIRProxy.preprocesso
 var proxyPreProcessSettings  = '${profileValidationString}${transformBundleString}${everythingPatientString}' 
 var fhirProxyPreProcess = take(proxyPreProcessSettings, length(proxyPreProcessSettings)-1)
 
-var consentOptOutString = (enableConsentOptOut) ? 'FHIRProxy.postprocessorsConsentOptOutFilter;' : ''
+var consentOptOutString = (enableConsentOptOut) ? 'FHIRProxy.postprocessors.ConsentOptOutFilter;' : ''
+
 var dateSortString  = (enableDateSort) ? 'FHIRProxy.postprocessors.DateSortPostProcessor;' : ''
 var participantFilterString  = (enableParticipantFilter) ? 'FHIRProxy.postprocessors.ParticipantFilterPostProcess;' : ''
 var fhirCdsSyncAgentString = (enableFhirCdsSyncAgent) ? 'FHIRProxy.postprocessors.FHIRCDSSyncAgentPostProcess2;' : ''

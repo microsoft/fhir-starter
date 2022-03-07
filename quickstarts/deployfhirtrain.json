@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1272.37030",
-      "templateHash": "11211951081162533168"
+      "templateHash": "7594512057095341883"
     }
   },
   "parameters": {
@@ -15,7 +15,7 @@
         "environmentName": "Azure Healthcare APIs OpenHack",
         "challengeTitle": "Deploy Core Training Environment",
         "eventId": "6071",
-        "expirationDate": "03/15/2021"
+        "expirationDate": "03/30/2022"
       },
       "metadata": {
         "description": "Tags to be applied to resources that are deployed in this template"
@@ -128,7 +128,7 @@
     "everythingPatientString": "[if(parameters('enableEverythingPatient'), 'FHIRProxy.preprocessors.EverythingPatientPreProcess;', '')]",
     "proxyPreProcessSettings": "[format('{0}{1}{2}', variables('profileValidationString'), variables('transformBundleString'), variables('everythingPatientString'))]",
     "fhirProxyPreProcess": "[take(variables('proxyPreProcessSettings'), sub(length(variables('proxyPreProcessSettings')), 1))]",
-    "consentOptOutString": "[if(parameters('enableConsentOptOut'), 'FHIRProxy.postprocessorsConsentOptOutFilter;', '')]",
+    "consentOptOutString": "[if(parameters('enableConsentOptOut'), 'FHIRProxy.postprocessors.ConsentOptOutFilter;', '')]",
     "dateSortString": "[if(parameters('enableDateSort'), 'FHIRProxy.postprocessors.DateSortPostProcessor;', '')]",
     "participantFilterString": "[if(parameters('enableParticipantFilter'), 'FHIRProxy.postprocessors.ParticipantFilterPostProcess;', '')]",
     "fhirCdsSyncAgentString": "[if(parameters('enableFhirCdsSyncAgent'), 'FHIRProxy.postprocessors.FHIRCDSSyncAgentPostProcess2;', '')]",

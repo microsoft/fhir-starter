@@ -128,7 +128,9 @@
     "everythingPatientString": "[if(parameters('enableEverythingPatient'), 'FHIRProxy.preprocessors.EverythingPatientPreProcess;', '')]",
     "proxyPreProcessSettings": "[format('{0}{1}{2}', variables('profileValidationString'), variables('transformBundleString'), variables('everythingPatientString'))]",
     "fhirProxyPreProcess": "[take(variables('proxyPreProcessSettings'), sub(length(variables('proxyPreProcessSettings')), 1))]",
+
     "consentOptOutString": "[if(parameters('enableConsentOptOut'), 'FHIRProxy.postprocessors.ConsentOptOutFilter;', '')]",
+
     "dateSortString": "[if(parameters('enableDateSort'), 'FHIRProxy.postprocessors.DateSortPostProcessor;', '')]",
     "participantFilterString": "[if(parameters('enableParticipantFilter'), 'FHIRProxy.postprocessors.ParticipantFilterPostProcess;', '')]",
     "fhirCdsSyncAgentString": "[if(parameters('enableFhirCdsSyncAgent'), 'FHIRProxy.postprocessors.FHIRCDSSyncAgentPostProcess2;', '')]",

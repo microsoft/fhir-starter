@@ -2,10 +2,10 @@
 
 ## Introduction 
 
-The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview) and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is the recommended method for deploying Azure API for FHIR with automatic setup of an [AAD Service Client](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/register-confidential-azure-ad-client-app) for use with FHIR-Proxy.
+The goal of the **FHIR-Starter** repo is to provide users with a choice of deployment options for [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview) and supporting resources. The `deployFhirStarter.bash` script hosted in this repo is the recommended method for deploying Azure API for FHIR with an [AAD Service Client](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/register-confidential-azure-ad-client-app) for use with FHIR-Proxy.
 
 ## Script details
-The following Azure resources will be deployed when you run the `deployFhirStarter.bash` script. Detailed deployment instructions are available in the [scripts](./scripts) directory.
+The `deployFhirStarter.bash` script deploys the following resources (detailed deployment instructions are available in the [scripts](./scripts) directory).
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing Key Vault as long as the Key Vault's [Purge Protection](https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-overview#:~:text=Purge%20protection%20is%20an%20optional,the%20retention%20period%20has%20passed.) is disabled)
@@ -25,11 +25,11 @@ After running the `deployFhirStarter.bash` script, you can set up Postman follow
 __Note:__ The `deployFhirStarter.bash` script is designed and tested for the [Azure Cloud Shell - Bash Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview) environment. 
 
 ## Deployment
-To deploy resources in Azure, you must have an active Azure Subscription. Read [here](https://azure.microsoft.com/en-us/free/) about obtaining a free Azure Subscription. For instructions on getting started with Azure API for FHIR deployment, please visit the [scripts](./scripts) directory in this repo. 
+To deploy resources in Azure, you must have an active Azure Subscription. Read [here](https://azure.microsoft.com/en-us/free/) about obtaining a free Azure Subscription.
 
 
 __Next Steps__  
-Complete the deployment and setup steps detailed **[here](./scripts)**.
+Complete the deployment and setup detailed **[here](./scripts)**.
 
 
 ## Tracking Changes & Updates

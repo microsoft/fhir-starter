@@ -1091,6 +1091,7 @@ var proxyPreProcessSettings  = '${profileValidationString}${transformBundleStrin
 var fhirProxyPreProcess = take(proxyPreProcessSettings, length(proxyPreProcessSettings)-1)
 
 var consentOptOutString = (enableConsentOptOut) ? 'FHIRProxy.postprocessors.ConsentOptOutFilter;' : ''
+
 var dateSortString  = (enableDateSort) ? 'FHIRProxy.postprocessors.DateSortPostProcessor;' : ''
 var participantFilterString  = (enableParticipantFilter) ? 'FHIRProxy.postprocessors.ParticipantFilterPostProcess;' : ''
 var fhirCdsSyncAgentString = (enableFhirCdsSyncAgent) ? 'FHIRProxy.postprocessors.FHIRCDSSyncAgentPostProcess2;' : ''

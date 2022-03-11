@@ -9,7 +9,7 @@ The `deployFhirStarter.bash` script deploys the following resources (detailed de
 
 1) Azure API for FHIR  
 2) Azure Key Vault (users can select to use an existing Key Vault as long as the Key Vault's [Purge Protection](https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-overview#:~:text=Purge%20protection%20is%20an%20optional,the%20retention%20period%20has%20passed.) is disabled)
-3) Azure AD Service Principal for RBAC ([link](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli))
+3) Managed Service Identity - Service Principal for RBAC ([link](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli))
 4) Azure Resource Group
 
 ## Postman setup

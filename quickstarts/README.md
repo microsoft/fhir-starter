@@ -71,8 +71,8 @@ Name          | Type                 |  Purpose
 [prefix]**la**    | Log Analytics Workspace  | Logs activity of all components
 [prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader
 [prefix]**ldrtopic** | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account
-[prefix]**pxyai** | Application Insights | Monitors FHIR Proxy application
-[prefix]**rc**    | Redis Cache  | Supports FHIR Proxy
+[prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
+[prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 
 
 ## Step 2 - Complete FHIR-Proxy Authentication 

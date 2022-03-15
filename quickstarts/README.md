@@ -63,7 +63,7 @@ Name          | Type                 |  Purpose
 [prefix]**fhir**  | **PaaS** | **Azure API for FHIR**
 [prefix]**pxyfa** | **Function App** | **FHIR-Proxy**
 [prefix]**ldrfa** | **Function App** | **FHIR-Bulk Loader**
-[prefix]**asp**   | App Service plan |  Shared by FHIR-Proxy & FHIR-Bulk Loader function apps
+[prefix]**asp**   | App Service plan |  Shared by FHIR-Proxy and FHIR-Bulk Loader function apps
 [prefix]**cr**    | Container registry   |   Supports Azure API for FHIR `$convert-data` operation
 [prefix]**fssa**  | Storage account      | Supports Azure API for FHIR `$export` operation and Event Grid for FHIR-Bulk Loader
 [prefix]**funsa** | Storage account      | Supports FHIR-Proxy and FHIR-Bulk Loader functions

@@ -43,9 +43,9 @@ There are only a few required parameters for deployment:
     
 + Deployment Prefix (3-7 characters that will be used as a prefix for all created resources - e.g., "lrn01")
 
-__Important:__ In order to successfully deploy this ARM template, the user must have the Owner role for the resource group where the components are being deployed and have the ability to create [application registrations](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#application-administrator) in Azure Active Directory. 
+__Important:__ In order to successfully deploy resources with this ARM template, the user must have the Owner role for the resource group where the components are being deployed and have the ability to create [application registrations](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#application-administrator) in Azure Active Directory. 
 
-__Note:__ It is recommended to create a new resource group first and check to make sure that you have the Owner role (for that resource group) before running the template. If you have the Owner role, then proceed to run the template and deploy into that resource group.
+__Note:__ It is recommended to create a new resource group first and check to make sure that you have the Owner role for the resource group before running the ARM template. If you have the Owner role, then proceed to run the template and deploy into that resource group.
 
 ## Step 1 - Initial deployment 
 

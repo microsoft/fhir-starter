@@ -49,7 +49,7 @@ __Note:__ It is recommended to create a new resource group first and check to ma
 
 ## Step 1 - Initial deployment 
 
-Fill in the parameter values. Click **Review + create** when ready, and then click **Create** on the next page. 
+Fill in the parameter values. Make sure to select the "true" values as shown. Click **Review + create** when ready, and then click **Create** on the next page. 
 
 ![Custom Deployment Page](./images/ARM_template_config2.png) 
 
@@ -60,19 +60,19 @@ In your resource group, you should see the components listed below.
 
 Name          | Type                 |  Purpose                               
 --------------|----------------------|----------------------------------------
-**[prefix]fhir**  | **PaaS** | **Azure API for FHIR**
-**[prefix]pxyfa** | **Function App** | **FHIR-Proxy**
-**[prefix]ldrfa** | **Function App** | **FHIR-Bulk Loader**
-**[prefix]asp**   | App Service plan |  Shared by FHIR-Proxy & FHIR-Bulk Loader function apps
-**[prefix]cr**    | Container registry   |   Supports Azure API for FHIR `$convert-data` operation
-**[prefix]fssa**  | Storage account      | Supports Azure API for FHIR `$export` operation and Event Grid for FHIR-Bulk Loader
-**[prefix]funsa** | Storage account      | Supports FHIR-Proxy and FHIR-Bulk Loader functions
-**[prefix]kv**    | Key Vault            | Manages secrets and configuration settings
-**[prefix]la**    | Log Analytics Workspace  | Logs activity of all components
-**[prefix]ldrai** | Application Insights | Monitors FHIR-Bulk Loader
-**[prefix]ldrtopic** | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account
-**[prefix]pxyai** | Application Insights | Monitors FHIR Proxy application
-**[prefix]rc**    | Redis Cache  | Supports FHIR Proxy
+[prefix]**fhir**  | **PaaS** | **Azure API for FHIR**
+[prefix]**pxyfa** | **Function App** | **FHIR-Proxy**
+[prefix]**ldrfa** | **Function App** | **FHIR-Bulk Loader**
+[prefix]**asp**   | App Service plan |  Shared by FHIR-Proxy & FHIR-Bulk Loader function apps
+[prefix]**cr**    | Container registry   |   Supports Azure API for FHIR `$convert-data` operation
+[prefix]**fssa**  | Storage account      | Supports Azure API for FHIR `$export` operation and Event Grid for FHIR-Bulk Loader
+[prefix]**funsa** | Storage account      | Supports FHIR-Proxy and FHIR-Bulk Loader functions
+[prefix]**kv**    | Key Vault            | Manages secrets and configuration settings
+[prefix]**la**    | Log Analytics Workspace  | Logs activity of all components
+[prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader
+[prefix]**ldrtopic** | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account
+[prefix]**pxyai** | Application Insights | Monitors FHIR Proxy application
+[prefix]**rc**    | Redis Cache  | Supports FHIR Proxy
 
 
 ## Step 2 - Complete FHIR-Proxy Authentication 

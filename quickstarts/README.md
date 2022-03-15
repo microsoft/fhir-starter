@@ -55,7 +55,7 @@ Fill in the parameter values. Click **Review + create** when ready, and then cli
 
 _Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes._
 
-In your newly created resource group, you should see the deployed components as listed below. 
+In your resource group, you should see the components as listed below. 
 
 
 Name          | Type                 |  Purpose                               

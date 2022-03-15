@@ -55,6 +55,86 @@ Fill in the parameter values. Click **Review + create** when ready, and then cli
 
 _Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes._
 
+In your newly created resource group, you should see the deployed resources as listed below. 
+
+
+Name          | Type                 |  Purpose                               
+--------------|----------------------|----------------------------------------
+[prefix]fhir  | PaaS | **Azure API for FHIR**
+[prefix]pxyfa | Function App | **FHIR-Proxy**
+[prefix]ldrfa | Function App | **FHIR-Bulk Loader**
+[prefix]asp   | App Service plan     |  Shared by FHIR-Proxy & FHIR-Bulk Loader function apps
+[prefix]cr    | Container registry   |   Supports Azure API for FHIR `$convert-data` operation
+[prefix]fssa  | Storage account      | Supports Azure API for FHIR `$export` operation and Event Grid for FHIR-Bulk Loader
+[prefix]funsa | Storage account      | Supports FHIR-Proxy and FHIR-Bulk Loader functions
+[prefix]kv    | Key Vault            | Manages secrets and configuration settings
+[prefix]la    | Log Analytics Workspace  | Logs activity of all components
+[prefix]ldrai | Application Insights | Monitors FHIR-Bulk Loader
+[prefix]ldrtopic | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account
+[prefix]pxyai | Application Insights | Monitors FHIR Proxy application
+[prefix]rc    | Redis Cache  | Supports FHIR Proxy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once the initial deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 
 

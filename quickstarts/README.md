@@ -58,8 +58,8 @@ _Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with t
 When the deployment finishes, you should see these components in your resource group. 
 
 
-Name          | Type                 |  Purpose                               
---------------|----------------------|----------------------------------------
+Name              | Type                 |  Purpose                               
+------------------|----------------------|----------------------------------------
 [prefix]**fhir**  | **PaaS** | **Azure API for FHIR**
 [prefix]**pxyfa** | **Function App** | **FHIR-Proxy**
 [prefix]**ldrfa** | **Function App** | **FHIR-Bulk Loader**

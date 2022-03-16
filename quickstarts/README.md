@@ -51,7 +51,7 @@ __Note:__ It is recommended to create a new resource group first and check to ma
 
 Fill in the parameter values. Make sure to select the "true" values as shown. Click **Review + create** when ready, and then click **Create** on the next page. 
 
-<img src="./images/ARM_template_config2.png" height="450"> 
+<img src="./images/ARM_template_config2.png" height="470"> 
 
 _Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes._
 

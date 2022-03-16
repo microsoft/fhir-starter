@@ -61,14 +61,14 @@ When the deployment finishes, you should see these components in your resource g
 
 Name              | Type                 |  Purpose                               
 ------------------|----------------------|----------------------------------------
-[prefix]**fhir**  | **PaaS** | **Azure API for FHIR**
-[prefix]**pxyfa** | **Function App** | **FHIR-Proxy**
-[prefix]**ldrfa** | **Function App** | **FHIR-Bulk Loader**
+[prefix]**fhir**  | **PaaS** | **Azure API for FHIR** - managed FHIR service
+[prefix]**pxyfa** | **Function App** | **FHIR-Proxy** - filter input/output of FHIR data
+[prefix]**ldrfa** | **Function App** | **FHIR-Bulk Loader** - bulk ingest FHIR data
 [prefix]**asp**   | App Service Plan | Shared by FHIR-Proxy and FHIR-Bulk Loader function apps
 [prefix]**cr**    | Container Registry   | Supports Azure API for FHIR `$convert-data` operation
 [prefix]**fssa**  | Storage account      | Supports Azure API for FHIR `$export` operation and Event Grid for FHIR-Bulk Loader
 [prefix]**funsa** | Storage account      | Supports FHIR-Proxy and FHIR-Bulk Loader functions
-[prefix]**kv**    | Key Vault            | Manages secrets and configuration settings
+[prefix]**kv**    | Key Vault            | Stores secrets and configuration settings
 [prefix]**la**    | Log Analytics Workspace  | Logs activity of all components
 [prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader
 [prefix]**ldrtopic** | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account

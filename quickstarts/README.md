@@ -4,7 +4,7 @@
 
 The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) (ARM) template contained in this folder is intended to replicate, where possible, the `deployFhirStarter.bash` script hosted in [another folder](https://github.com/microsoft/fhir-starter/tree/main/scripts) in this repo (please see the note below about the intended environment for ARM template deployment). Unlike the `deployFhirStarter.bash` script, the quickstart ARM template deploys [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview), [FHIR-Proxy](https://github.com/microsoft/fhir-proxy), and [FHIR-Bulk Loader](https://github.com/microsoft/fhir-loader) (the `deployFhirStarter.bash` script only deploys Azure API for FHIR). 
 
-__Note:__ This quickstart ARM template is not intended for deployment in a production environment. The intended use for this ARM template is to deploy resources in an Azure [training environment](https://github.com/microsoft/azure-healthcare-apis-workshop). Please proceed accordingly.
+__Note:__ This quickstart ARM template is not intended for deploying resources in a production environment. The intended use is for an Azure [training environment](https://github.com/microsoft/azure-healthcare-apis-workshop). Please proceed accordingly.
 
 ## Deploy Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader
 

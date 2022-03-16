@@ -75,6 +75,8 @@ Name              | Type                 |  Purpose
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
 [prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 
+### Data Flow
+Note: [Postman](https://www.getpostman.com/) is shown as an example REST client. If you are interested in setting up Postman to connect with Azure API for FHIR, please see [here](https://github.com/microsoft/health-architectures/tree/main/Postman) after completing steps 2 and 3 below.
 <img src="./images/Quickstart_ARM_template_components_deployed.png" height="450">
 
 ## Step 2 - Complete FHIR-Proxy Authentication 

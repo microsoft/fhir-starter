@@ -53,7 +53,7 @@ Fill in the parameter values. Make sure to select the "true" values as shown. Cl
 
 <img src="./images/ARM_template_config2.png" height="470"> 
 
-Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes.
+__Note:__ Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes.
 
 ### Deployed Components
 When the deployment finishes, you should see these components in your resource group. 
@@ -76,7 +76,7 @@ Name              | Type                 |  Purpose
 [prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 
 ### Data Flow
-Note: [Postman](https://www.getpostman.com/) is shown as an example REST client. If you are interested in setting up Postman to connect with Azure API for FHIR, please see [here](https://github.com/microsoft/health-architectures/tree/main/Postman) after completing steps 2 and 3 below. 
+__Note:__ [Postman](https://www.getpostman.com/) is shown as an example REST client. If you are interested in setting up Postman to connect with Azure API for FHIR, please see [here](https://github.com/microsoft/health-architectures/tree/main/Postman) after completing steps 2 and 3 below. 
 
 <img src="./images/Quickstart_ARM_template_components_deployed.png" height="450">
 

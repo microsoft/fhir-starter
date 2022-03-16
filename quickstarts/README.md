@@ -51,7 +51,7 @@ __Note:__ It is recommended to create a new resource group first and check to ma
 
 Fill in the parameter values. Make sure to select the "true" values as shown. Click **Review + create** when ready, and then click **Create** on the next page. 
 
-![Custom Deployment Page](./images/ARM_template_config2.png) 
+<img src="./images/ARM_template_config2.png" height="450"> 
 
 _Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes._
 
@@ -75,7 +75,7 @@ Name              | Type                 |  Purpose
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
 [prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 
-<img src="./images/Quickstart_ARM_template_components_deployed.png" height="468">
+<img src="./images/Quickstart_ARM_template_components_deployed.png" height="450">
 
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once the initial deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 

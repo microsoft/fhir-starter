@@ -75,7 +75,7 @@ Name              | Type                 |  Purpose
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
 [prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 
-![Components Deployed](./Quickstart_ARM_template_components_deployed.png)
+![Components Deployed](./images/Quickstart_ARM_template_components_deployed.png)
 
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once the initial deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 

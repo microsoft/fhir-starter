@@ -75,27 +75,28 @@ Name              | Type                 |  Purpose
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
 [prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 
+![Components Deployed](./Quickstart_ARM_template_components_deployed.png)
 
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once the initial deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 
 
 1. In the Azure Portal, navigate to the FHIR-Proxy function app that was deployed by the resource manager template. 
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH1.png)
+![Enable Authentication Step 2](./images/FHIR-PROXY-AUTH1.png)
 
 2. Select the function app and select **Authentication**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH2.png)
+![Enable Authentication Step 2](./images/FHIR-PROXY-AUTH2.png)
 
 3. Click **Add identity provider**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH3.png)
+![Enable Authentication Step 2](./images/FHIR-PROXY-AUTH3.png)
 
 4. Select **Microsoft**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH4.png)
+![Enable Authentication Step 2](./images/FHIR-PROXY-AUTH4.png)
 
 5. Configure basic settings as follows and click **Next Permissions**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH5a.png)
+![Enable Authentication Step 2](./images/FHIR-PROXY-AUTH5a.png)
 
 6. Click **Add**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH6.png)
+![Enable Authentication Step 2](./images/FHIR-PROXY-AUTH6.png)
 
 At this point, the FHIR-Proxy application registration is complete. 
 
@@ -104,31 +105,31 @@ At this point, the FHIR-Proxy application registration is complete.
 Further configuration is required to define **App Roles and Permissions**. 
 
 1. Click on the link next to the Microsoft identity provider, which will open the Azure AD blade.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH7.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH7.png)
 
 2. Click on **Manifest**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH8.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH8.png)
 
 3. Update the **appRoles** element using the data in the [app roles json](./fhirproxyroles.json) file.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH9.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH9.png)
 
 4. The **appRoles** element should look something like shown below. Click **Save**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH10.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH10.png)
 
 5. Select **API permissions** and **Add a Permission**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH11.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH11.png)
 
 6. Select **APIs my organization uses**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH12.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH12.png)
 
 7. Filter the results to "Azure Healthcare APIs". Click on **Azure Healthcare APIs**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH13.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH13.png)
 
 8. Select the **user_impersonation permission** box and click **Add permissions**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH14.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH14.png)
 
 9. Verify the **API permissions**.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH15.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH15.png)
 
 10. Verify that the **App roles** were created properly.
-![Enable Authentication Step 1](./images/FHIR-PROXY-AUTH16.png)
+![Configure App Roles Step 3](./images/FHIR-PROXY-AUTH16.png)

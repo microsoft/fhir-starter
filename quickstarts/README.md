@@ -53,7 +53,7 @@ Fill in the parameter values. Make sure to select the "true" values as shown. Cl
 
 <img src="./images/ARM_template_config2.png" height="470"> 
 
-_Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes._
+Note: Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader with the ARM template typically takes around 20 minutes.
 
 ### Deployed Components
 When the deployment finishes, you should see these components in your resource group. 

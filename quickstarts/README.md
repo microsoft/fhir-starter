@@ -12,44 +12,24 @@ To begin, **CTRL+click** (Windows or Linux) or **CMD+click** (Mac) on the **Depl
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Ffhir-starter%2Fmain%2Fquickstarts%2Fdeployfhirtrain.json)
 
-The Azure Resource Manager / Bicep template located in this folder will deploy the following components:
+The ARM Bicep template located in this folder will deploy the following components:
 + [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview)
 + [FHIR-Proxy](https://github.com/microsoft/fhir-proxy)
 + [FHIR-Bulk Loader](https://github.com/microsoft/fhir-loader)
 
-In an effort to simplify the deployment process, [Managed Service Identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) are used wherever possible. This template currently links to a repo that contains modifications to ensure that the MSIs function as expected. This repo is not in sync with the origin repos. The bicep code or corresponding ARM template may be modified to update this reference.
+__Important:__ In order to successfully deploy resources with this ARM template, the user must have [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) rights for the [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal) where the components are deployed. Additionally, the user must have the [Application Administrator](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#application-administrator) role in the AAD tenant in order to create application registrations.
 
-There are only a few required parameters for deployment: 
-+ Subscription
-+ [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
-+ Azure Region (Supported Regions: 
-    South Africa North, 
-    South East Asia, 
-    Australia East, 
-    Canada Central, 
-    North Europe, 
-    West Europe, 
-    Germany West Central, 
-    Japan East, 
-    Switzerland North, 
-    UK South, 
-    UK West, 
-    East US, 
-    East US 2, 
-    North Central US, 
-    South Central US, 
-    West Central US, 
-    West US 2) 
-    
-+ Deployment Prefix (3-7 characters that will be used as a prefix for all created resources - e.g., "lrn01")
-
-__Important:__ In order to successfully deploy resources with this ARM template, the user must have [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) rights for the resource group where the components are being deployed. Additionally, the user must have the [Application Administrator](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#application-administrator) role to create application registrations in Azure Active Directory. 
-
-__Note:__ It is recommended to create a new resource group first and check to make sure that you have Owner rights before running the ARM template. Once you check the resource group and confirm that you have Owner rights, proceed to run the template and deploy into that resource group.
+__Note:__  Before running the ARM template, it is recommended to create a new resource group first and check to make sure that you have Owner rights for the resource group. Once you confirm that you have Owner rights, then proceed to run the template and deploy into that resource group.
 
 ## Step 1 - Initial deployment 
 
-Fill in the parameter values. Make sure to select the "true" values as shown. Click **Review + create** when ready, and then click **Create** on the next page. 
+Select or fill in the parameter values. 
+
+The **Deploymemt Prefix** is your your choice and will be used as a prefix for all created resources ("trn05" is shown as an example).
+
+Make sure to select the "true" values as shown. 
+
+Click **Review + create** when ready, and then click **Create** on the next page. 
 
 <img src="./images/ARM_template_config2.png" height="470"> 
 

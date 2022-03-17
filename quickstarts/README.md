@@ -25,7 +25,7 @@ __Note:__  Before running the ARM template, it is recommended to create a new re
 
 Select or fill in the parameter values. 
 
-The **Deploymemt Prefix** is your choice and will be used as a prefix for all created resources ("trn05" is shown as an example).
+The **Deployment Prefix** is your choice and will be used as a prefix for all created resources ("trn05" is shown as an example).
 
 Make sure to select the "true" values as shown. 
 

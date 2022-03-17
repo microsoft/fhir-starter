@@ -55,7 +55,7 @@ Name              | Type                 |  Purpose
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
 [prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 
-### Data Flow
+### Deployed Components Data Flow
 
 <img src="./images/Quickstart_ARM_template_components_deployed.png" height="410">
 

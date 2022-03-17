@@ -31,7 +31,7 @@ Make sure to select the "true" values as shown.
 
 Click **Review + create** when ready, and then click **Create** on the next page. 
 
-<img src="./images/ARM_template_config2.png" height="470"> 
+<img src="./images/ARM_template_config2.png" height="420"> 
 
 __Note:__ Deployment of Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader typically takes 20 minutes.
 
@@ -57,7 +57,7 @@ Name              | Type                 |  Purpose
 
 ### Data Flow
 
-<img src="./images/Quickstart_ARM_template_components_deployed.png" height="450">
+<img src="./images/Quickstart_ARM_template_components_deployed.png" height="410">
 
 __Note:__ [Postman](https://www.getpostman.com/) is shown as an example REST client. If you are interested in setting up Postman to connect with Azure API for FHIR, please see [here](https://github.com/microsoft/health-architectures/tree/main/Postman) after completing steps 2 and 3 below. 
 
@@ -65,22 +65,22 @@ __Note:__ [Postman](https://www.getpostman.com/) is shown as an example REST cli
 Once the initial deployment has completed, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 
 
 1. In the Azure Portal, navigate to the FHIR-Proxy function app that was deployed by the resource manager template. 
-<img src="./images/FHIR-PROXY-AUTH1.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH1.png" height="410">
 
 2. Select the function app and select **Authentication**.
-<img src="./images/FHIR-PROXY-AUTH2.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH2.png" height="410">
 
 3. Click **Add identity provider**.
-<img src="./images/FHIR-PROXY-AUTH3.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH3.png" height="410">
 
 4. Select **Microsoft**.
-<img src="./images/FHIR-PROXY-AUTH4.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH4.png" height="410">
 
 5. Configure basic settings as follows and click **Next Permissions**.
-<img src="./images/FHIR-PROXY-AUTH5a.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH5a.png" height="410">
 
 6. Click **Add**.
-<img src="./images/FHIR-PROXY-AUTH6.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH6.png" height="410">
 
 At this point, the FHIR-Proxy application registration is complete. 
 
@@ -89,31 +89,31 @@ At this point, the FHIR-Proxy application registration is complete.
 Further configuration is required to define **App Roles and Permissions**. 
 
 1. Click on the link next to the Microsoft identity provider, which will open the Azure AD blade.
-<img src="./images/FHIR-PROXY-AUTH7.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH7.png" height="410">
 
 2. Click on **Manifest**.
-<img src="./images/FHIR-PROXY-AUTH8.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH8.png" height="410">
 
 3. Update the **appRoles** element using the data in the [app roles json](./fhirproxyroles.json) file.
-<img src="./images/FHIR-PROXY-AUTH9.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH9.png" height="410">
 
 4. The **appRoles** element should look something like shown below. Click **Save**.
-<img src="./images/FHIR-PROXY-AUTH10.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH10.png" height="410">
 
 5. Select **API permissions** and **Add a Permission**.
-<img src="./images/FHIR-PROXY-AUTH11.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH11.png" height="410">
 
 6. Select **APIs my organization uses**.
-<img src="./images/FHIR-PROXY-AUTH12.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH12.png" height="410">
 
 7. Filter the results to "Azure Healthcare APIs". Click on **Azure Healthcare APIs**.
-<img src="./images/FHIR-PROXY-AUTH13.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH13.png" height="410">
 
 8. Select the **user_impersonation permission** box and click **Add permissions**.
-<img src="./images/FHIR-PROXY-AUTH14.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH14.png" height="410">
 
 9. Verify the **API permissions**.
-<img src="./images/FHIR-PROXY-AUTH15.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH15.png" height="410">
 
 10. Verify that the **App roles** were created properly.
-<img src="./images/FHIR-PROXY-AUTH16.png" height="450">
+<img src="./images/FHIR-PROXY-AUTH16.png" height="410">

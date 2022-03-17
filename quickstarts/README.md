@@ -76,7 +76,7 @@ Once the initial deployment has completed, additional steps are necessary to com
 4. Select **Microsoft**.
 <img src="./images/FHIR-PROXY-AUTH4.png" height="410">
 
-5. Configure basic settings as follows and click **Next Permissions**.
+5. Configure basic settings as follows. The **Allow unauthenticated access** button should remain checked so that the FHIR service Capability Statement is generally available. Click **Next Permissions**. 
 <img src="./images/FHIR-PROXY-AUTH5a.png" height="410">
 
 6. Click **Add**.

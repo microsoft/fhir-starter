@@ -47,7 +47,7 @@ Name              | Type                 |  Purpose
 [prefix]**asp**   | App Service Plan | Shared by FHIR-Proxy and FHIR-Bulk Loader function apps
 [prefix]**cr**    | Container Registry   | Supports Azure API for FHIR `$convert-data` operation
 [prefix]**fssa**  | Storage account      | Supports Azure API for FHIR `$export` operation and Event Grid for FHIR-Bulk Loader
-[prefix]**funsa** | Storage account      | Supports FHIR-Proxy and FHIR-Bulk Loader functions
+[prefix]**funsa** | Storage account      | Supports FHIR-Proxy and FHIR-Bulk Loader function apps
 [prefix]**kv**    | Key Vault            | Stores secrets and configuration settings
 [prefix]**la**    | Log Analytics Workspace  | Logs activity of all components
 [prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader

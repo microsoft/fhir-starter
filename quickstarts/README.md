@@ -25,7 +25,7 @@ __Note:__  Before running the ARM template, it is recommended to create a new re
 
 1. Select or fill in the parameter values (see image below). 
 
-+ Enter a **Deployment Prefix** of your choosing. This will be used as a prefix for all created resources ("trn05" is shown as an example).
++ Enter a custom **Deployment Prefix**. This will be prepended to the names of all created resources ("trn05" is shown as an example prefix).
 
 + Make sure to select the "true" values as shown. 
 

@@ -23,13 +23,13 @@ __Note:__  Before running the ARM template, it is recommended to create a new re
 
 ## Step 1 - Initial deployment 
 
-Select or fill in the parameter values. 
+1. Select or fill in the parameter values (see image below). 
 
-The **Deployment Prefix** is your choice and will be used as a prefix for all created resources ("trn05" is shown as an example).
++ Enter a **Deployment Prefix** of your choosing. This will be used as a prefix for all created resources ("trn05" is shown as an example).
 
-Make sure to select the "true" values as shown. 
++ Make sure to select the "true" values as shown. 
 
-Click **Review + create** when ready, and then click **Create** on the next page. 
+2. Click **Review + create** when ready, and then click **Create** on the next page. 
 
 <img src="./images/ARM_template_config2.png" height="420"> 
 

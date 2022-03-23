@@ -53,7 +53,7 @@ Name              | Type                 |  Purpose
 [prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader
 [prefix]**ldrtopic** | Event Grid System Topic | Triggers FHIR-Bulk Loader processing of FHIR bundles placed in the fssa storage account
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
-[prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
+[prefix]**rc**    | Redis Cache  | Improves FHIR-Proxy performance  
 
 ### Data Flow
 

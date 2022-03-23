@@ -19,7 +19,7 @@ The ARM/Bicep template will deploy the following components:
 
 __Important:__ In order to successfully deploy resources with this ARM template, the user must have [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) rights for the [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal) where the components are deployed. Additionally, the user must have the [Application Administrator](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#application-administrator) role in AAD in order to create application registrations.
 
-__Note:__  Before running the ARM template, it is recommended to create a new resource group first and check to make sure that you have Owner rights for the resource group. Once you confirm that you have Owner rights, then proceed to run the template and deploy into that resource group.
+__Note:__  Before running the ARM template, it is recommended to create a new resource group first and check to make sure that you have Owner rights. Once you confirm that you have Owner rights, then proceed to run the template and deploy into that resource group.
 
 ## Step 1 - Initial deployment 
 

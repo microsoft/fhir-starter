@@ -49,7 +49,7 @@ Name              | Type                 |  Purpose
 [prefix]**fssa**  | Storage account      | Blob storage for Azure API for FHIR `$export` operation and FHIR-Bulk Loader
 [prefix]**funsa** | Storage account      | Storage for FHIR-Proxy and FHIR-Bulk Loader function apps
 [prefix]**kv**    | Key Vault            | Stores secrets and configuration settings
-[prefix]**la**    | Log Analytics Workspace  | Logs activity of all components
+[prefix]**la**    | Log Analytics Workspace  | Logs the activity of deployed components
 [prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader
 [prefix]**ldrtopic** | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application

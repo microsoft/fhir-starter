@@ -12,7 +12,7 @@ To begin, **CTRL+click** (Windows or Linux) or **CMD+click** (Mac) on the **Depl
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Ffhir-starter%2Fmain%2Fquickstarts%2Fdeployfhirtrain.json)
 
-The ARM Bicep template will deploy the following components:
+The ARM/Bicep template will deploy the following components:
 + [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview)
 + [FHIR-Proxy](https://github.com/microsoft/fhir-proxy)
 + [FHIR-Bulk Loader](https://github.com/microsoft/fhir-loader)

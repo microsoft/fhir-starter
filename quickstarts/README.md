@@ -51,7 +51,7 @@ Name              | Type                 |  Purpose
 [prefix]**kv**    | Key Vault            | Stores secrets and configuration settings
 [prefix]**la**    | Log Analytics Workspace  | Logs the activity of deployed components
 [prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader
-[prefix]**ldrtopic** | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account
+[prefix]**ldrtopic** | Event Grid System Topic | Triggers FHIR-Bulk Loader processing of FHIR bundles placed in the fssa storage account
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
 [prefix]**rc**    | Redis Cache  | Supports FHIR-Proxy
 

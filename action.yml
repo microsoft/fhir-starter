@@ -1,0 +1,22 @@
+name: bicep-build-output
+description: Build an ARM template from Bicep main file
+
+branding:
+  icon: check
+  color: blue
+  
+inputs:
+  bicepFilePath:
+    description: Bicep main file path
+    required: true
+    default: ./main.bicep
+  outputFilePath:
+    description: ARM template output path
+    required: false
+    default: ./azuredeploy.json
+
+runs:
+  using: composite
+  steps:
+    - run: az bicep build --file ${{ inputs.bicepFilePath }} --outfile ${{ inputs.outputFilePath }}
+      shell: bash

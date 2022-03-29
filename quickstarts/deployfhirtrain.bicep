@@ -44,27 +44,41 @@ param enableProfileValidation bool = false
 param enableTransformBundle bool = true
 @description('Enable the Patient Everything module in FHIR PROXY')
 param enableEverythingPatient bool = false
-
+@description('Configure FHIR Proxy to use Managed Service Identity (MSI) to access FHIR Server')
+param useMSI bool = true
 
 var tenantId = subscription().tenantId
 // Unique Id used to generate resource names
-var uniqueId  = take(uniqueString(subscription().id, resourceGroup().id, toLower(deploymentPrefix)),6)
+var uniqueId  = toLower(take(uniqueString(subscription().id, resourceGroup().id, deploymentPrefix),6))
 
 // Default resource names
 
 // Azure key Vault
 var kvName   = '${deploymentPrefix}${uniqueId}kv'
-
 // Log Analytics Workspace
 var laName   = '${deploymentPrefix}${uniqueId}la'
-
 // API for FHIR Service Name
 var apiForFhirServiceName = '${deploymentPrefix}${uniqueId}fhir'
-
 // API for FHIR export and import storage account name
-var saName   = '${deploymentPrefix}${uniqueId}fssa'
+var saName   = '${deploymentPrefix}${uniqueId}expsa'
 // API for FHIR artifact container registry name
 var containerRegistryName   = '${deploymentPrefix}${uniqueId}cr'
+// -- containers to be created in export storage account
+var dataLakeContainerName = 'fhirdatalake'
+var exportStorageContainerList = [
+  'anonymization'
+  'bundles'
+  'export'
+  'export-trigger'
+  'ndjson'
+  'zip'
+  toLower(dataLakeContainerName)
+]
+// -- deployment flags
+var deployfhirAdlsLink = true
+
+// -- other variables
+var functionPlanOS = 'Windows'
 
 // Azure Log Analytics Workspace
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
@@ -136,37 +150,9 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-06-01
     }
   }
 }
-resource bundleContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
-  name: '${exportStorageAccount.name}/default/bundles'
-  properties: {
-  }
-}
-resource ndjsonContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
-  name: '${exportStorageAccount.name}/default/ndjson'
-  properties: {
-  }
-}
-resource zipContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
-  name: '${exportStorageAccount.name}/default/zip'
-  properties: {
-  }
-}
-resource exportContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
-  name: '${exportStorageAccount.name}/default/export'
-  properties: {
-  }
-}
-resource exportTriggerContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
-  name: '${exportStorageAccount.name}/default/export-trigger'
-  properties: {
-  }
-}
-resource anonymizationTriggerContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-06-01' = {
-  name: '${exportStorageAccount.name}/default/anonymization'
-  properties: {
-  }
-}
-
+resource createBlobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = [for containerName in exportStorageContainerList: {
+  name: '${exportStorageAccount.name}/default/${containerName}'
+}]
 resource fileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-06-01' = {
   name: '${exportStorageAccount.name}/default'
   properties: {
@@ -453,6 +439,7 @@ resource keyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   }
 }
 // API for FHIR Resource
+var cosmosDbThroughput = 400
 var systemIdentity = {
   type: 'SystemAssigned'
 }
@@ -466,6 +453,9 @@ resource apiForFhir 'Microsoft.HealthcareApis/services@2021-06-01-preview' ={
     authenticationConfiguration: {
       audience: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
       authority: uri(environment().authentication.loginEndpoint,subscription().tenantId)
+    }
+    cosmosDbConfiguration:{
+        offerThroughput: cosmosDbThroughput
     }
     exportConfiguration:{
       storageAccountName: exportStorageAccount.name
@@ -506,10 +496,16 @@ resource fhirDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
     ]
   }
 }
-
-// FHIR Service parameters that are saved to KV
+// -- add secrets to Key Vault 
+// -- add 'Old' secrets for compatibility with bash scripts and related tools
 resource fhirServerUrlSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' =  {
   name: '${keyVault.name}/fhirServiceUrl'
+  properties:{
+    value: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
+  }
+}
+resource fhirServerUrlSecretOld 'Microsoft.KeyVault/vaults/secrets@2019-09-01' =  {
+  name: '${keyVault.name}/FS-URL'
   properties:{
     value: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
   }
@@ -520,14 +516,43 @@ resource fhirServerTenantNameSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-0
     value: fhirServerTenantName
   }
 }
+resource fhirServerTenantNameSecretOld 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = if(!empty(fhirServerTenantName)) {
+  name: '${keyVault.name}/FS-TENANT-NAME'
+  properties:{
+    value: fhirServerTenantName
+  }
+}
+resource fhirProxyHostNameSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' =  {
+  name: '${keyVault.name}/fhirProxyHostName'
+  properties:{
+    value: '${fhirProxyFunctionApp.name}.azurewebsites.net'
+  }
+}
+resource fhirProxyHostNameSecretOld 'Microsoft.KeyVault/vaults/secrets@2019-09-01' =  {
+  name: '${keyVault.name}/FP-HOST'
+  properties:{
+    value: '${fhirProxyFunctionApp.name}.azurewebsites.net'
+  }
+}
 resource logAnalyticsWorkspacenameSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
   name: '${keyVault.name}/logAnalyticsWorkspaceName'
   properties:{
     value: logAnalyticsWorkspace.name
   }
 }
-
-// Assign API for  FHIR service Permissions to Storage Account
+resource createKeyVaultRedisSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${keyVault.name}/proxyRedisConnectionString'
+  properties:{
+    value: '${redisCache.properties.hostName}:${redisCache.properties.sslPort},password=${listKeys(redisCache.id, redisCache.apiVersion).primaryKey},ssl=True,abortConnect=False' 
+  }
+}
+resource functionsStorageAccountConnectionSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${keyVault.name}/functionsStorageAccountConnectionString'
+  properties:{
+    value: 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
+  }
+}
+// -- assign permissions for FHIR Service, FHIR Proxy, FHIR Loader
 module functionsStoragePermissions './assignpermissions.bicep' = {
   name: 'proxyFHIRPermissions'
   params: {
@@ -546,16 +571,43 @@ module registryPermissions './assignpermissions.bicep' = {
     resourceName: artifactContainerRegistry.name
   }
 }
+module loaderPermissionsFHIRWriter './assignpermissions.bicep' = {
+  name: 'loaderPermissionsFHIRWriter'
+  params: {
+    principalId: fhirLoaderFunctionApp.identity.principalId
+    builtInRoleType: 'FHIRDataWriter'
+    resourceType: 'FHIR'
+    resourceName: apiForFhir.name
+  }
+}
+module proxyPermissionsFHIRContributor './assignpermissions.bicep' = {
+  name: 'proxyPermissionsFHIRContributor'
+  params: {
+    principalId: fhirProxyFunctionApp.identity.principalId
+    builtInRoleType: 'FHIRDataContributor'
+    resourceType: 'FHIR'
+    resourceName: apiForFhir.name
+  }
+}
+module proxyPermissionsFHIRWriter './assignpermissions.bicep' = {
+  name: 'proxyPermissionsFHIRWriter'
+  params: {
+    principalId: fhirProxyFunctionApp.identity.principalId
+    builtInRoleType: 'FHIRDataWriter'
+    resourceType: 'FHIR'
+    resourceName: apiForFhir.name
+  }
+}
 
 //
 // Healthcare APIs (API for FHIR) : Training starter FHIR Loader and Proxy
 // 
 
-
 // FHIR Loader and Proxy resource names
 var proxyStorageAccountName = '${deploymentPrefix}${uniqueId}funsa'
 var proxyFunctionAppName    = '${deploymentPrefix}${uniqueId}pxyfa'
 var loaderFunctionAppName   = '${deploymentPrefix}${uniqueId}ldrfa'
+var adlsSyncFunctionAppName = '${deploymentPrefix}${uniqueId}synfa'
 var redisCacheName          = '${deploymentPrefix}${uniqueId}rc'
 var appServicePlanName      = '${deploymentPrefix}${uniqueId}asp'
 var proxyAppInsightName     = '${deploymentPrefix}${uniqueId}pxyai'
@@ -563,11 +615,11 @@ var loaderAppInsightName    = '${deploymentPrefix}${uniqueId}ldrai'
 var loaderEventGridTopicName = '${deploymentPrefix}${uniqueId}ldrtopic'
 
 // FHIR Proxy Code Repo
-var fhirProxyRepoUrl = 'https://github.com/ToddM2/fhir-proxy'
-var fhirProxyRepoBranch = 'MSIOnly'
+var fhirProxyRepoUrl = 'https://github.com/microsoft/fhir-proxy'
+var fhirProxyRepoBranch = 'main'
 // FHIR Bulk Loader Code Repo
-var fhirLoaderRepoUrl = 'https://github.com/ToddM2/fhir-loader'
-var fhirLoaderRepoBranch = 'MSIOnly'
+var fhirLoaderRepoUrl = 'https://github.com/microsoft/fhir-loader'
+var fhirLoaderRepoBranch = 'main'
 
 
 // create a storage account for FHIR Loader/Proxy and enable diagnostic logging
@@ -835,14 +887,22 @@ resource redisCacheDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01
   }
 }
 // App Service Plan for FHIR Bulk Loader and FHIR Proxy
+param appServicePlanSku object = {
+  name: 'EP1'
+  tier: 'ElasticPremium'
+  size: 'EP1'
+  family: 'EP'
+}
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-09-01' = {
   name: appServicePlanName
   location: resourceLocation
   tags: resourceTags
-  sku: {
-    name: 'S1'
+  sku: appServicePlanSku
+  kind: 'elastic'
+  properties:{
+    maximumElasticWorkerCount: 5
+    reserved: (functionPlanOS == 'Linux') ? true : false
   }
-  kind: 'functionapp'
 }
 resource appServicePlanDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   scope: appServicePlan
@@ -879,7 +939,7 @@ resource fhirProxyFunctionApp 'Microsoft.Web/sites@2021-02-01' = {
     serverFarmId: appServicePlan.id
     siteConfig: {
       use32BitWorkerProcess: false
-      alwaysOn: true
+      //alwaysOn: true
       ftpsState:'FtpsOnly'
       minTlsVersion: '1.2'
     }
@@ -928,7 +988,7 @@ resource fhirLoaderFunctionApp 'Microsoft.Web/sites@2021-02-01' = {
     serverFarmId: appServicePlan.id
     siteConfig: {
       use32BitWorkerProcess: false
-      alwaysOn: true
+      //alwaysOn: true
       ftpsState:'FtpsOnly'
       minTlsVersion: '1.2'
     }
@@ -962,49 +1022,7 @@ resource fhirLoaderFunctionAppDiagnostics 'Microsoft.Insights/diagnosticSettings
   }
 }
 
-// Assign Loader and Proxy permissions to API for  FHIR service
-module loaderPermissionsFHIRWriter './assignpermissions.bicep' = {
-  name: 'loaderPermissionsFHIRWriter'
-  params: {
-    principalId: fhirLoaderFunctionApp.identity.principalId
-    builtInRoleType: 'FHIRDataWriter'
-    resourceType: 'FHIR'
-    resourceName: apiForFhir.name
-  }
-}
-module proxyPermissionsFHIRContributor './assignpermissions.bicep' = {
-  name: 'proxyPermissionsFHIRContributor'
-  params: {
-    principalId: fhirProxyFunctionApp.identity.principalId
-    builtInRoleType: 'FHIRDataContributor'
-    resourceType: 'FHIR'
-    resourceName: apiForFhir.name
-  }
-}
-module proxyPermissionsFHIRWriter './assignpermissions.bicep' = {
-  name: 'proxyPermissionsFHIRWriter'
-  params: {
-    principalId: fhirProxyFunctionApp.identity.principalId
-    builtInRoleType: 'FHIRDataWriter'
-    resourceType: 'FHIR'
-    resourceName: apiForFhir.name
-  }
-}
 
-
-//  save secrets redis and storage account connection string
-resource createKeyVaultRedisSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
-  name: '${keyVault.name}/proxyRedisConnectionString'
-  properties:{
-    value: '${redisCache.properties.hostName}:${redisCache.properties.sslPort},password=${listKeys(redisCache.id, redisCache.apiVersion).primaryKey},ssl=True,abortConnect=False' 
-  }
-}
-resource functionsStorageAccountConnectionSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
-  name: '${keyVault.name}/functionsStorageAccountConnectionString'
-  properties:{
-    value: 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
-  }
-}
 // FHIR loader and Proxy Application Insights instances
 resource proxyAppInsights 'microsoft.insights/components@2020-02-02-preview' = {
   name: proxyAppInsightName
@@ -1116,29 +1134,34 @@ resource fhirProxyAppSettings 'Microsoft.Web/sites/config@2021-02-01' = {
     'FUNCTIONS_WORKER_RUNTIME': 'dotnet'
     'APPINSIGHTS_INSTRUMENTATIONKEY':proxyAppInsights.properties.InstrumentationKey
     'AzureWebJobsStorage': 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
+    'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING': 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
+    'WEBSITE_CONTENTSHARE': toLower(fhirProxyFunctionApp.name)
     'FP-ADMIN-ROLE': roleAdmin
     'FP-READER-ROLE': roleReader
     'FP-WRITER-ROLE': roleWriter
     'FP-GLOBAL-ACCESS-ROLES': roleGlobal
     'FP-PATIENT-ACCESS-ROLES': rolePatient
     'FP-PARTICIPANT-ACCESS-ROLES': roleParticipant
-    'FP-HOST': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-HOST/)'
     'FP-MOD-CONSENT-OPTOUT-CATEGORY' : (enableConsentOptOut) ? 'http://loinc.org|59284-0' : ''
     'FP-PRE-PROCESSOR-TYPES': empty(fhirProxyPreProcess) ? 'FHIRProxy.preprocessors.TransformBundlePreProcess' : fhirProxyPreProcess
     'FP-POST-PROCESSOR-TYPES': empty(fhirProxyPostProcess) ? '' : fhirProxyPostProcess
+
     'FP-RBAC-NAME':'@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-RBAC-NAME/)'
-    'FP-RBAC-TENANT-NAME':'@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-RBAC-TENANT-NAME/)'
     'FP-RBAC-CLIENT-ID':'@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-RBAC-CLIENT-ID/)'
     'FP-RBAC-CLIENT-SECRET':'@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-RBAC-CLIENT-SECRET/)'
-    'FS-CLIENT-ID': ''
-    'FS-SECRET': ''
+    'FP-RBAC-TENANT-NAME':'@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FP-RBAC-TENANT-NAME/)'
     
-    // revised setting to Key Vault secret mapping
-    'FS-URL': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceUrl/)'
+    'FS-CLIENT-ID': useMSI ? '' : '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FS-CLIENT-ID/)'
+    'FS-SECRET': useMSI ? '' : '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FS-SECRET/)'
+    // revised fir proxy app settings to updated Key Vault secrets (keyVault uses fhirServicUrl instead of FS-URL)
     'FS-RESOURCE': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceUrl/)'
+    'FS-TENANT-NAME': useMSI ? '' : '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceTenantName/)'
+    'FS-URL': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceUrl/)'
+
+    'FP-HOST': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirProxyHostName/)'
     'FP-STORAGEACCT': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/functionsStorageAccountConnectionString/)'
     'FP-REDISCONNECTION': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/proxyRedisConnectionString/)'
-    'FS-TENANT-NAME': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceTenantName/)'
+
   }
 }
 
@@ -1153,15 +1176,16 @@ resource fhirLoaderAppSettings 'Microsoft.Web/sites/config@2021-02-01' = {
     'FUNCTIONS_WORKER_RUNTIME': 'dotnet'
     'APPINSIGHTS_INSTRUMENTATIONKEY': loaderAppInsights.properties.InstrumentationKey
     'AzureWebJobsStorage': 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
-   
+    'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING': 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
+    'WEBSITE_CONTENTSHARE': toLower(fhirLoaderFunctionApp.name)
     'AzureWebJobs.ImportBundleBlobTrigger.Disabled': '1'
-
-    'FS-URL': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceUrl/)'
-    'FS-TENANT-NAME': ''
-    'FP-HOST': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/proxyServiceUrl/)'
-    'FS-CLIENT-ID': ''
-    'FS-SECRET': ''
+    // fhir service settings
+    'FS-CLIENT-ID': useMSI ? '' : '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FS-CLIENT-ID/)'
     'FS-RESOURCE': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceUrl/)'
+    'FS-SECRET': useMSI ? '' : '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FS-SECRET/)'
+    'FS-TENANT-NAME': useMSI ? '' : '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/FS-TENANT-NAME/)'
+    'FS-URL': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirServiceUrl/)'
+    'FP-HOST': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirProxyHostName/)'
 
     'FBI-TRANSFORMBUNDLES' : 'true'
     'FBI-POOLEDCON-MAXCONNECTIONS': '20'
@@ -1353,6 +1377,156 @@ resource functionAppKeyVaultPermissions 'Microsoft.KeyVault/vaults/accessPolicie
         tenantId: tenantId
       }
     ]
+  }
+}
+
+
+
+// -- fhir Synapse Link deployment
+
+var fhirServiceVersion = 'R4'
+var dataLakeSyncAppName = 'workbenchfhirsynapsesyncapp'
+var dataLakeStorageAccountName  = exportStorageAccount.name
+var dataLakeEndpoint = 'https://${exportStorageAccount.name}.blob.${environment().suffixes.storage}'
+
+var dataStart = '1970-01-01 00:00:00 +00:00'
+var dataEnd = ''
+
+var fhirSynapseSettings = {
+  fhirServiceUrl: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
+  fhirServiceVersion: fhirServiceVersion
+  name: adlsSyncFunctionAppName
+  dataLakeStorageAccountName: empty(dataLakeStorageAccountName) ? 'fhirdatalake' : dataLakeStorageAccountName
+  dataLakeContainerName: empty(dataLakeContainerName) ? 'fhirdatalake' : dataLakeContainerName
+  dataLakeEndpoint: empty(dataLakeEndpoint) ? '' : dataLakeEndpoint
+  dataStart: empty(dataStart) ? '' : dataStart
+  dataEnd: empty(dataEnd) ? '' : dataEnd
+  useMSI: useMSI ? true : false
+  packageUri:'https://fhirdeploy.blob.${environment().suffixes.storage}/fhir/Microsoft.Health.Fhir.Synapse.FunctionApp.zip'
+}
+
+resource fhirAnalyticsSyncAppInsights 'microsoft.insights/components@2020-02-02-preview' = if (deployfhirAdlsLink) {
+  name: '${fhirSynapseSettings.name}ai'
+  location: resourceLocation
+  kind: 'web'
+  tags: resourceTags
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
+  }
+}
+
+var adlsAppSettings = [
+  {
+    'name':'APPINSIGHTS_INSTRUMENTATIONKEY'
+    'value': (deployfhirAdlsLink) ? fhirAnalyticsSyncAppInsights.properties.InstrumentationKey : ''
+  }
+  {
+    'name': 'AzureWebJobsStorage'
+    'value': 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
+  }
+  {
+    'name':'FUNCTIONS_EXTENSION_VERSION'
+    'value': '~2'
+  }
+  {
+    'name':'FUNCTIONS_WORKER_RUNTIME'
+    'value': 'dotnet-isolated'
+  }
+  {
+    'name':'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+    'value': 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionsStorageAccount.id, functionsStorageAccount.apiVersion).keys[0].value}'
+  }
+  {
+    'name':'WEBSITE_CONTENTSHARE' 
+    'value': toLower(dataLakeSyncAppName)
+  }
+  {
+    'name':'WEBSITE_NODE_DEFAULT_VERSION'
+    'value': '~10'
+  }
+  {
+    'name':'job__containerName'
+    'value': toLower(dataLakeContainerName)
+  }
+  {
+    'name':'job__startTime'
+    'value': fhirSynapseSettings.dataStart
+  }
+  {
+    'name':'job__endTime'
+    'value': empty(dataEnd) ? '' : dataEnd
+  }
+  {
+    'name':'dataLakeStore__storageUrl'
+    'value': fhirSynapseSettings.dataLakeEndpoint
+  }
+  {
+    'name':'fhirServer__serverUrl'
+    'value': fhirSynapseSettings.fhirServiceUrl
+  }
+  {
+    'name':'fhirServer__version'
+    'value': fhirSynapseSettings.fhirServiceVersion
+  }
+  {
+    'name':'fhirServer__authentication'
+    'value': fhirSynapseSettings.useMSI ? 'ManagedIdentity' : 'None'
+  }
+]
+
+var fhirSynapseSyncAppServicePlanId = appServicePlan.id
+
+resource fhirSynapseSyncOperationFunction  'Microsoft.Web/sites@2021-02-01' = if (deployfhirAdlsLink) {
+  name: fhirSynapseSettings.name
+  location: resourceLocation
+  tags: resourceTags
+  identity: {
+    type: 'SystemAssigned'
+  }
+  kind: 'functionapp'
+  properties: {
+    enabled: true
+    httpsOnly: true
+    clientAffinityEnabled: false
+    serverFarmId: fhirSynapseSyncAppServicePlanId
+    reserved: (functionPlanOS == 'Linux') ? true : false
+    siteConfig: {
+      use32BitWorkerProcess: false
+      ftpsState:'FtpsOnly'
+      minTlsVersion: '1.2'
+      appSettings: adlsAppSettings
+      
+    }
+  }
+}
+
+resource fhirSynapsSyncPackageDeploy 'Microsoft.Web/sites/extensions@2020-12-01' = if(deployfhirAdlsLink) {
+    name: 'MSDeploy'
+  parent: fhirSynapseSyncOperationFunction
+  properties: {
+      packageUri: fhirSynapseSettings.packageUri
+      dbType : 'None'
+      connectionString : ''
+  }
+}
+
+module syncAppStoragePermissions './assignpermissions.bicep' = if (deployfhirAdlsLink){
+    name: 'synapseSyncStoragePermissions'
+    params: {
+      principalId: fhirSynapseSyncOperationFunction.identity.principalId
+      builtInRoleType: 'StorageBlobDataContributor'
+      resourceType: 'Storage'
+      resourceName: exportStorageAccount.name
+    }
+}
+module syncAppFhirPermissions './assignpermissions.bicep' = if (deployfhirAdlsLink){
+  name: 'synapseSyncFhirPermissions'
+  params: {
+    principalId: fhirSynapseSyncOperationFunction.identity.principalId
+    builtInRoleType: 'FHIRDataReader'
+    resourceType: 'FHIR'
+    resourceName: apiForFhir.name
   }
 }
 

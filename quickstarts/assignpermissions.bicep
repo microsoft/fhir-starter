@@ -89,7 +89,7 @@ resource myStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existin
   name: resourceName
 }
 
-resource storageAccountRoleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = if (resourceType == 'Storage') {
+resource storageAccountRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (resourceType == 'Storage') {
   name: guid(resourceGroup().id, principalId, roleDefinitionId[builtInRoleType].id, resourceName)
   scope: myStorageAccount
   properties: {
@@ -102,7 +102,7 @@ resource storageAccountRoleAssignment 'Microsoft.Authorization/roleAssignments@2
 resource myContainerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = if (resourceType == 'Registry') {
   name: resourceName
 }
-resource containerRegistryRoleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = if (resourceType == 'Registry') {
+resource containerRegistryRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (resourceType == 'Registry') {
   name: guid(resourceGroup().id, principalId, roleDefinitionId[builtInRoleType].id, resourceName)
   scope: myContainerRegistry
   properties: {
@@ -117,7 +117,7 @@ resource myFhirWorkspace 'Microsoft.HealthcareApis/workspaces/fhirservices@2021-
 /*
 // need to repair this permission snippet causes deployment error
 
-resource fhirWorkspaceRoleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = if (resourceType == 'FHIRWS') {
+resource fhirWorkspaceRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (resourceType == 'FHIRWS') {
   name: guid(resourceGroup().id, principalId, roleDefinitionId[builtInRoleType].id, resourceName)
   scope: myFhirWorkspace
   properties: {
@@ -130,7 +130,7 @@ resource fhirWorkspaceRoleAssignment 'Microsoft.Authorization/roleAssignments@20
 resource myApiforFhir 'Microsoft.HealthcareApis/services@2021-06-01-preview' existing = if (resourceType == 'FHIR') {
   name: resourceName
 }
-resource ApiforFhirRoleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = if (resourceType == 'FHIR') {
+resource ApiforFhirRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (resourceType == 'FHIR') {
   name: guid(resourceGroup().id, principalId, roleDefinitionId[builtInRoleType].id, resourceName)
   scope: myApiforFhir
   properties: {
@@ -143,7 +143,7 @@ resource ApiforFhirRoleAssignment 'Microsoft.Authorization/roleAssignments@2021-
 resource myKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = if (resourceType == 'Vault') {
   name: resourceName
 }
-resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = if (resourceType == 'Vault') {
+resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (resourceType == 'Vault') {
   name: guid(resourceGroup().id, principalId, roleDefinitionId[builtInRoleType].id, resourceName)
   scope: myKeyVault
   properties: {
@@ -151,4 +151,3 @@ resource keyVaultRoleAssignment 'Microsoft.Authorization/roleAssignments@2021-04
     principalId: principalId
   }
 }
-

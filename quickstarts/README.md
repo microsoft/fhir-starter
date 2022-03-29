@@ -6,7 +6,7 @@ The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/a
 
 __Note:__ This quickstart ARM template is not intended for deploying resources in a production environment. The intended use is for an Azure [training environment](https://github.com/microsoft/azure-healthcare-apis-workshop). Please proceed accordingly.
 
-## Deploy Azure API for FHIR, FHIR-Proxy, and FHIR-Bulk Loader
+## Deploy Azure API for FHIR, FHIR-Proxy, FHIR-Bulk Loader, and FHIR-Synapse Link
 
 To begin, **CTRL+click** (Windows or Linux) or **CMD+click** (Mac) on the **Deploy to Azure** button below to open the deployment form in a new browser tab.
 
@@ -16,6 +16,7 @@ The ARM/Bicep template will deploy the following components:
 + [Azure API for FHIR](https://docs.microsoft.com/en-us/azure/healthcare-apis/azure-api-for-fhir/overview)
 + [FHIR-Proxy](https://github.com/microsoft/fhir-proxy)
 + [FHIR-Bulk Loader](https://github.com/microsoft/fhir-loader)
++ [FHIR-Analytics-Pipelines FHIR to Datalake](https://github.com/microsoft/FHIR-Analytics-Pipelines)
 
 __Important:__ In order to successfully deploy resources with this ARM template, the user must have [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) rights for the [Resource Group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal) where the components are deployed. Additionally, the user must have the [Application Administrator](https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#application-administrator) role in AAD in order to create application registrations.
 
@@ -44,16 +45,18 @@ Name              | Type                 |  Purpose
 [prefix]**fhir**  | **PaaS** | **Azure API for FHIR** - managed FHIR service
 [prefix]**pxyfa** | **Function App** | **FHIR-Proxy** - filters FHIR data input/output 
 [prefix]**ldrfa** | **Function App** | **FHIR-Bulk Loader** - bulk ingest FHIR data
+[prefix]**synfa** | **Function App** | **FHIR Synapse Link** - export FHIR data to ADLS every 5 minutes
 [prefix]**asp**   | App Service Plan | Shared by FHIR-Proxy and FHIR-Bulk Loader function apps
 [prefix]**cr**    | Container Registry   | Supports Azure API for FHIR `$convert-data` operation
-[prefix]**fssa**  | Storage account      | Blob storage for Azure API for FHIR `$export` operation and FHIR-Bulk Loader
-[prefix]**funsa** | Storage account      | Storage for FHIR-Proxy and FHIR-Bulk Loader function apps
+[prefix]**expsa**  | Storage account      | Blob storage for Azure API for FHIR `$export` operation and FHIR-Bulk Loader
+[prefix]**funsa** | Storage account      | Storage for FHIR-Proxy, FHIR-Bulk and Synapse Link Loader function apps
 [prefix]**kv**    | Key Vault            | Stores secrets and configuration settings
 [prefix]**la**    | Log Analytics Workspace  | Logs the activity of deployed components
 [prefix]**ldrai** | Application Insights | Monitors FHIR-Bulk Loader
-[prefix]**ldrtopic** | Event Grid System Topic | Triggers FHIR-Bulk Loader processing of FHIR bundles placed in the fssa storage account
 [prefix]**pxyai** | Application Insights | Monitors FHIR-Proxy application
-[prefix]**rc**    | Redis Cache  | Improves FHIR-Proxy performance  
+[prefix]**synai** | Application Insights | Monitors FHIR Synapse Link application
+[prefix]**ldrtopic** | Event Grid System Topic | Triggers processing of FHIR bundles placed in the fssa storage account
+[prefix]**rc**    | Redis Cache  | Required by FHIR-Proxy modules, Consent Opt Out
 
 ### Data Flow
 

@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.1272.37030",
-      "templateHash": "7594512057095341883"
+      "version": "0.4.1318.3566",
+      "templateHash": "3659646444049485434"
     }
   },
   "parameters": {
@@ -98,39 +98,67 @@
       "metadata": {
         "description": "Enable the Patient Everything module in FHIR PROXY"
       }
+    },
+    "useMSI": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Configure FHIR Proxy to use Managed Service Identity (MSI) to access FHIR Server"
+      }
+    },
+    "appServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "name": "EP1",
+        "tier": "ElasticPremium",
+        "size": "EP1",
+        "family": "EP"
+      }
     }
   },
   "variables": {
     "tenantId": "[subscription().tenantId]",
-    "uniqueId": "[take(uniqueString(subscription().id, resourceGroup().id, toLower(parameters('deploymentPrefix'))), 6)]",
+    "uniqueId": "[toLower(take(uniqueString(subscription().id, resourceGroup().id, parameters('deploymentPrefix')), 6))]",
     "kvName": "[format('{0}{1}kv', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "laName": "[format('{0}{1}la', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "apiForFhirServiceName": "[format('{0}{1}fhir', parameters('deploymentPrefix'), variables('uniqueId'))]",
-    "saName": "[format('{0}{1}fssa', parameters('deploymentPrefix'), variables('uniqueId'))]",
+    "saName": "[format('{0}{1}expsa', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "containerRegistryName": "[format('{0}{1}cr', parameters('deploymentPrefix'), variables('uniqueId'))]",
+    "dataLakeContainerName": "fhirdatalake",
+    "exportStorageContainerList": [
+      "anonymization",
+      "bundles",
+      "export",
+      "export-trigger",
+      "ndjson",
+      "zip",
+      "[toLower(variables('dataLakeContainerName'))]"
+    ],
+    "deployfhirAdlsLink": true,
+    "functionPlanOS": "Windows",
+    "cosmosDbThroughput": 400,
     "systemIdentity": {
       "type": "SystemAssigned"
     },
     "proxyStorageAccountName": "[format('{0}{1}funsa', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "proxyFunctionAppName": "[format('{0}{1}pxyfa', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "loaderFunctionAppName": "[format('{0}{1}ldrfa', parameters('deploymentPrefix'), variables('uniqueId'))]",
+    "adlsSyncFunctionAppName": "[format('{0}{1}synfa', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "redisCacheName": "[format('{0}{1}rc', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "appServicePlanName": "[format('{0}{1}asp', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "proxyAppInsightName": "[format('{0}{1}pxyai', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "loaderAppInsightName": "[format('{0}{1}ldrai', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "loaderEventGridTopicName": "[format('{0}{1}ldrtopic', parameters('deploymentPrefix'), variables('uniqueId'))]",
-    "fhirProxyRepoUrl": "https://github.com/ToddM2/fhir-proxy",
-    "fhirProxyRepoBranch": "MSIOnly",
-    "fhirLoaderRepoUrl": "https://github.com/ToddM2/fhir-loader",
-    "fhirLoaderRepoBranch": "MSIOnly",
+    "fhirProxyRepoUrl": "https://github.com/microsoft/fhir-proxy",
+    "fhirProxyRepoBranch": "main",
+    "fhirLoaderRepoUrl": "https://github.com/microsoft/fhir-loader",
+    "fhirLoaderRepoBranch": "main",
     "profileValidationString": "[if(parameters('enableProfileValidation'), 'FHIRProxy.preprocessors.ProfileValidationPreProcess;', '')]",
     "transformBundleString": "[if(parameters('enableTransformBundle'), 'FHIRProxy.preprocessors.TransformBundlePreProcess;', '')]",
     "everythingPatientString": "[if(parameters('enableEverythingPatient'), 'FHIRProxy.preprocessors.EverythingPatientPreProcess;', '')]",
     "proxyPreProcessSettings": "[format('{0}{1}{2}', variables('profileValidationString'), variables('transformBundleString'), variables('everythingPatientString'))]",
     "fhirProxyPreProcess": "[take(variables('proxyPreProcessSettings'), sub(length(variables('proxyPreProcessSettings')), 1))]",
-
     "consentOptOutString": "[if(parameters('enableConsentOptOut'), 'FHIRProxy.postprocessors.ConsentOptOutFilter;', '')]",
-
     "dateSortString": "[if(parameters('enableDateSort'), 'FHIRProxy.postprocessors.DateSortPostProcessor;', '')]",
     "participantFilterString": "[if(parameters('enableParticipantFilter'), 'FHIRProxy.postprocessors.ParticipantFilterPostProcess;', '')]",
     "fhirCdsSyncAgentString": "[if(parameters('enableFhirCdsSyncAgent'), 'FHIRProxy.postprocessors.FHIRCDSSyncAgentPostProcess2;', '')]",
@@ -142,7 +170,26 @@
     "roleWriter": "Writer",
     "rolePatient": "Patient",
     "roleParticipant": "Practitioner,RelatedPerson",
-    "roleGlobal": "DataScientist"
+    "roleGlobal": "DataScientist",
+    "fhirServiceVersion": "R4",
+    "dataLakeSyncAppName": "workbenchfhirsynapsesyncapp",
+    "dataLakeStorageAccountName": "[variables('saName')]",
+    "dataLakeEndpoint": "[format('https://{0}.blob.{1}', variables('saName'), environment().suffixes.storage)]",
+    "dataStart": "1970-01-01 00:00:00 +00:00",
+    "dataEnd": "",
+    "fhirSynapseSettings": {
+      "fhirServiceUrl": "[format('https://{0}.azurehealthcareapis.com', variables('apiForFhirServiceName'))]",
+      "fhirServiceVersion": "[variables('fhirServiceVersion')]",
+      "name": "[variables('adlsSyncFunctionAppName')]",
+      "dataLakeStorageAccountName": "[if(empty(variables('dataLakeStorageAccountName')), 'fhirdatalake', variables('dataLakeStorageAccountName'))]",
+      "dataLakeContainerName": "[if(empty(variables('dataLakeContainerName')), 'fhirdatalake', variables('dataLakeContainerName'))]",
+      "dataLakeEndpoint": "[if(empty(variables('dataLakeEndpoint')), '', variables('dataLakeEndpoint'))]",
+      "dataStart": "[if(empty(variables('dataStart')), '', variables('dataStart'))]",
+      "dataEnd": "[if(empty(variables('dataEnd')), '', variables('dataEnd'))]",
+      "useMSI": "[if(parameters('useMSI'), true(), false())]",
+      "packageUri": "[format('https://fhirdeploy.blob.{0}/fhir/Microsoft.Health.Fhir.Synapse.FunctionApp.zip', environment().suffixes.storage)]"
+    },
+    "fhirSynapseSyncAppServicePlanId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
   },
   "resources": [
     {
@@ -227,55 +274,13 @@
       ]
     },
     {
+      "copy": {
+        "name": "createBlobContainers",
+        "count": "[length(variables('exportStorageContainerList'))]"
+      },
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2021-06-01",
-      "name": "[format('{0}/default/bundles', variables('saName'))]",
-      "properties": {},
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2021-06-01",
-      "name": "[format('{0}/default/ndjson', variables('saName'))]",
-      "properties": {},
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2021-06-01",
-      "name": "[format('{0}/default/zip', variables('saName'))]",
-      "properties": {},
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2021-06-01",
-      "name": "[format('{0}/default/export', variables('saName'))]",
-      "properties": {},
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2021-06-01",
-      "name": "[format('{0}/default/export-trigger', variables('saName'))]",
-      "properties": {},
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2021-06-01",
-      "name": "[format('{0}/default/anonymization', variables('saName'))]",
-      "properties": {},
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/default/{1}', variables('saName'), variables('exportStorageContainerList')[copyIndex()])]",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]"
       ]
@@ -631,6 +636,9 @@
           "audience": "[format('https://{0}.azurehealthcareapis.com', variables('apiForFhirServiceName'))]",
           "authority": "[uri(environment().authentication.loginEndpoint, subscription().tenantId)]"
         },
+        "cosmosDbConfiguration": {
+          "offerThroughput": "[variables('cosmosDbThroughput')]"
+        },
         "exportConfiguration": {
           "storageAccountName": "[variables('saName')]"
         },
@@ -690,6 +698,17 @@
       ]
     },
     {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/FS-URL', variables('kvName'))]",
+      "properties": {
+        "value": "[format('https://{0}.azurehealthcareapis.com', variables('apiForFhirServiceName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
+      ]
+    },
+    {
       "condition": "[not(empty(parameters('fhirServerTenantName')))]",
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2019-09-01",
@@ -698,6 +717,42 @@
         "value": "[parameters('fhirServerTenantName')]"
       },
       "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
+      ]
+    },
+    {
+      "condition": "[not(empty(parameters('fhirServerTenantName')))]",
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/FS-TENANT-NAME', variables('kvName'))]",
+      "properties": {
+        "value": "[parameters('fhirServerTenantName')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/fhirProxyHostName', variables('kvName'))]",
+      "properties": {
+        "value": "[format('{0}.azurewebsites.net', variables('proxyFunctionAppName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('proxyFunctionAppName'))]",
+        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/FP-HOST', variables('kvName'))]",
+      "properties": {
+        "value": "[format('{0}.azurewebsites.net', variables('proxyFunctionAppName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('proxyFunctionAppName'))]",
         "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
       ]
     },
@@ -711,6 +766,30 @@
       "dependsOn": [
         "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]",
         "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/proxyRedisConnectionString', variables('kvName'))]",
+      "properties": {
+        "value": "[format('{0}:{1},password={2},ssl=True,abortConnect=False', reference(resourceId('Microsoft.Cache/redis', variables('redisCacheName'))).hostName, reference(resourceId('Microsoft.Cache/redis', variables('redisCacheName'))).sslPort, listKeys(resourceId('Microsoft.Cache/redis', variables('redisCacheName')), '2020-06-01').primaryKey)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]",
+        "[resourceId('Microsoft.Cache/redis', variables('redisCacheName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2019-09-01",
+      "name": "[format('{0}/functionsStorageAccountConnectionString', variables('kvName'))]",
+      "properties": {
+        "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName'))]",
+        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
       ]
     },
     {
@@ -1041,10 +1120,12 @@
       "name": "[variables('appServicePlanName')]",
       "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
-      "sku": {
-        "name": "S1"
-      },
-      "kind": "functionapp"
+      "sku": "[parameters('appServicePlanSku')]",
+      "kind": "elastic",
+      "properties": {
+        "maximumElasticWorkerCount": 5,
+        "reserved": "[if(equals(variables('functionPlanOS'), 'Linux'), true(), false())]"
+      }
     },
     {
       "type": "Microsoft.Insights/diagnosticSettings",
@@ -1087,7 +1168,6 @@
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "siteConfig": {
           "use32BitWorkerProcess": false,
-          "alwaysOn": true,
           "ftpsState": "FtpsOnly",
           "minTlsVersion": "1.2"
         }
@@ -1146,7 +1226,6 @@
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "siteConfig": {
           "use32BitWorkerProcess": false,
-          "alwaysOn": true,
           "ftpsState": "FtpsOnly",
           "minTlsVersion": "1.2"
         }
@@ -1186,30 +1265,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites', variables('loaderFunctionAppName'))]",
         "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2019-09-01",
-      "name": "[format('{0}/proxyRedisConnectionString', variables('kvName'))]",
-      "properties": {
-        "value": "[format('{0}:{1},password={2},ssl=True,abortConnect=False', reference(resourceId('Microsoft.Cache/redis', variables('redisCacheName'))).hostName, reference(resourceId('Microsoft.Cache/redis', variables('redisCacheName'))).sslPort, listKeys(resourceId('Microsoft.Cache/redis', variables('redisCacheName')), '2020-06-01').primaryKey)]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]",
-        "[resourceId('Microsoft.Cache/redis', variables('redisCacheName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2019-09-01",
-      "name": "[format('{0}/functionsStorageAccountConnectionString', variables('kvName'))]",
-      "properties": {
-        "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName'))]",
-        "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]"
       ]
     },
     {
@@ -1317,27 +1372,29 @@
         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('proxyAppInsightName'))).InstrumentationKey]",
         "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]",
+        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]",
+        "WEBSITE_CONTENTSHARE": "[toLower(variables('proxyFunctionAppName'))]",
         "FP-ADMIN-ROLE": "[variables('roleAdmin')]",
         "FP-READER-ROLE": "[variables('roleReader')]",
         "FP-WRITER-ROLE": "[variables('roleWriter')]",
         "FP-GLOBAL-ACCESS-ROLES": "[variables('roleGlobal')]",
         "FP-PATIENT-ACCESS-ROLES": "[variables('rolePatient')]",
         "FP-PARTICIPANT-ACCESS-ROLES": "[variables('roleParticipant')]",
-        "FP-HOST": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-HOST/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
         "FP-MOD-CONSENT-OPTOUT-CATEGORY": "[if(parameters('enableConsentOptOut'), 'http://loinc.org|59284-0', '')]",
         "FP-PRE-PROCESSOR-TYPES": "[if(empty(variables('fhirProxyPreProcess')), 'FHIRProxy.preprocessors.TransformBundlePreProcess', variables('fhirProxyPreProcess'))]",
         "FP-POST-PROCESSOR-TYPES": "[if(empty(variables('fhirProxyPostProcess')), '', variables('fhirProxyPostProcess'))]",
         "FP-RBAC-NAME": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-RBAC-NAME/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
-        "FP-RBAC-TENANT-NAME": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-RBAC-TENANT-NAME/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
         "FP-RBAC-CLIENT-ID": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-RBAC-CLIENT-ID/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
         "FP-RBAC-CLIENT-SECRET": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-RBAC-CLIENT-SECRET/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
-        "FS-CLIENT-ID": "",
-        "FS-SECRET": "",
-        "FS-URL": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
+        "FP-RBAC-TENANT-NAME": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/FP-RBAC-TENANT-NAME/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
+        "FS-CLIENT-ID": "[if(parameters('useMSI'), '', format('@Microsoft.KeyVault(SecretUri={0}/secrets/FS-CLIENT-ID/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri))]",
+        "FS-SECRET": "[if(parameters('useMSI'), '', format('@Microsoft.KeyVault(SecretUri={0}/secrets/FS-SECRET/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri))]",
         "FS-RESOURCE": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
+        "FS-TENANT-NAME": "[if(parameters('useMSI'), '', format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceTenantName/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri))]",
+        "FS-URL": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
+        "FP-HOST": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirProxyHostName/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
         "FP-STORAGEACCT": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/functionsStorageAccountConnectionString/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
-        "FP-REDISCONNECTION": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/proxyRedisConnectionString/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
-        "FS-TENANT-NAME": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceTenantName/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]"
+        "FP-REDISCONNECTION": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/proxyRedisConnectionString/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites', variables('proxyFunctionAppName'))]",
@@ -1355,13 +1412,15 @@
         "FUNCTIONS_WORKER_RUNTIME": "dotnet",
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('loaderAppInsightName'))).InstrumentationKey]",
         "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]",
+        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]",
+        "WEBSITE_CONTENTSHARE": "[toLower(variables('loaderFunctionAppName'))]",
         "AzureWebJobs.ImportBundleBlobTrigger.Disabled": "1",
-        "FS-URL": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
-        "FS-TENANT-NAME": "",
-        "FP-HOST": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/proxyServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
-        "FS-CLIENT-ID": "",
-        "FS-SECRET": "",
+        "FS-CLIENT-ID": "[if(parameters('useMSI'), '', format('@Microsoft.KeyVault(SecretUri={0}/secrets/FS-CLIENT-ID/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri))]",
         "FS-RESOURCE": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
+        "FS-SECRET": "[if(parameters('useMSI'), '', format('@Microsoft.KeyVault(SecretUri={0}/secrets/FS-SECRET/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri))]",
+        "FS-TENANT-NAME": "[if(parameters('useMSI'), '', format('@Microsoft.KeyVault(SecretUri={0}/secrets/FS-TENANT-NAME/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri))]",
+        "FS-URL": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
+        "FP-HOST": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirProxyHostName/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
         "FBI-TRANSFORMBUNDLES": "true",
         "FBI-POOLEDCON-MAXCONNECTIONS": "20",
         "FBI-STORAGEACCT": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('saName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('saName')), '2021-04-01').keys[0].value)]"
@@ -1584,6 +1643,126 @@
       ]
     },
     {
+      "condition": "[variables('deployfhirAdlsLink')]",
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02-preview",
+      "name": "[format('{0}ai', variables('fhirSynapseSettings').name)]",
+      "location": "[parameters('resourceLocation')]",
+      "kind": "web",
+      "tags": "[parameters('resourceTags')]",
+      "properties": {
+        "Application_Type": "web",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
+      ]
+    },
+    {
+      "condition": "[variables('deployfhirAdlsLink')]",
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('fhirSynapseSettings').name]",
+      "location": "[parameters('resourceLocation')]",
+      "tags": "[parameters('resourceTags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "kind": "functionapp",
+      "properties": {
+        "enabled": true,
+        "httpsOnly": true,
+        "clientAffinityEnabled": false,
+        "serverFarmId": "[variables('fhirSynapseSyncAppServicePlanId')]",
+        "reserved": "[if(equals(variables('functionPlanOS'), 'Linux'), true(), false())]",
+        "siteConfig": {
+          "use32BitWorkerProcess": false,
+          "ftpsState": "FtpsOnly",
+          "minTlsVersion": "1.2",
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[if(variables('deployfhirAdlsLink'), reference(resourceId('Microsoft.Insights/components', format('{0}ai', variables('fhirSynapseSettings').name)), '2020-02-02-preview').InstrumentationKey, '')]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet-isolated"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('proxyStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName')), '2021-04-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('dataLakeSyncAppName'))]"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "~10"
+            },
+            {
+              "name": "job__containerName",
+              "value": "[toLower(variables('dataLakeContainerName'))]"
+            },
+            {
+              "name": "job__startTime",
+              "value": "[variables('fhirSynapseSettings').dataStart]"
+            },
+            {
+              "name": "job__endTime",
+              "value": "[if(empty(variables('dataEnd')), '', variables('dataEnd'))]"
+            },
+            {
+              "name": "dataLakeStore__storageUrl",
+              "value": "[variables('fhirSynapseSettings').dataLakeEndpoint]"
+            },
+            {
+              "name": "fhirServer__serverUrl",
+              "value": "[variables('fhirSynapseSettings').fhirServiceUrl]"
+            },
+            {
+              "name": "fhirServer__version",
+              "value": "[variables('fhirSynapseSettings').fhirServiceVersion]"
+            },
+            {
+              "name": "fhirServer__authentication",
+              "value": "[if(variables('fhirSynapseSettings').useMSI, 'ManagedIdentity', 'None')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
+        "[resourceId('Microsoft.Insights/components', format('{0}ai', variables('fhirSynapseSettings').name))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName'))]"
+      ]
+    },
+    {
+      "condition": "[variables('deployfhirAdlsLink')]",
+      "type": "Microsoft.Web/sites/extensions",
+      "apiVersion": "2020-12-01",
+      "name": "[format('{0}/{1}', variables('fhirSynapseSettings').name, 'MSDeploy')]",
+      "properties": {
+        "packageUri": "[variables('fhirSynapseSettings').packageUri]",
+        "dbType": "None",
+        "connectionString": ""
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('fhirSynapseSettings').name)]"
+      ]
+    },
+    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "proxyFHIRPermissions",
@@ -1612,8 +1791,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1272.37030",
-              "templateHash": "6708801682825504859"
+              "version": "0.4.1318.3566",
+              "templateHash": "9402806730437447415"
             }
           },
           "parameters": {
@@ -1725,7 +1904,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Storage')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1736,7 +1915,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Registry')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1747,7 +1926,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'FHIR')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.HealthcareApis/services/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1758,7 +1937,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Vault')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1803,8 +1982,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1272.37030",
-              "templateHash": "6708801682825504859"
+              "version": "0.4.1318.3566",
+              "templateHash": "9402806730437447415"
             }
           },
           "parameters": {
@@ -1916,7 +2095,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Storage')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1927,7 +2106,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Registry')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1938,7 +2117,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'FHIR')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.HealthcareApis/services/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1949,7 +2128,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Vault')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -1994,8 +2173,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1272.37030",
-              "templateHash": "6708801682825504859"
+              "version": "0.4.1318.3566",
+              "templateHash": "9402806730437447415"
             }
           },
           "parameters": {
@@ -2107,7 +2286,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Storage')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2118,7 +2297,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Registry')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2129,7 +2308,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'FHIR')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.HealthcareApis/services/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2140,7 +2319,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Vault')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2185,8 +2364,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1272.37030",
-              "templateHash": "6708801682825504859"
+              "version": "0.4.1318.3566",
+              "templateHash": "9402806730437447415"
             }
           },
           "parameters": {
@@ -2298,7 +2477,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Storage')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2309,7 +2488,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Registry')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2320,7 +2499,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'FHIR')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.HealthcareApis/services/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2331,7 +2510,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Vault')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2376,8 +2555,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1272.37030",
-              "templateHash": "6708801682825504859"
+              "version": "0.4.1318.3566",
+              "templateHash": "9402806730437447415"
             }
           },
           "parameters": {
@@ -2489,7 +2668,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Storage')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2500,7 +2679,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Registry')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2511,7 +2690,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'FHIR')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.HealthcareApis/services/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2522,7 +2701,7 @@
             {
               "condition": "[equals(parameters('resourceType'), 'Vault')]",
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2021-04-01-preview",
+              "apiVersion": "2020-10-01-preview",
               "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('resourceName'))]",
               "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
               "properties": {
@@ -2536,6 +2715,390 @@
       "dependsOn": [
         "[resourceId('Microsoft.HealthcareApis/services', variables('apiForFhirServiceName'))]",
         "[resourceId('Microsoft.Web/sites', variables('proxyFunctionAppName'))]"
+      ]
+    },
+    {
+      "condition": "[variables('deployfhirAdlsLink')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "synapseSyncStoragePermissions",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.Web/sites', variables('fhirSynapseSettings').name), '2021-02-01', 'full').identity.principalId]"
+          },
+          "builtInRoleType": {
+            "value": "StorageBlobDataContributor"
+          },
+          "resourceType": {
+            "value": "Storage"
+          },
+          "resourceName": {
+            "value": "[variables('saName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.4.1318.3566",
+              "templateHash": "9402806730437447415"
+            }
+          },
+          "parameters": {
+            "resourceName": {
+              "type": "string",
+              "minLength": 2,
+              "metadata": {
+                "description": "Name of the resource that permissions will be applied to"
+              }
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Service Principal Object ID"
+              }
+            },
+            "builtInRoleType": {
+              "type": "string",
+              "allowedValues": [
+                "AcrPush",
+                "AcrPull",
+                "AcrDelete",
+                "StorageBlobDataContributor",
+                "FHIRDataContributor",
+                "FHIRDataReader",
+                "FHIRDataWriter",
+                "FHIRDataConverter",
+                "FHIRDataExporter",
+                "KeyVaultReader",
+                "KeyVaultSecretsUser"
+              ],
+              "metadata": {
+                "description": "Standard RBAC role that will be assigned to the Service Principal"
+              }
+            },
+            "resourceType": {
+              "type": "string",
+              "allowedValues": [
+                "Storage",
+                "Registry",
+                "FHIR",
+                "FHIRWS",
+                "Vault"
+              ],
+              "metadata": {
+                "description": "Type of resource that the permissions will be applied to"
+              }
+            }
+          },
+          "variables": {
+            "roleDefinitionId": {
+              "AcrPush": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8311e382-0749-4cb8-b61a-304f252e45ec')]"
+              },
+              "AcrPull": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
+              },
+              "AcrDelete": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'c2f4ef07-c644-48eb-af81-4b1b4947fb11')]"
+              },
+              "StorageBlobDataContributor": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]"
+              },
+              "FHIRDataContributor": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5a1fc7df-4bf1-4951-a576-89034ee01acd')]"
+              },
+              "FHIRDataReader": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4c8d0bbc-75d3-4935-991f-5f3c56d81508')]"
+              },
+              "FHIRDataWriter": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3f88fce4-5892-4214-ae73-ba5294559913')]"
+              },
+              "FHIRDataConverter": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a1705bd2-3a8f-45a5-8683-466fcfd5cc24')]"
+              },
+              "FHIRDataExporter": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3db33094-8700-4567-8da5-1501d4e7e843')]"
+              },
+              "KeyVaultContributor": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f25e0fa2-a7c8-4377-a976-54943a77a395')]"
+              },
+              "KeyVaultAdministrator": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b363-3b7fe8e74483')]"
+              },
+              "KeyVaultCryptoOfficer": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '14b46e9e-c2b7-41b4-b07b-48a6ebf60603')]"
+              },
+              "KeyVaultCryptoUser": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '12338af0-0e69-4776-bea7-57ae8d297424')]"
+              },
+              "KeyVaultSecretsOfficer": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7')]"
+              },
+              "KeyVaultSecretsUser": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')]"
+              },
+              "KeyVaultCertificatesOfficer": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a4417e6f-fecd-4de8-b567-7b0420556985')]"
+              },
+              "KeyVaultReader": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '21090545-7ca7-4776-b22c-e363652d74d2')]"
+              },
+              "KeyVaultCryptoServiceEncryptionUser": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'e147488a-f6f5-4113-8e2d-b22465e65bf6')]"
+              }
+            }
+          },
+          "resources": [
+            {
+              "condition": "[equals(parameters('resourceType'), 'Storage')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            },
+            {
+              "condition": "[equals(parameters('resourceType'), 'Registry')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            },
+            {
+              "condition": "[equals(parameters('resourceType'), 'FHIR')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.HealthcareApis/services/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            },
+            {
+              "condition": "[equals(parameters('resourceType'), 'Vault')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('fhirSynapseSettings').name)]"
+      ]
+    },
+    {
+      "condition": "[variables('deployfhirAdlsLink')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "synapseSyncFhirPermissions",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalId": {
+            "value": "[reference(resourceId('Microsoft.Web/sites', variables('fhirSynapseSettings').name), '2021-02-01', 'full').identity.principalId]"
+          },
+          "builtInRoleType": {
+            "value": "FHIRDataReader"
+          },
+          "resourceType": {
+            "value": "FHIR"
+          },
+          "resourceName": {
+            "value": "[variables('apiForFhirServiceName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.4.1318.3566",
+              "templateHash": "9402806730437447415"
+            }
+          },
+          "parameters": {
+            "resourceName": {
+              "type": "string",
+              "minLength": 2,
+              "metadata": {
+                "description": "Name of the resource that permissions will be applied to"
+              }
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Service Principal Object ID"
+              }
+            },
+            "builtInRoleType": {
+              "type": "string",
+              "allowedValues": [
+                "AcrPush",
+                "AcrPull",
+                "AcrDelete",
+                "StorageBlobDataContributor",
+                "FHIRDataContributor",
+                "FHIRDataReader",
+                "FHIRDataWriter",
+                "FHIRDataConverter",
+                "FHIRDataExporter",
+                "KeyVaultReader",
+                "KeyVaultSecretsUser"
+              ],
+              "metadata": {
+                "description": "Standard RBAC role that will be assigned to the Service Principal"
+              }
+            },
+            "resourceType": {
+              "type": "string",
+              "allowedValues": [
+                "Storage",
+                "Registry",
+                "FHIR",
+                "FHIRWS",
+                "Vault"
+              ],
+              "metadata": {
+                "description": "Type of resource that the permissions will be applied to"
+              }
+            }
+          },
+          "variables": {
+            "roleDefinitionId": {
+              "AcrPush": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8311e382-0749-4cb8-b61a-304f252e45ec')]"
+              },
+              "AcrPull": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
+              },
+              "AcrDelete": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'c2f4ef07-c644-48eb-af81-4b1b4947fb11')]"
+              },
+              "StorageBlobDataContributor": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]"
+              },
+              "FHIRDataContributor": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5a1fc7df-4bf1-4951-a576-89034ee01acd')]"
+              },
+              "FHIRDataReader": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4c8d0bbc-75d3-4935-991f-5f3c56d81508')]"
+              },
+              "FHIRDataWriter": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3f88fce4-5892-4214-ae73-ba5294559913')]"
+              },
+              "FHIRDataConverter": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a1705bd2-3a8f-45a5-8683-466fcfd5cc24')]"
+              },
+              "FHIRDataExporter": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '3db33094-8700-4567-8da5-1501d4e7e843')]"
+              },
+              "KeyVaultContributor": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f25e0fa2-a7c8-4377-a976-54943a77a395')]"
+              },
+              "KeyVaultAdministrator": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b363-3b7fe8e74483')]"
+              },
+              "KeyVaultCryptoOfficer": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '14b46e9e-c2b7-41b4-b07b-48a6ebf60603')]"
+              },
+              "KeyVaultCryptoUser": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '12338af0-0e69-4776-bea7-57ae8d297424')]"
+              },
+              "KeyVaultSecretsOfficer": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7')]"
+              },
+              "KeyVaultSecretsUser": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')]"
+              },
+              "KeyVaultCertificatesOfficer": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a4417e6f-fecd-4de8-b567-7b0420556985')]"
+              },
+              "KeyVaultReader": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '21090545-7ca7-4776-b22c-e363652d74d2')]"
+              },
+              "KeyVaultCryptoServiceEncryptionUser": {
+                "id": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'e147488a-f6f5-4113-8e2d-b22465e65bf6')]"
+              }
+            }
+          },
+          "resources": [
+            {
+              "condition": "[equals(parameters('resourceType'), 'Storage')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            },
+            {
+              "condition": "[equals(parameters('resourceType'), 'Registry')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            },
+            {
+              "condition": "[equals(parameters('resourceType'), 'FHIR')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.HealthcareApis/services/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            },
+            {
+              "condition": "[equals(parameters('resourceType'), 'Vault')]",
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2020-10-01-preview",
+              "scope": "[format('Microsoft.KeyVault/vaults/{0}', parameters('resourceName'))]",
+              "name": "[guid(resourceGroup().id, parameters('principalId'), variables('roleDefinitionId')[parameters('builtInRoleType')].id, parameters('resourceName'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('roleDefinitionId')[parameters('builtInRoleType')].id]",
+                "principalId": "[parameters('principalId')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.HealthcareApis/services', variables('apiForFhirServiceName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('fhirSynapseSettings').name)]"
       ]
     }
   ],

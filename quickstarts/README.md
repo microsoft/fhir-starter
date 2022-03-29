@@ -42,10 +42,10 @@ When the deployment finishes, you should see these components in your resource g
 
 Name              | Type                 |  Purpose                               
 ------------------|----------------------|----------------------------------------
-[prefix]**fhir**  | **PaaS** | **Azure API for FHIR** - managed FHIR service
-[prefix]**pxyfa** | **Function App** | **FHIR-Proxy** - filters FHIR data input/output 
-[prefix]**ldrfa** | **Function App** | **FHIR-Bulk Loader** - bulk ingest FHIR data
-[prefix]**synfa** | **Function App** | **FHIR Synapse Link** - export FHIR data to ADLS every 5 minutes
+[prefix]**fhir**  | PaaS | **Azure API for FHIR** - managed FHIR service
+[prefix]**pxyfa** | Function App | **FHIR-Proxy** - filters FHIR data input/output 
+[prefix]**ldrfa** | Function App | **FHIR-Bulk Loader** - bulk ingest FHIR data
+[prefix]**synfa** | Function App | **FHIR Synapse Link** - export FHIR data to ADLS every 5 minutes
 [prefix]**asp**   | App Service Plan | Shared by FHIR-Proxy and FHIR-Bulk Loader function apps
 [prefix]**cr**    | Container Registry   | Supports Azure API for FHIR `$convert-data` operation
 [prefix]**expsa**  | Storage account      | Blob storage for Azure API for FHIR `$export` operation and FHIR-Bulk Loader

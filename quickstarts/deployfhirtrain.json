@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "3659646444049485434"
+      "templateHash": "2642519487279379963"
     }
   },
   "parameters": {
@@ -123,16 +123,19 @@
     "laName": "[format('{0}{1}la', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "apiForFhirServiceName": "[format('{0}{1}fhir', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "saName": "[format('{0}{1}expsa', parameters('deploymentPrefix'), variables('uniqueId'))]",
+    "importSAName": "[format('{0}{1}impsa', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "containerRegistryName": "[format('{0}{1}cr', parameters('deploymentPrefix'), variables('uniqueId'))]",
     "dataLakeContainerName": "fhirdatalake",
     "exportStorageContainerList": [
       "anonymization",
-      "bundles",
       "export",
       "export-trigger",
-      "ndjson",
-      "zip",
       "[toLower(variables('dataLakeContainerName'))]"
+    ],
+    "importStorageContainerList": [
+      "bundles",
+      "ndjson",
+      "zip"
     ],
     "deployfhirAdlsLink": true,
     "functionPlanOS": "Windows",
@@ -513,6 +516,284 @@
       "dependsOn": [
         "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts/queueServices', split(format('{0}/default', variables('saName')), '/')[0], split(format('{0}/default', variables('saName')), '/')[1])]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('importSAName')]",
+      "location": "[parameters('resourceLocation')]",
+      "tags": "[parameters('resourceTags')]",
+      "kind": "StorageV2",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "properties": {
+        "accessTier": "Hot",
+        "supportsHttpsTrafficOnly": true,
+        "allowBlobPublicAccess": false,
+        "isHnsEnabled": true,
+        "isNfsV3Enabled": false,
+        "minimumTlsVersion": "TLS1_2"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/default', variables('importSAName'))]",
+      "properties": {
+        "cors": {
+          "corsRules": []
+        },
+        "deleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "createImportBlobContainers",
+        "count": "[length(variables('importStorageContainerList'))]"
+      },
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/default/{1}', variables('importSAName'), variables('importStorageContainerList')[copyIndex()])]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/fileServices",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/default', variables('importSAName'))]",
+      "properties": {
+        "cors": {
+          "corsRules": []
+        },
+        "shareDeleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/queueServices",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/default', variables('importSAName'))]",
+      "properties": {
+        "cors": {
+          "corsRules": []
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/tableServices",
+      "apiVersion": "2021-06-01",
+      "name": "[format('{0}/default', variables('importSAName'))]",
+      "properties": {
+        "cors": {
+          "corsRules": []
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('importSAName'))]",
+      "name": "defaultSettings",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]",
+        "metrics": [
+          {
+            "category": "Transaction",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/blobServices/{1}', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+      "name": "defaultSettings",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]",
+        "logs": [
+          {
+            "categoryGroup": "allLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          },
+          {
+            "categoryGroup": "audit",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/fileServices/{1}', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+      "name": "defaultSettings",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]",
+        "logs": [
+          {
+            "categoryGroup": "allLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          },
+          {
+            "categoryGroup": "audit",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/fileServices', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/tableServices/{1}', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+      "name": "defaultSettings",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]",
+        "logs": [
+          {
+            "categoryGroup": "allLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          },
+          {
+            "categoryGroup": "audit",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/tableServices', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}/queueServices/{1}', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+      "name": "defaultSettings",
+      "properties": {
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]",
+        "logs": [
+          {
+            "categoryGroup": "allLogs",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          },
+          {
+            "categoryGroup": "audit",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/queueServices', split(format('{0}/default', variables('importSAName')), '/')[0], split(format('{0}/default', variables('importSAName')), '/')[1])]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laName'))]"
       ]
     },
     {
@@ -1422,13 +1703,13 @@
         "FS-URL": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirServiceUrl/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
         "FP-HOST": "[format('@Microsoft.KeyVault(SecretUri={0}/secrets/fhirProxyHostName/)', reference(resourceId('Microsoft.KeyVault/vaults', variables('kvName'))).vaultUri)]",
         "FBI-TRANSFORMBUNDLES": "true",
-        "FBI-POOLEDCON-MAXCONNECTIONS": "20",
-        "FBI-STORAGEACCT": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('saName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('saName')), '2021-04-01').keys[0].value)]"
+        "FBI-POOLEDCON-MAXCONNECTIONS": "10",
+        "FBI-STORAGEACCT": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('importSAName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('importSAName')), '2021-04-01').keys[0].value)]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
         "[resourceId('Microsoft.Web/sites', variables('loaderFunctionAppName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('proxyStorageAccountName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]",
         "[resourceId('Microsoft.KeyVault/vaults', variables('kvName'))]",
         "[resourceId('Microsoft.Insights/components', variables('loaderAppInsightName'))]"
       ]
@@ -1468,17 +1749,17 @@
       "location": "[parameters('resourceLocation')]",
       "tags": "[parameters('resourceTags')]",
       "properties": {
-        "source": "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
+        "source": "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]",
         "topicType": "microsoft.storage.storageaccounts"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]"
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
       ]
     },
     {
       "type": "Microsoft.EventGrid/eventSubscriptions",
       "apiVersion": "2021-06-01-preview",
-      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('saName'))]",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('importSAName'))]",
       "name": "bundlecreated",
       "properties": {
         "eventDeliverySchema": "EventGridSchema",
@@ -1516,14 +1797,14 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites/sourcecontrols', variables('loaderFunctionAppName'), 'web')]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
-        "[resourceId('Microsoft.Web/sites', variables('loaderFunctionAppName'))]"
+        "[resourceId('Microsoft.Web/sites', variables('loaderFunctionAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
       ]
     },
     {
       "type": "Microsoft.EventGrid/eventSubscriptions",
       "apiVersion": "2021-06-01-preview",
-      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('saName'))]",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('importSAName'))]",
       "name": "ndjsoncreated",
       "properties": {
         "eventDeliverySchema": "EventGridSchema",
@@ -1561,8 +1842,8 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/sites/sourcecontrols', variables('loaderFunctionAppName'), 'web')]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('saName'))]",
-        "[resourceId('Microsoft.Web/sites', variables('loaderFunctionAppName'))]"
+        "[resourceId('Microsoft.Web/sites', variables('loaderFunctionAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('importSAName'))]"
       ]
     },
     {

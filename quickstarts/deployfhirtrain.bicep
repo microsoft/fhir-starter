@@ -61,18 +61,21 @@ var laName   = '${deploymentPrefix}${uniqueId}la'
 var apiForFhirServiceName = '${deploymentPrefix}${uniqueId}fhir'
 // API for FHIR export and import storage account name
 var saName   = '${deploymentPrefix}${uniqueId}expsa'
+var importSAName = '${deploymentPrefix}${uniqueId}impsa'
 // API for FHIR artifact container registry name
 var containerRegistryName   = '${deploymentPrefix}${uniqueId}cr'
 // -- containers to be created in export storage account
 var dataLakeContainerName = 'fhirdatalake'
 var exportStorageContainerList = [
   'anonymization'
-  'bundles'
   'export'
   'export-trigger'
+  toLower(dataLakeContainerName)
+]
+var importStorageContainerList = [
+  'bundles'
   'ndjson'
   'zip'
-  toLower(dataLakeContainerName)
 ]
 // -- deployment flags
 var deployfhirAdlsLink = true
@@ -181,7 +184,6 @@ resource tableServices 'Microsoft.Storage/storageAccounts/tableServices@2021-06-
     }
   }
 }
-
 // enable diagnostics for export storage account
 resource exportSADiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   scope: exportStorageAccount
@@ -340,6 +342,228 @@ resource exportSAQueueDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05
     ]
   }
 }
+
+// create import storage account
+resource importStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: importSAName
+  location: resourceLocation
+  tags: resourceTags
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  properties: {
+    accessTier: 'Hot'
+    supportsHttpsTrafficOnly: true
+    allowBlobPublicAccess: false
+    isHnsEnabled: true
+    isNfsV3Enabled: false
+    minimumTlsVersion: 'TLS1_2'
+  }
+}
+// Blob Services for Storage Account
+resource importBlobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-06-01' = {
+  name: '${importStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+    deleteRetentionPolicy: {
+      enabled: true
+      days: 7
+    }
+  }
+}
+resource createImportBlobContainers 'Microsoft.Storage/storageAccounts/blobServices/containers@2021-08-01' = [for containerName in importStorageContainerList: {
+  name: '${importStorageAccount.name}/default/${containerName}'
+}]
+resource importFileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-06-01' = {
+  name: '${importStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+    shareDeleteRetentionPolicy: {
+      enabled: true
+      days: 7
+    }
+  }
+}
+resource importQueueServices 'Microsoft.Storage/storageAccounts/queueServices@2021-06-01' = {
+  name: '${importStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+  }
+}
+resource importTableServices 'Microsoft.Storage/storageAccounts/tableServices@2021-06-01' = {
+  name: '${importStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+  }
+}
+// enable diagnostics for export storage account
+resource importSADiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: importStorageAccount
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource importSABlobDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: importBlobServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource importSAFileDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: importFileServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource importSATableDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: importTableServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource importSAQueueDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: importQueueServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+
 
 // Azure Container Registry
 resource artifactContainerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
@@ -1188,8 +1412,8 @@ resource fhirLoaderAppSettings 'Microsoft.Web/sites/config@2021-02-01' = {
     'FP-HOST': '@Microsoft.KeyVault(SecretUri=${keyVaultUri}/secrets/fhirProxyHostName/)'
 
     'FBI-TRANSFORMBUNDLES' : 'true'
-    'FBI-POOLEDCON-MAXCONNECTIONS': '20'
-    'FBI-STORAGEACCT': 'DefaultEndpointsProtocol=https;AccountName=${exportStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(exportStorageAccount.id, exportStorageAccount.apiVersion).keys[0].value}'
+    'FBI-POOLEDCON-MAXCONNECTIONS': '10'
+    'FBI-STORAGEACCT': 'DefaultEndpointsProtocol=https;AccountName=${importStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(importStorageAccount.id, importStorageAccount.apiVersion).keys[0].value}'
   }
 }
 
@@ -1226,13 +1450,13 @@ resource loaderEventGridSystemTopic 'Microsoft.EventGrid/systemTopics@2021-06-01
   location: resourceLocation
   tags: resourceTags
   properties: {
-    source: exportStorageAccount.id
+    source: importStorageAccount.id
     topicType: 'microsoft.storage.storageaccounts'
   }
 }
 resource loaderEventGridSubscription 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = {
   name: 'bundlecreated'
-  scope: exportStorageAccount
+  scope: importStorageAccount
   dependsOn: [
     deployLoaderUsingCD
   ]
@@ -1273,7 +1497,7 @@ resource loaderEventGridSubscription 'Microsoft.EventGrid/eventSubscriptions@202
 }
 resource loaderEventGridSubscriptionND 'Microsoft.EventGrid/eventSubscriptions@2021-06-01-preview' = {
   name: 'ndjsoncreated'
-  scope: exportStorageAccount
+  scope: importStorageAccount
   dependsOn: [
     deployLoaderUsingCD
   ]
@@ -1477,7 +1701,7 @@ var adlsAppSettings = [
 
 var fhirSynapseSyncAppServicePlanId = appServicePlan.id
 
-resource fhirSynapseSyncOperationFunction  'Microsoft.Web/sites@2021-02-01' = if (deployfhirAdlsLink) {
+resource fhirSynapseSyncOperationFunction  'Microsoft.Web/sites@2021-02-01' = if(deployfhirAdlsLink) {
   name: fhirSynapseSettings.name
   location: resourceLocation
   tags: resourceTags

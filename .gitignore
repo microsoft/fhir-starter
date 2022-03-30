@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# ARM Parameter files
+*.parameters.json

@@ -27,6 +27,8 @@ param builtInRoleType string
   'Vault'
 ])
 param resourceType string
+param healthDataWorkspaceName string = ''
+
 
 var roleDefinitionId = {
   AcrPush: {
@@ -110,12 +112,10 @@ resource containerRegistryRoleAssignment 'Microsoft.Authorization/roleAssignment
     principalId: principalId
   }
 }
-// Healthcare APIs Workspace
-resource myFhirWorkspace 'Microsoft.HealthcareApis/workspaces/fhirservices@2021-06-01-preview' existing = if (resourceType == 'FHIRWS') {
-  name: resourceName
+resource myFhirWorkspace 'Microsoft.HealthcareApis/workspaces/fhirservices@2021-11-01' existing = if (resourceType == 'FHIRWS') {
+  name: '${healthDataWorkspaceName}/${resourceName}'
+  //name: resourceNames
 }
-/*
-// need to repair this permission snippet causes deployment error
 
 resource fhirWorkspaceRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = if (resourceType == 'FHIRWS') {
   name: guid(resourceGroup().id, principalId, roleDefinitionId[builtInRoleType].id, resourceName)
@@ -125,7 +125,8 @@ resource fhirWorkspaceRoleAssignment 'Microsoft.Authorization/roleAssignments@20
     principalId: principalId
   }
 }
-*/
+
+
 // API for FHIR
 resource myApiforFhir 'Microsoft.HealthcareApis/services@2021-06-01-preview' existing = if (resourceType == 'FHIR') {
   name: resourceName
@@ -138,6 +139,7 @@ resource ApiforFhirRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-
     principalId: principalId
   }
 }
+
 
 // Key Vault
 resource myKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = if (resourceType == 'Vault') {

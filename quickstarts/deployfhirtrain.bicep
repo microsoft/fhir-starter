@@ -1,43 +1,35 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-//
-// Healthcare APIs (API for FHIR) : Training starter template
-// 
+// --
+// -- Health Data Services : Training environment starter template
+// --
 
+// -- parameter definitions
 @description('Tags to be applied to resources that are deployed in this template')
 param resourceTags object  = {
-  environmentName: 'Azure Healthcare APIs OpenHack'
+  environmentName: 'Azure Health Data Services OpenHack'
   challengeTitle: 'Deploy Core Training Environment'
-  eventId: '6071'
-  expirationDate: '03/30/2022'
+  expirationDate: '06/30/2022'
 }
 @description('Deployment Prefix - all resources names created by this template will start with this prefix')
 @minLength(3)
 @maxLength(7)
 param deploymentPrefix string
-
 @description('FHIR Server Azure AD Tenant ID (GUID)')
 param fhirServerTenantName string = subscription().tenantId
-
 @description('Azure Region where the resources will be deployed. Default Value:  the resource group region')
 param resourceLocation string = resourceGroup().location
-
 @description('Enable the Consent Opt Out module in FHIR PROXY')
 param enableConsentOptOut bool = false
-
 @description('Enable the Date Sort module in FHIR PROXY')
 param enableDateSort bool = false
-
 @description('Enable the Participant Filter module in FHIR PROXY')
 param enableParticipantFilter bool = false
-
 @description('Enable the FHIR to CDS Sync Agent module in FHIR PROXY')
 param enableFhirCdsSyncAgent bool = false
-
 @description('Enable the Pubish FHIR Event module in FHIR PROXY')
 param enablePublishFhirEvent bool = false
-
 @description('Enable the Profile Validation module in FHIR PROXY')
 param enableProfileValidation bool = false
 @description('Enable the Transform Bundle module in FHIR PROXY')
@@ -47,45 +39,121 @@ param enableEverythingPatient bool = false
 @description('Configure FHIR Proxy to use Managed Service Identity (MSI) to access FHIR Server')
 param useMSI bool = true
 
-var tenantId = subscription().tenantId
-// Unique Id used to generate resource names
+// -- variables
 var uniqueId  = toLower(take(uniqueString(subscription().id, resourceGroup().id, deploymentPrefix),6))
+// -- resource names
+var fhirProxyAppName         = '${deploymentPrefix}${uniqueId}pxyfa'
+var fhirLoaderAppName        = '${deploymentPrefix}${uniqueId}ldrfa'
+var fhirSynapseAppName       = '${deploymentPrefix}${uniqueId}synfa'
+var redisCacheName           = '${deploymentPrefix}${uniqueId}rc'
+var appServicePlanName       = '${deploymentPrefix}${uniqueId}asp'
+var proxyAppInsightName      = '${deploymentPrefix}${uniqueId}pxyai'
+var loaderAppInsightName     = '${deploymentPrefix}${uniqueId}ldrai'
+var loaderEventGridTopicName = '${deploymentPrefix}${uniqueId}ldrtopic'
 
-// Default resource names
-
-// Azure key Vault
-var kvName   = '${deploymentPrefix}${uniqueId}kv'
-// Log Analytics Workspace
-var laName   = '${deploymentPrefix}${uniqueId}la'
-// API for FHIR Service Name
-var apiForFhirServiceName = '${deploymentPrefix}${uniqueId}fhir'
-// API for FHIR export and import storage account name
-var saName   = '${deploymentPrefix}${uniqueId}expsa'
-var importSAName = '${deploymentPrefix}${uniqueId}impsa'
 // API for FHIR artifact container registry name
 var containerRegistryName   = '${deploymentPrefix}${uniqueId}cr'
 // -- containers to be created in export storage account
 var dataLakeContainerName = 'fhirdatalake'
+
+// -- storage account names
+var exportStorageAccountName = '${deploymentPrefix}${uniqueId}expsa'
+var functionsStorageAccountName = '${deploymentPrefix}${uniqueId}funsa'
+var importStorageAccountName = '${deploymentPrefix}${uniqueId}impsa'
+
+var tenantId = subscription().tenantId
+// -- fhir synapse link settings
+var dataStart = '1970-01-01 00:00:00 +00:00'
+var dataEnd = ''
+
+
+var logAnalyticsConfig = {
+  name:'${deploymentPrefix}${uniqueId}la'
+  diagnosticsSettingsName: 'defaultSettings'
+  enableDiagnostics: true
+}
+var keyVaultConfig = {
+  name: '${deploymentPrefix}${uniqueId}kv'
+  diagnosticsSettingsName: 'defaultSettings'
+  enableDiagnostics: true
+}
+var healthDataServicesConfig = {
+  name:'${deploymentPrefix}${uniqueId}hdsws'
+}
+var fhirServiceConfig = {
+  name: 'fhirtrn'
+  url: 'https://${healthDataServicesConfig.name}-fhirtrn.fhir.azurehealthcareapis.com'
+  kind: 'fhir-R4'
+  version: 'R4'
+  loginServers: [
+    '${artifactContainerRegistry.name}.azurecr.io'
+  ]
+  systemIdentity: {
+    type: 'SystemAssigned'
+  }
+}
+var fhirProxyConfig = {
+  name: fhirProxyAppName
+  url: 'https://${fhirProxyAppName}.azurewebsites.net'
+  repoUrl: 'https://github.com/microsoft/fhir-proxy'
+  repoBranch: 'main'
+  enableDiagnostics: true
+  diagnosticsSettingsName: 'defaultSettings'
+  enableAppInsights: true
+  appInsightsName: '${deploymentPrefix}${uniqueId}pxyai'
+}
+var fhirLoaderConfig = {
+  name: fhirLoaderAppName
+  url: 'https://${fhirLoaderAppName}.azurewebsites.net'
+  repoUrl: 'https://github.com/microsoft/fhir-loader'
+  repoBranch: 'main'
+  enableDiagnostics: true
+  diagnosticsSettingsName: 'defaultSettings'
+  enableAppInsights: true
+  appInsightsName: '${deploymentPrefix}${uniqueId}ldrai'
+  enabled: true
+}
+var fhirSynapseLinkConfig = {
+  name: fhirSynapseAppName
+  url: 'https://${fhirSynapseAppName}.azurewebsites.net'
+  repoUrl: 'https://github.com/microsoft/FHIR-Analytics-Pipelines'
+  repoBranch: 'main'
+  enableDiagnostics: true
+  diagnosticsSettingsName: 'defaultSettings'
+  enableAppInsights: true
+  appInsightsName: '${deploymentPrefix}${uniqueId}ldrai'
+  dataLakeEndpoint: 'https://${exportStorageAccount.name}.blob.${environment().suffixes.storage}'
+  dataLakeContainerName: empty(dataLakeContainerName) ? 'fhirdatalake' : toLower(dataLakeContainerName)
+  enabled: true
+  dataStart: empty(dataStart) ? '' : dataStart
+  dataEnd: empty(dataEnd) ? '' : dataEnd
+  // fhir service configuration settings
+  fhirServiceUrl: fhirServiceConfig.url
+  fhirServiceVersion: fhirServiceConfig.version
+  packageUri:'https://fhirdeploy.blob.${environment().suffixes.storage}/fhir/Microsoft.Health.Fhir.Synapse.FunctionApp.zip'
+  useMSI: true
+}
+
+var dataLakeSyncAppName = 'workbenchfhirsynapsesyncapp'
+
 var exportStorageContainerList = [
   'anonymization'
   'export'
   'export-trigger'
-  toLower(dataLakeContainerName)
+  fhirSynapseLinkConfig.dataLakeContainerName
 ]
 var importStorageContainerList = [
   'bundles'
   'ndjson'
   'zip'
 ]
-// -- deployment flags
-var deployfhirAdlsLink = true
 
 // -- other variables
 var functionPlanOS = 'Windows'
 
-// Azure Log Analytics Workspace
+// -- Log Analytics Workspace and diagnostics
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
-  name: laName
+  name: logAnalyticsConfig.name
   location: resourceLocation
   tags: resourceTags
   properties: {
@@ -95,9 +163,9 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03
     }
   }
 }
-resource logAnalyticsWorkspaceDiagnostics 'Microsoft.Insights/diagnosticSettings@2017-05-01-preview' = {
+resource logAnalyticsWorkspaceDiagnostics 'Microsoft.Insights/diagnosticSettings@2017-05-01-preview' = if(logAnalyticsConfig.enableDiagnostics){
   scope: logAnalyticsWorkspace
-  name: 'diagnosticSettings'
+  name: logAnalyticsConfig.diagnosticsSettingsName
   properties: {
     workspaceId: logAnalyticsWorkspace.id
     logs: [
@@ -122,9 +190,276 @@ resource logAnalyticsWorkspaceDiagnostics 'Microsoft.Insights/diagnosticSettings
     ]
   }
 }
-// create export storage account
+// -- deploy Azure Key Vault and enable diagnostics settings
+resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' =  {
+  name: keyVaultConfig.name
+  location: resourceLocation
+  properties: {
+    tenantId: tenantId
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    accessPolicies: [
+    ]
+    enabledForDeployment: false
+    enabledForDiskEncryption: false
+    enabledForTemplateDeployment: false
+    softDeleteRetentionInDays: 7
+    enableSoftDelete: true
+    enableRbacAuthorization: false
+    networkAcls: {
+      defaultAction: 'Allow'
+      bypass: 'AzureServices'
+    }
+  }
+}
+resource keyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if(keyVaultConfig.enableDiagnostics){
+  scope: keyVault
+  name: keyVaultConfig.diagnosticsSettingsName
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+// -- create storage accounts
+// -- functions storage account
+resource functionsStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: functionsStorageAccountName
+  location: resourceLocation
+  tags: resourceTags
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+  properties: {
+    accessTier: 'Hot'
+    supportsHttpsTrafficOnly: true
+    allowBlobPublicAccess: false
+    isHnsEnabled: false
+    isNfsV3Enabled: false
+    minimumTlsVersion: 'TLS1_2'
+  }
+}
+resource functionsBlobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-06-01' = {
+  name: '${functionsStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+    deleteRetentionPolicy: {
+      enabled: true
+      days: 7
+    }
+  }
+}
+resource functionsFileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-06-01' = {
+  name: '${functionsStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+    shareDeleteRetentionPolicy: {
+      enabled: true
+      days: 7
+    }
+  }
+}
+resource functionsQueueServices 'Microsoft.Storage/storageAccounts/queueServices@2021-06-01' = {
+  name: '${functionsStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+  }
+}
+resource functionsTableServices 'Microsoft.Storage/storageAccounts/tableServices@2021-06-01' = {
+  name: '${functionsStorageAccount.name}/default'
+  properties: {
+    cors: {
+      corsRules: []
+    }
+  }
+}
+resource storageAcountDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: functionsStorageAccount
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource functionsStorageAccountBlobDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: functionsBlobServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource functionsStorageAccountFileDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: functionsFileServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource functionsStorageAccountTableDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: functionsTableServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+resource functionsStorageAccountQueueDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: functionsQueueServices
+  name: 'defaultSettings'
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+      {
+        categoryGroup: 'audit'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy:{
+          enabled: true
+          days: 7
+        }
+      }
+    ]
+  }
+}
+// -- export storage account
 resource exportStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: saName
+  name: exportStorageAccountName
   location: resourceLocation
   tags: resourceTags
   kind: 'StorageV2'
@@ -342,10 +677,9 @@ resource exportSAQueueDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05
     ]
   }
 }
-
-// create import storage account
+// -- import storage account
 resource importStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: importSAName
+  name: importStorageAccountName
   location: resourceLocation
   tags: resourceTags
   kind: 'StorageV2'
@@ -405,7 +739,7 @@ resource importTableServices 'Microsoft.Storage/storageAccounts/tableServices@20
     }
   }
 }
-// enable diagnostics for export storage account
+// enable diagnostics for import storage account
 resource importSADiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   scope: importStorageAccount
   name: 'defaultSettings'
@@ -563,9 +897,7 @@ resource importSAQueueDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05
     ]
   }
 }
-
-
-// Azure Container Registry
+// -- Azure Container Registry
 resource artifactContainerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
   name:containerRegistryName
   tags: resourceTags
@@ -573,8 +905,12 @@ resource artifactContainerRegistry 'Microsoft.ContainerRegistry/registries@2021-
   sku: {
     name: 'Basic'
   }
+  properties: {
+    adminUserEnabled: false
+    anonymousPullEnabled: false
+  }
 }
-// enable diagnostics for container registry
+// -- enable diagnostics for container registry
 resource artifactContainerRegistryDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   scope: artifactContainerRegistry
   name: 'defaultSettings'
@@ -610,91 +946,41 @@ resource artifactContainerRegistryDiagnostics 'Microsoft.Insights/diagnosticSett
     ]
   }
 }
-// Azure Key Vault 
-resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' =  {
-  name: kvName
-  location: resourceLocation
-  properties: {
-    tenantId: tenantId
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }
-    accessPolicies: [
-    ]
-    enabledForDeployment: false
-    enabledForDiskEncryption: false
-    enabledForTemplateDeployment: false
-    softDeleteRetentionInDays: 7
-    enableSoftDelete: true
-    enableRbacAuthorization: false
-    networkAcls: {
-      defaultAction: 'Allow'
-      bypass: 'AzureServices'
-    }
-  }
-}
-// enable diagnostic settings for KV
-resource keyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  scope: keyVault
-  name: 'defaultSettings'
-  properties: {
-    workspaceId: logAnalyticsWorkspace.id
-    logs: [
-      {
-        categoryGroup: 'allLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy:{
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-  }
-}
-// API for FHIR Resource
-var cosmosDbThroughput = 400
-var systemIdentity = {
-  type: 'SystemAssigned'
-}
-resource apiForFhir 'Microsoft.HealthcareApis/services@2021-06-01-preview' ={
-  name: apiForFhirServiceName
+
+//  -- Health Data Services Resources
+// -- deploy Health Data Services Workspace
+resource healthDataWorkspace 'Microsoft.HealthcareApis/workspaces@2021-11-01' = {
+  name: healthDataServicesConfig.name
   tags: resourceTags
-  kind: 'fhir-R4'
   location: resourceLocation
-  identity: systemIdentity
   properties:{
-    authenticationConfiguration: {
-      audience: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
-      authority: uri(environment().authentication.loginEndpoint,subscription().tenantId)
-    }
-    cosmosDbConfiguration:{
-        offerThroughput: cosmosDbThroughput
-    }
+    publicNetworkAccess: 'Enabled'
+  }
+}
+// -- deploy FHIR Service
+resource fhirService 'Microsoft.HealthcareApis/workspaces/fhirservices@2021-11-01' = {
+  name: fhirServiceConfig.name
+  tags: resourceTags
+  location: resourceLocation
+  parent: healthDataWorkspace
+  identity: fhirServiceConfig.systemIdentity
+  kind: fhirServiceConfig.kind
+  properties:{
     exportConfiguration:{
       storageAccountName: exportStorageAccount.name
     }
     acrConfiguration:{
-      loginServers: [
-        // to be updated
-        '${artifactContainerRegistry.name}.azurecr.io'
-      ]
+      loginServers: fhirServiceConfig.loginServers
+    }
+    authenticationConfiguration: {
+      audience: 'https://${healthDataServicesConfig.name}-${fhirServiceConfig.name}.fhir.azurehealthcareapis.com'
+      authority: uri(environment().authentication.loginEndpoint,subscription().tenantId)
     }
   }
 }
-// enable diagnostic settings for API for FHIR
-resource fhirDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  scope: apiForFhir
+// -- configure diagnostics settings
+resource fhirServiceDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' =  {
+  scope: fhirService
   name: 'defaultSettings'
   properties: {
     workspaceId: logAnalyticsWorkspace.id
@@ -720,18 +1006,18 @@ resource fhirDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
     ]
   }
 }
-// -- add secrets to Key Vault 
-// -- add 'Old' secrets for compatibility with bash scripts and related tools
+// -- add FHIR service 'secrets' to Key Vault 
 resource fhirServerUrlSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' =  {
   name: '${keyVault.name}/fhirServiceUrl'
   properties:{
-    value: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
+    value: fhirServiceConfig.url
+
   }
 }
 resource fhirServerUrlSecretOld 'Microsoft.KeyVault/vaults/secrets@2019-09-01' =  {
   name: '${keyVault.name}/FS-URL'
   properties:{
-    value: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
+    value: fhirServiceConfig.url
   }
 }
 resource fhirServerTenantNameSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = if(!empty(fhirServerTenantName)) {
@@ -778,9 +1064,9 @@ resource functionsStorageAccountConnectionSecret 'Microsoft.KeyVault/vaults/secr
 }
 // -- assign permissions for FHIR Service, FHIR Proxy, FHIR Loader
 module functionsStoragePermissions './assignpermissions.bicep' = {
-  name: 'proxyFHIRPermissions'
+  name: 'fhirProxyStoragePermissions'
   params: {
-    principalId: apiForFhir.identity.principalId
+    principalId: fhirService.identity.principalId
     builtInRoleType: 'StorageBlobDataContributor'
     resourceType: 'Storage'
     resourceName: functionsStorageAccount.name
@@ -789,7 +1075,7 @@ module functionsStoragePermissions './assignpermissions.bicep' = {
 module registryPermissions './assignpermissions.bicep' = {
   name: 'registryPermissions'
   params: {
-    principalId: apiForFhir.identity.principalId
+    principalId: fhirService.identity.principalId
     builtInRoleType: 'AcrPull'
     resourceType: 'Registry'
     resourceName: artifactContainerRegistry.name
@@ -800,8 +1086,9 @@ module loaderPermissionsFHIRWriter './assignpermissions.bicep' = {
   params: {
     principalId: fhirLoaderFunctionApp.identity.principalId
     builtInRoleType: 'FHIRDataWriter'
-    resourceType: 'FHIR'
-    resourceName: apiForFhir.name
+    resourceType: 'FHIRWS'
+    resourceName: fhirService.name
+    healthDataWorkspaceName: healthDataWorkspace.name
   }
 }
 module proxyPermissionsFHIRContributor './assignpermissions.bicep' = {
@@ -809,8 +1096,9 @@ module proxyPermissionsFHIRContributor './assignpermissions.bicep' = {
   params: {
     principalId: fhirProxyFunctionApp.identity.principalId
     builtInRoleType: 'FHIRDataContributor'
-    resourceType: 'FHIR'
-    resourceName: apiForFhir.name
+    resourceType: 'FHIRWS'
+    resourceName: fhirService.name
+    healthDataWorkspaceName: healthDataWorkspace.name
   }
 }
 module proxyPermissionsFHIRWriter './assignpermissions.bicep' = {
@@ -818,249 +1106,14 @@ module proxyPermissionsFHIRWriter './assignpermissions.bicep' = {
   params: {
     principalId: fhirProxyFunctionApp.identity.principalId
     builtInRoleType: 'FHIRDataWriter'
-    resourceType: 'FHIR'
-    resourceName: apiForFhir.name
+    resourceType: 'FHIRWS'
+    resourceName: fhirService.name
+    healthDataWorkspaceName: healthDataWorkspace.name
   }
 }
 
-//
-// Healthcare APIs (API for FHIR) : Training starter FHIR Loader and Proxy
-// 
-
-// FHIR Loader and Proxy resource names
-var proxyStorageAccountName = '${deploymentPrefix}${uniqueId}funsa'
-var proxyFunctionAppName    = '${deploymentPrefix}${uniqueId}pxyfa'
-var loaderFunctionAppName   = '${deploymentPrefix}${uniqueId}ldrfa'
-var adlsSyncFunctionAppName = '${deploymentPrefix}${uniqueId}synfa'
-var redisCacheName          = '${deploymentPrefix}${uniqueId}rc'
-var appServicePlanName      = '${deploymentPrefix}${uniqueId}asp'
-var proxyAppInsightName     = '${deploymentPrefix}${uniqueId}pxyai'
-var loaderAppInsightName    = '${deploymentPrefix}${uniqueId}ldrai'
-var loaderEventGridTopicName = '${deploymentPrefix}${uniqueId}ldrtopic'
-
-// FHIR Proxy Code Repo
-var fhirProxyRepoUrl = 'https://github.com/microsoft/fhir-proxy'
-var fhirProxyRepoBranch = 'main'
-// FHIR Bulk Loader Code Repo
-var fhirLoaderRepoUrl = 'https://github.com/microsoft/fhir-loader'
-var fhirLoaderRepoBranch = 'main'
 
 
-// create a storage account for FHIR Loader/Proxy and enable diagnostic logging
-resource functionsStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: proxyStorageAccountName
-  location: resourceLocation
-  tags: resourceTags
-  kind: 'StorageV2'
-  sku: {
-    name: 'Standard_LRS'
-  }
-  properties: {
-    accessTier: 'Hot'
-    supportsHttpsTrafficOnly: true
-    allowBlobPublicAccess: false
-    isHnsEnabled: false
-    isNfsV3Enabled: false
-    minimumTlsVersion: 'TLS1_2'
-  }
-}
-resource functionsBlobServices 'Microsoft.Storage/storageAccounts/blobServices@2021-06-01' = {
-  name: '${functionsStorageAccount.name}/default'
-  properties: {
-    cors: {
-      corsRules: []
-    }
-    deleteRetentionPolicy: {
-      enabled: true
-      days: 7
-    }
-  }
-}
-resource functionsFileServices 'Microsoft.Storage/storageAccounts/fileServices@2021-06-01' = {
-  name: '${functionsStorageAccount.name}/default'
-  properties: {
-    cors: {
-      corsRules: []
-    }
-    shareDeleteRetentionPolicy: {
-      enabled: true
-      days: 7
-    }
-  }
-}
-resource functionsQueueServices 'Microsoft.Storage/storageAccounts/queueServices@2021-06-01' = {
-  name: '${functionsStorageAccount.name}/default'
-  properties: {
-    cors: {
-      corsRules: []
-    }
-  }
-}
-resource functionsTableServices 'Microsoft.Storage/storageAccounts/tableServices@2021-06-01' = {
-  name: '${functionsStorageAccount.name}/default'
-  properties: {
-    cors: {
-      corsRules: []
-    }
-  }
-}
-resource storageAcountDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  scope: functionsStorageAccount
-  name: 'defaultSettings'
-  properties: {
-    workspaceId: logAnalyticsWorkspace.id
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy:{
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-  }
-}
-resource functionsStorageAccountBlobDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  scope: functionsBlobServices
-  name: 'defaultSettings'
-  properties: {
-    workspaceId: logAnalyticsWorkspace.id
-    logs: [
-      {
-        categoryGroup: 'allLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-      {
-        categoryGroup: 'audit'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy:{
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-  }
-}
-resource functionsStorageAccountFileDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  scope: functionsFileServices
-  name: 'defaultSettings'
-  properties: {
-    workspaceId: logAnalyticsWorkspace.id
-    logs: [
-      {
-        categoryGroup: 'allLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-      {
-        categoryGroup: 'audit'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy:{
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-  }
-}
-resource functionsStorageAccountTableDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  scope: functionsTableServices
-  name: 'defaultSettings'
-  properties: {
-    workspaceId: logAnalyticsWorkspace.id
-    logs: [
-      {
-        categoryGroup: 'allLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-      {
-        categoryGroup: 'audit'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy:{
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-  }
-}
-resource functionsStorageAccountQueueDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  scope: functionsQueueServices
-  name: 'defaultSettings'
-  properties: {
-    workspaceId: logAnalyticsWorkspace.id
-    logs: [
-      {
-        categoryGroup: 'allLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-      {
-        categoryGroup: 'audit'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'Transaction'
-        enabled: true
-        retentionPolicy:{
-          enabled: true
-          days: 7
-        }
-      }
-    ]
-  }
-}
 // Azure Redis Cache & diagnostics logging
 resource redisCache 'Microsoft.Cache/redis@2020-06-01' = {
   name: redisCacheName
@@ -1149,7 +1202,7 @@ resource appServicePlanDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-0
 }
 // FHIR Proxy Function App
 resource fhirProxyFunctionApp 'Microsoft.Web/sites@2021-02-01' = {
-  name: proxyFunctionAppName
+  name: fhirProxyAppName
   location: resourceLocation
   tags: resourceTags
   identity: {
@@ -1198,7 +1251,7 @@ resource fhirProxyFunctionAppDiagnostics 'Microsoft.Insights/diagnosticSettings@
 }
 // FHIR Bulk Loader Function App
 resource fhirLoaderFunctionApp 'Microsoft.Web/sites@2021-02-01' = {
-  name: loaderFunctionAppName
+  name: fhirLoaderAppName
   location: resourceLocation
   tags: resourceTags
   identity: {
@@ -1425,8 +1478,8 @@ resource deployLoaderUsingCD 'Microsoft.Web/sites/sourcecontrols@2020-12-01' = {
   name:'web'
   parent: fhirLoaderFunctionApp
   properties: {
-    repoUrl: fhirLoaderRepoUrl
-    branch: fhirLoaderRepoBranch
+    repoUrl: fhirLoaderConfig.repoUrl
+    branch: fhirLoaderConfig.repoBranch
     isManualIntegration: true
   }
 }
@@ -1438,8 +1491,8 @@ resource deployProxyUsingCD 'Microsoft.Web/sites/sourcecontrols@2020-12-01' = {
   name:'web'
   parent: fhirProxyFunctionApp
   properties: {
-    repoUrl: fhirProxyRepoUrl
-    branch: fhirProxyRepoBranch
+    repoUrl: fhirProxyConfig.repoUrl
+    branch: fhirProxyConfig.repoBranch
     isManualIntegration: true
   }
 }
@@ -1604,33 +1657,10 @@ resource functionAppKeyVaultPermissions 'Microsoft.KeyVault/vaults/accessPolicie
   }
 }
 
-
-
 // -- fhir Synapse Link deployment
 
-var fhirServiceVersion = 'R4'
-var dataLakeSyncAppName = 'workbenchfhirsynapsesyncapp'
-var dataLakeStorageAccountName  = exportStorageAccount.name
-var dataLakeEndpoint = 'https://${exportStorageAccount.name}.blob.${environment().suffixes.storage}'
-
-var dataStart = '1970-01-01 00:00:00 +00:00'
-var dataEnd = ''
-
-var fhirSynapseSettings = {
-  fhirServiceUrl: 'https://${apiForFhirServiceName}.azurehealthcareapis.com'
-  fhirServiceVersion: fhirServiceVersion
-  name: adlsSyncFunctionAppName
-  dataLakeStorageAccountName: empty(dataLakeStorageAccountName) ? 'fhirdatalake' : dataLakeStorageAccountName
-  dataLakeContainerName: empty(dataLakeContainerName) ? 'fhirdatalake' : dataLakeContainerName
-  dataLakeEndpoint: empty(dataLakeEndpoint) ? '' : dataLakeEndpoint
-  dataStart: empty(dataStart) ? '' : dataStart
-  dataEnd: empty(dataEnd) ? '' : dataEnd
-  useMSI: useMSI ? true : false
-  packageUri:'https://fhirdeploy.blob.${environment().suffixes.storage}/fhir/Microsoft.Health.Fhir.Synapse.FunctionApp.zip'
-}
-
-resource fhirAnalyticsSyncAppInsights 'microsoft.insights/components@2020-02-02-preview' = if (deployfhirAdlsLink) {
-  name: '${fhirSynapseSettings.name}ai'
+resource fhirAnalyticsSyncAppInsights 'microsoft.insights/components@2020-02-02-preview' = if (fhirSynapseLinkConfig.enabled) {
+  name: '${fhirSynapseLinkConfig.name}ai'
   location: resourceLocation
   kind: 'web'
   tags: resourceTags
@@ -1643,7 +1673,7 @@ resource fhirAnalyticsSyncAppInsights 'microsoft.insights/components@2020-02-02-
 var adlsAppSettings = [
   {
     'name':'APPINSIGHTS_INSTRUMENTATIONKEY'
-    'value': (deployfhirAdlsLink) ? fhirAnalyticsSyncAppInsights.properties.InstrumentationKey : ''
+    'value': (fhirSynapseLinkConfig.enabled) ? fhirAnalyticsSyncAppInsights.properties.InstrumentationKey : ''
   }
   {
     'name': 'AzureWebJobsStorage'
@@ -1671,11 +1701,11 @@ var adlsAppSettings = [
   }
   {
     'name':'job__containerName'
-    'value': toLower(dataLakeContainerName)
+    'value': fhirSynapseLinkConfig.dataLakeContainerName
   }
   {
     'name':'job__startTime'
-    'value': fhirSynapseSettings.dataStart
+    'value': fhirSynapseLinkConfig.dataStart
   }
   {
     'name':'job__endTime'
@@ -1683,26 +1713,26 @@ var adlsAppSettings = [
   }
   {
     'name':'dataLakeStore__storageUrl'
-    'value': fhirSynapseSettings.dataLakeEndpoint
+    'value': fhirSynapseLinkConfig.dataLakeEndpoint
   }
   {
     'name':'fhirServer__serverUrl'
-    'value': fhirSynapseSettings.fhirServiceUrl
+    'value': fhirSynapseLinkConfig.fhirServiceUrl
   }
   {
     'name':'fhirServer__version'
-    'value': fhirSynapseSettings.fhirServiceVersion
+    'value': fhirSynapseLinkConfig.fhirServiceVersion
   }
   {
     'name':'fhirServer__authentication'
-    'value': fhirSynapseSettings.useMSI ? 'ManagedIdentity' : 'None'
+    'value': fhirSynapseLinkConfig.useMSI ? 'ManagedIdentity' : 'None'
   }
 ]
 
 var fhirSynapseSyncAppServicePlanId = appServicePlan.id
 
-resource fhirSynapseSyncOperationFunction  'Microsoft.Web/sites@2021-02-01' = if(deployfhirAdlsLink) {
-  name: fhirSynapseSettings.name
+resource fhirSynapseSyncOperationFunction  'Microsoft.Web/sites@2021-02-01' = if(fhirSynapseLinkConfig.enabled) {
+  name: fhirSynapseLinkConfig.name
   location: resourceLocation
   tags: resourceTags
   identity: {
@@ -1725,17 +1755,17 @@ resource fhirSynapseSyncOperationFunction  'Microsoft.Web/sites@2021-02-01' = if
   }
 }
 
-resource fhirSynapsSyncPackageDeploy 'Microsoft.Web/sites/extensions@2020-12-01' = if(deployfhirAdlsLink) {
+resource fhirSynapsSyncPackageDeploy 'Microsoft.Web/sites/extensions@2020-12-01' = if(fhirSynapseLinkConfig.enabled) {
     name: 'MSDeploy'
   parent: fhirSynapseSyncOperationFunction
   properties: {
-      packageUri: fhirSynapseSettings.packageUri
+      packageUri: fhirSynapseLinkConfig.packageUri
       dbType : 'None'
       connectionString : ''
   }
 }
 
-module syncAppStoragePermissions './assignpermissions.bicep' = if (deployfhirAdlsLink){
+module syncAppStoragePermissions './assignpermissions.bicep' = if (fhirSynapseLinkConfig.enabled){
     name: 'synapseSyncStoragePermissions'
     params: {
       principalId: fhirSynapseSyncOperationFunction.identity.principalId
@@ -1744,140 +1774,24 @@ module syncAppStoragePermissions './assignpermissions.bicep' = if (deployfhirAdl
       resourceName: exportStorageAccount.name
     }
 }
-module syncAppFhirPermissions './assignpermissions.bicep' = if (deployfhirAdlsLink){
+module syncAppFhirPermissions './assignpermissions.bicep' = if (fhirSynapseLinkConfig.enabled){
   name: 'synapseSyncFhirPermissions'
   params: {
     principalId: fhirSynapseSyncOperationFunction.identity.principalId
     builtInRoleType: 'FHIRDataReader'
-    resourceType: 'FHIR'
-    resourceName: apiForFhir.name
+    resourceType: 'FHIRWS'
+    resourceName: fhirService.name
+    healthDataWorkspaceName: healthDataWorkspace.name
   }
 }
 
-// fhir proxy auth settings
-/*
-resource fhirProxyAuthenticationSettings 'Microsoft.Web/sites/config@2021-02-01' = {
-  name: 'authsettingsV2'
-  kind: 'string'
-  parent: fhirProxyFunctionApp
-  properties: {
-    globalValidation: {
-      requireAuthentication: false
-      unauthenticatedClientAction: 'AllowAnonymous'
-    }
-    httpSettings: {
-      requireHttps: true
-    }
-    identityProviders: {
-      azureActiveDirectory: {
-        enabled: true
-        isAutoProvisioned: bool
-        login: {
-          disableWWWAuthenticate: bool
-          loginParameters: [ 
-            'string' 
-          ]
-        }
-        registration: {
-          clientId: 'string'
-          clientSecretCertificateIssuer: 'string'
-          clientSecretCertificateSubjectAlternativeName: 'string'
-          clientSecretCertificateThumbprint: 'string'
-          clientSecretSettingName: 'string'
-          openIdIssuer: 'string'
-        }
-        validation: {
-          allowedAudiences: [ 
-            'string' 
-          ]
-          defaultAuthorizationPolicy: {
-            allowedApplications: [ 
-              'string' 
-            ]
-            allowedPrincipals: {
-              groups: [ 
-                'string' 
-              ]
-              identities: [ 
-                'string' 
-              ]
-            }
-          }
-          jwtClaimChecks: {
-            allowedClientApplications: [ 
-              'string' 
-            ]
-            allowedGroups: [ 
-              'string' 
-            ]
-          }
-        }
-      }
-      azureStaticWebApps: {
-        enabled: bool
-        registration: {
-          clientId: 'string'
-        }
-      }
-      customOpenIdConnectProviders: {}
-      legacyMicrosoftAccount: {
-        enabled: bool
-        login: {
-          scopes: [ 
-            'string' 
-          ]
-        }
-        registration: {
-          clientId: 'string'
-          clientSecretSettingName: 'string'
-        }
-        validation: {
-          allowedAudiences: [ 
-            'string' 
-          ]
-        }
-      }
-    }
-    login: {
-      allowedExternalRedirectUrls: [ 
-        'string' 
-      ]
-      cookieExpiration: {
-        convention: 'string'
-        timeToExpiration: 'string'
-      }
-      nonce: {
-        nonceExpirationInterval: 'string'
-        validateNonce: bool
-      }
-      preserveUrlFragmentsForLogins: bool
-      routes: {
-        logoutEndpoint: 'string'
-      }
-      tokenStore: {
-        azureBlobStorage: {
-          sasUrlSettingName: 'string'
-        }
-        enabled: true
-        tokenRefreshExtensionHours: int
-      }
-    }
-    platform: {
-      configFilePath: 'string'
-      enabled: bool
-      runtimeVersion: 'string'
-    }
-  }
-}
-*/
-
-
+// -- outputs
 output deploymentUniqueId string = uniqueId
 output keyVaultName string = keyVault.name
-output fhirServiceUrl string = apiForFhir.properties.authenticationConfiguration.audience
-output fhirServiceAuthority string = apiForFhir.properties.authenticationConfiguration.authority
-output fhirServiceExportStorageAccountName string = apiForFhir.properties.exportConfiguration.storageAccountName
-output fhirServiceRegistryList array = apiForFhir.properties.acrConfiguration.loginServers
-output fhirServiceManagedIdentity string = apiForFhir.identity.principalId
+output fhirServiceUrl string = fhirService.properties.authenticationConfiguration.audience
+output fhirServiceAuthority string = fhirService.properties.authenticationConfiguration.authority
+output fhirServiceExportStorageAccountName string = fhirService.properties.exportConfiguration.storageAccountName
+output fhirServiceRegistryList array = fhirService.properties.acrConfiguration.loginServers
+output fhirServiceManagedIdentity string = fhirService.identity.principalId
 output fhirLoaderManagedIdentity string = fhirLoaderFunctionApp.identity.principalId
 output fhirProxyManagedIdentity string = fhirProxyFunctionApp.identity.principalId

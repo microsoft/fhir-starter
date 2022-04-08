@@ -6,7 +6,7 @@ The quickstart [Azure Resource Manager](https://docs.microsoft.com/en-us/azure/a
 
 __Note:__ This quickstart ARM template is not intended for deploying resources in a production environment. The intended use is for an Azure [training environment](https://github.com/microsoft/azure-healthcare-apis-workshop). Please proceed accordingly.
 
-## Deploy Azure API for FHIR, FHIR-Proxy, FHIR-Bulk Loader, and FHIR-Synapse Link
+## Deploy FHIR service, FHIR-Proxy, FHIR-Bulk Loader, and FHIR-Synapse Link
 
 To begin, **CTRL+click** (Windows or Linux) or **CMD+click** (Mac) on the **Deploy to Azure** button below to open the deployment form in a new browser tab.
 

@@ -107,7 +107,7 @@ Further configuration is required to define **App Roles and Permissions**.
 <img src="./images/FHIR-PROXY-AUTH11.png" height="410">
 
 6. Select **APIs my organization uses**.
-<img src="./images/FHIR-PROXY-AUTH12.png" height="350">
+<img src="./images/FHIR-PROXY-AUTH12.png" height="310">
 
 7. Filter the results to "Azure Healthcare APIs". Click on **Azure Healthcare APIs**.
 <img src="./images/FHIR-PROXY-AUTH13.png" height="310">

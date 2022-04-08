@@ -119,4 +119,4 @@ Further configuration is required to define **App Roles and Permissions**.
 <img src="./images/FHIR-PROXY-AUTH15.png" height="410">
 
 10. Verify that the **App roles** were created properly.
-<img src="./images/FHIR-PROXY-AUTH16.png" height="410">
+<img src="./images/FHIR-PROXY-AUTH16.png" height="310">

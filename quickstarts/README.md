@@ -62,7 +62,7 @@ Name              | Type                 |  Purpose
 
 <img src="./images/Deployed_Components_Data_Flow_Revised.png" height="410">
 
-__Note:__ [Postman](https://www.getpostman.com/) is shown as an example REST client. If you are interested in setting up Postman to connect with Azure API for FHIR, please see [here](https://github.com/microsoft/health-architectures/tree/main/Postman) after completing steps 2 and 3 below. 
+__Note:__ [Postman](https://www.getpostman.com/) is shown as an example REST client. If you are interested in setting up Postman to connect with FHIR service, please see [here](https://github.com/microsoft/health-architectures/tree/main/Postman) after completing steps 2 and 3 below. 
 
 ## Step 2 - Complete FHIR-Proxy Authentication 
 Once initial deployment is finished, additional steps are necessary to complete the authentication configuration of the FHIR-Proxy function app. 

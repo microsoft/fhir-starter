@@ -45,10 +45,10 @@ Name              | Type                 |  Purpose
 [prefix]**fhir**  | PaaS | **Azure API for FHIR** - managed FHIR service
 [prefix]**pxyfa** | Function App | **FHIR-Proxy** - filters FHIR data input/output 
 [prefix]**ldrfa** | Function App | **FHIR-Bulk Loader** - bulk ingest FHIR data
-[prefix]**synfa** | Function App | **FHIR Synapse Link** - export FHIR data to ADLS every 5 minutes
+[prefix]**synfa** | Function App | **FHIR Synapse Link** - export FHIR data to ADLS Gen2 every 5 minutes
 [prefix]**asp**   | App Service Plan | Shared by FHIR-Proxy and FHIR-Bulk Loader function apps
-[prefix]**cr**    | Container Registry   | Supports Azure API for FHIR `$convert-data` operation
-[prefix]**expsa**  | Storage account      | Blob storage for Azure API for FHIR `$export` operation and FHIR-Bulk Loader
+[prefix]**cr**    | Container Registry   | Supports FHIR service `$convert-data` operation
+[prefix]**expsa** | Storage account      | Blob storage for FHIR service `$export` operation and FHIR-Bulk Loader
 [prefix]**funsa** | Storage account      | Storage for FHIR-Proxy, FHIR-Bulk and Synapse Link Loader function apps
 [prefix]**kv**    | Key Vault            | Stores secrets and configuration settings
 [prefix]**la**    | Log Analytics Workspace  | Logs the activity of deployed components
